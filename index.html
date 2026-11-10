@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=1.0.1">
+  <link rel="stylesheet" href="styles.css?v=1.0.2">
 </head>
 <body>
   <div class="announcement"><span class="announcement-mark">✦</span> Un hogar para quienes mantienen viva la llama de la Tierra Media <span class="announcement-mark">✦</span></div>
@@ -76,9 +76,43 @@
     <section class="register-section" id="registro"><div class="register-decoration">✧</div><p class="eyebrow">06 / EL CAMINO TE ESPERA</p><h2>Hay sitio en la mesa<br>para <em>una historia más.</em></h2><p>¿Te interesa Tolkien, quieres conocer nuestras actividades o formar parte del Smial? Déjanos tus datos y nos pondremos en contacto cuando el registro esté habilitado.</p>
       <form class="register-form" id="register-form"><label for="name">Tu nombre</label><input id="name" name="name" type="text" placeholder="¿Cómo te llamas?" required><label for="email">Correo electrónico</label><input id="email" name="email" type="email" placeholder="nombre@correo.com" required><label for="message">Cuéntanos qué te interesa (opcional)</label><textarea id="message" name="message" rows="3" placeholder="Lecturas, eventos, personajes..."></textarea><button class="button button-light" type="submit">Preparar solicitud <span>→</span></button><p class="form-feedback" id="form-feedback" role="status">El formulario es una maqueta inicial. El envío se conectará en una próxima etapa.</p></form>
     </section>
+    <section class="section admin-section" id="admin">
+      <p class="eyebrow dark">07 / GESTIÓN DEL SMIAL</p>
+      <h2>Administración</h2>
+      <p>Acceso reservado a la administración del Smial Dol Amroth de Chile.</p>
+      <div id="auth-box" class="admin-panel">
+        <form id="login-form" class="admin-form">
+          <label for="admin-email">Correo electrónico</label>
+          <input id="admin-email" type="email" value="Ch.munozfu@gmail.com" autocomplete="username" required>
+          <label for="admin-password">Contraseña</label>
+          <input id="admin-password" type="password" autocomplete="current-password" minlength="8" required>
+          <button class="button button-dark" type="submit">Iniciar sesión</button>
+          <button class="button button-outline-dark" id="signup-button" type="button">Crear cuenta de administrador</button>
+          <p id="auth-feedback" class="form-feedback" role="status"></p>
+        </form>
+      </div>
+      <div id="admin-dashboard" class="admin-panel" hidden>
+        <p id="admin-identity"></p>
+        <h3>Solicitudes de personajes</h3>
+        <div id="pending-characters"></div>
+        <h3>Publicar un evento</h3>
+        <form id="event-form" class="admin-form">
+          <label for="event-title">Título</label><input id="event-title" required>
+          <label for="event-description">Descripción</label><textarea id="event-description" rows="3" required></textarea>
+          <label for="event-date">Fecha</label><input id="event-date" type="date" required>
+          <label for="event-time">Hora</label><input id="event-time" type="time">
+          <label for="event-location">Lugar</label><input id="event-location" required>
+          <label for="event-image">Imagen (opcional)</label><input id="event-image" type="file" accept="image/jpeg,image/png,image/webp">
+          <button class="button button-dark" type="submit">Publicar evento</button>
+          <p id="event-feedback" class="form-feedback" role="status"></p>
+        </form>
+        <h3>Eventos publicados</h3><div id="admin-events"></div>
+        <button class="button button-outline-dark" id="logout-button" type="button">Cerrar sesión</button>
+      </div>
+    </section>
   </main>
 
-  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p>Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><span>NO OFICIAL · COMUNIDAD DE FANS</span><span id="app-version">VERSIÓN 1.0.1</span></div></footer>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>\n  <script src="script.js?v=1.0.1"></script>
+  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p>Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><span>NO OFICIAL · COMUNIDAD DE FANS</span><span id="app-version">VERSIÓN 1.0.2</span></div></footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>\n  <script src="script.js?v=1.0.2"></script>
 </body>
 </html>
