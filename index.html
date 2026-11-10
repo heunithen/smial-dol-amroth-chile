@@ -60,7 +60,7 @@
 
     <section class="section members-section" id="miembros">
       <div class="section-heading"><div><p class="eyebrow dark">03 / PERSONAJES</p><h2>Rostros e historias<br>de <em>nuestra casa.</em></h2></div><p class="section-lead">Cada integrante puede dar vida a un personaje con identidad, historia y lugar dentro del universo narrativo del Smial.</p></div>
-      <div class="members-empty"><div class="empty-crest">✧</div><h3>Un lugar para cada historia</h3><p>Pronto podrás conocer a los personajes de nuestros miembros y descubrir sus relatos.</p><a href="#registro" class="inline-link">¿Quieres sumarte? <span>→</span></a></div>
+      <div class="character-submit"><h3>Presenta tu personaje</h3><p>Completa tu ficha. Un administrador revisará la solicitud antes de publicarla.</p><form id="character-form" class="data-form"><label for="character-image">Retrato del personaje (cuadrado, 512 × 512 px)</label><input id="character-image" name="image" type="file" accept="image/jpeg,image/png,image/webp" required><label for="real-name">Nombre real</label><input id="real-name" name="real_name" maxlength="120" required><label for="tolkien-name">Nombre tolkiendil</label><input id="tolkien-name" name="tolkien_name" maxlength="120" required><label for="character-role">Cargo</label><input id="character-role" name="role_title" maxlength="120" placeholder="Ej. Guardián, bardo, explorador..." required><label for="character-story">Historia <span id="story-count">0/1000</span></label><textarea id="character-story" name="story" maxlength="1000" rows="5" required></textarea><label for="character-achievements">Logros</label><textarea id="character-achievements" name="achievements" rows="3" placeholder="Hazañas y aportes de tu personaje"></textarea><button class="button button-dark" type="submit">Enviar a aprobación <span>→</span></button><p id="character-feedback" class="form-feedback" role="status"></p></form></div><div id="approved-members" class="approved-members"></div>
     </section>
 
     <section class="shadow-section" id="la-sombra">
@@ -78,7 +78,7 @@
     </section>
   </main>
 
-  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p>Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#inicio">VOLVER ARRIBA ↑</a><span>NO OFICIAL · COMUNIDAD DE FANS</span></div></footer>
-  <script src="script.js"></script>
+  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p>Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><span>NO OFICIAL · COMUNIDAD DE FANS</span></div></footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>\n  <script src="script.js"></script>
 </body>
 </html>
