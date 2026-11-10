@@ -48,7 +48,7 @@ async function loadApproved(){
  const host=document.getElementById('approved-members');if(!host)return;
  const {data,error}=await db.from('characters').select('id,real_name,tolkien_name,role_title,story,achievements,image_path,hope_level,shadow_level').eq('status','approved').order('reviewed_at',{ascending:false});
  if(error){host.textContent='No fue posible cargar los personajes.';return;}
- host.innerHTML=data.map(c=>{const image=db.storage.from('smial-media').getPublicUrl(c.image_path).data.publicUrl;return '<article class="approved-card"><img src="'+image+'" alt=""><div><h3>'+escapeHtml(c.tolkien_name)+'</h3><p class="card-kicker">'+escapeHtml(c.role_title)+' · '+escapeHtml(c.real_name)+'</p><div class="character-levels"><span>Esperanza <b>'+c.hope_level+'/10</b></span><span>Sombra <b>'+c.shadow_level+'/10</b></span></div>'+(c.shadow_level>=10?'<p class="consumed-label">CONSUMIDO · ANTAGONISTA</p>':'')+'<p>'+escapeHtml(c.story)+'</p>'+(c.achievements?'<p><strong>Logros:</strong> '+escapeHtml(c.achievements)+'</p>':'')+'</div></article>';}).join('')||'<div class="members-empty"><div class="empty-crest">✧</div><h3>Las primeras historias están por llegar</h3><p>Los personajes aparecerán aquí una vez aprobados.</p></div>';
+ host.innerHTML=data.map(c=>{const image=db.storage.from('smial-media').getPublicUrl(c.image_path).data.publicUrl;return '<article class="approved-card"><img src="'+image+'" alt=""><div><h3>'+escapeHtml(c.tolkien_name)+'</h3><p class="card-kicker">'+escapeHtml(c.role_title)+' · '+escapeHtml(c.real_name)+'</p><div class="character-levels"><span>Esperanza <b>'+c.hope_level+'/10</b></span><span>Sombra <b>'+c.shadow_level+'/10</b></span></div>'+(c.hope_level<3?'<p class="consumed-label">CONSUMIDO · ANTAGONISTA</p>':'')+'<p>'+escapeHtml(c.story)+'</p>'+(c.achievements?'<p><strong>Logros:</strong> '+escapeHtml(c.achievements)+'</p>':'')+'</div></article>';}).join('')||'<div class="members-empty"><div class="empty-crest">✧</div><h3>Las primeras historias están por llegar</h3><p>Los personajes aparecerán aquí una vez aprobados.</p></div>';
 }
 function escapeHtml(value=''){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
 async function loadEvents(){
@@ -102,14 +102,14 @@ async function loadAdminEvents(){
 async function openAttendance(eventId){
  const host=document.getElementById('attendance-manager');host.textContent='Cargando personajes...';
  const [{data:characters,error:charError},{data:existing,error:attendanceError},{data:eventRow}] = await Promise.all([
-  db.from('characters').select('id,tolkien_name,role_title,shadow_level').eq('status','approved').order('tolkien_name'),
+  db.from('characters').select('id,tolkien_name,role_title,hope_level,shadow_level').eq('status','approved').order('tolkien_name'),
   db.from('event_attendance').select('character_id,attended').eq('event_id',eventId),
   db.from('events').select('title,attendance_closed').eq('id',eventId).single()
  ]);
  if(charError||attendanceError||!eventRow){host.textContent=(charError||attendanceError)?.message||'No se pudo cargar el evento.';return;}
  if(eventRow.attendance_closed){host.textContent='La asistencia de este evento ya fue cerrada.';return;}
  const present=new Set((existing||[]).filter(row=>row.attended).map(row=>row.character_id));
- host.innerHTML='<h4>'+escapeHtml(eventRow.title)+'</h4><p>Marca únicamente a los personajes que asistieron. Los demás se registrarán como ausentes al cerrar el evento.</p><form id="attendance-form"><div class="attendance-list">'+characters.map(c=>'<label><input type="checkbox" name="attended" value="'+c.id+'" '+(present.has(c.id)?'checked':'')+'><span><strong>'+escapeHtml(c.tolkien_name)+'</strong><small>'+escapeHtml(c.role_title)+(c.shadow_level>=10?' · CONSUMIDO':'')+'</small></span></label>').join('')+'</div><button class="button button-dark" type="submit">Guardar asistencia</button> <button class="button button-outline-dark" id="close-attendance" type="button">Cerrar evento y aplicar cambios</button><p id="attendance-feedback" class="form-feedback" role="status"></p></form>';
+ host.innerHTML='<h4>'+escapeHtml(eventRow.title)+'</h4><p>Marca únicamente a los personajes que asistieron. Los demás se registrarán como ausentes al cerrar el evento.</p><form id="attendance-form"><div class="attendance-list">'+characters.map(c=>'<label><input type="checkbox" name="attended" value="'+c.id+'" '+(present.has(c.id)?'checked':'')+'><span><strong>'+escapeHtml(c.tolkien_name)+'</strong><small>'+escapeHtml(c.role_title)+(c.hope_level<3?' · CONSUMIDO':'')+'</small></span></label>').join('')+'</div><button class="button button-dark" type="submit">Guardar asistencia</button> <button class="button button-outline-dark" id="close-attendance" type="button">Cerrar evento y aplicar cambios</button><p id="attendance-feedback" class="form-feedback" role="status"></p></form>';
  const form=document.getElementById('attendance-form');
  form.addEventListener('submit',async e=>{e.preventDefault();const ids=[...form.querySelectorAll('input[name="attended"]:checked')].map(input=>input.value);const rows=characters.map(c=>({event_id:eventId,character_id:c.id,attended:ids.includes(c.id)}));const {error}=await db.from('event_attendance').upsert(rows,{onConflict:'event_id,character_id'});say('attendance-feedback',error?'Error: '+error.message:'Asistencia guardada. Todavía puedes modificarla antes de cerrar el evento.');});
  document.getElementById('close-attendance').addEventListener('click',async()=>{
@@ -128,14 +128,14 @@ async function loadShadowState(){
  const [{data:state,error},{count:total},{count:consumed}] = await Promise.all([
   db.from('smial_state').select('*').eq('id',1).single(),
   db.from('characters').select('id',{count:'exact',head:true}).eq('status','approved'),
-  db.from('characters').select('id',{count:'exact',head:true}).eq('status','approved').gte('shadow_level',10)
+  db.from('characters').select('id',{count:'exact',head:true}).eq('status','approved').lt('hope_level',3)
  ]);
  if(error)return;
  document.getElementById('smial-light').textContent=state.light_level+'/10';
  document.getElementById('smial-shadow').textContent=state.shadow_level+'/10';
  document.getElementById('smial-light-bar').style.width=(state.light_level*10)+'%';
  document.getElementById('smial-shadow-bar').style.width=(state.shadow_level*10)+'%';
- document.getElementById('smial-state-label').textContent=state.shadow_level>=10?'EL SMIAL ESTÁ CONSUMIDO':state.shadow_level>state.light_level?'LA SOMBRA DOMINA':state.light_level>state.shadow_level?'LA LUZ RESISTE':'LUZ Y SOMBRA ESTÁN EN EQUILIBRIO';
- document.getElementById('smial-counts').textContent=(total||0)+' personajes aprobados · '+(consumed||0)+' consumidos · Marcas pendientes: '+state.light_marks+' de Luz y '+state.shadow_marks+' de Sombra.';
+ document.getElementById('smial-state-label').textContent=state.light_level<3?'EL SMIAL ESTÁ CONSUMIDO':state.shadow_level>state.light_level?'LA SOMBRA DOMINA':state.light_level>state.shadow_level?'LA ESPERANZA RESISTE':'ESPERANZA Y SOMBRA ESTÁN EN EQUILIBRIO';
+ document.getElementById('smial-counts').textContent=(total||0)+' personajes aprobados · '+(consumed||0)+' consumidos · Marcas pendientes: '+state.light_marks+' de Esperanza y '+state.shadow_marks+' de Sombra.';
 }
 loadApproved();loadEvents();loadShadowState();refreshAdmin();
