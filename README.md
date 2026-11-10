@@ -16,6 +16,7 @@ Sitio web estático de presentación para el Smial Dol Amroth de Chile, comunida
 2. En **Build and deployment**, selecciona **Deploy from a branch**.
 3. Elige la rama **main** y la carpeta **/(root)**.
 4. Guarda y espera la publicación.
+5. Los nuevos commits en `main` deberían iniciar una actualización del sitio.
 
 La dirección esperada será: https://heunithen.github.io/smial-dol-amroth-chile/
 
