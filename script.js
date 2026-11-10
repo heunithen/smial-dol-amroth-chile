@@ -48,14 +48,30 @@ async function loadApproved(){
  const host=document.getElementById('approved-members');if(!host)return;
  const {data,error}=await db.from('characters').select('id,real_name,tolkien_name,role_title,story,achievements,image_path,hope_level,shadow_level').eq('status','approved').order('reviewed_at',{ascending:false});
  if(error){host.textContent='No fue posible cargar los personajes.';return;}
- host.innerHTML=data.map(c=>{const image=db.storage.from('smial-media').getPublicUrl(c.image_path).data.publicUrl;return '<article class="approved-card"><img src="'+image+'" alt=""><div><h3>'+escapeHtml(c.tolkien_name)+'</h3><p class="card-kicker">'+escapeHtml(c.role_title)+' · '+escapeHtml(c.real_name)+'</p><div class="character-levels"><span>Esperanza <b>'+c.hope_level+'/10</b></span><span>Sombra <b>'+c.shadow_level+'/10</b></span></div>'+(c.hope_level<3?'<p class="consumed-label">CONSUMIDO · ANTAGONISTA</p>':'')+'<p>'+escapeHtml(c.story)+'</p>'+(c.achievements?'<p><strong>Logros:</strong> '+escapeHtml(c.achievements)+'</p>':'')+'</div></article>';}).join('')||'<div class="members-empty"><div class="empty-crest">✧</div><h3>Las primeras historias están por llegar</h3><p>Los personajes aparecerán aquí una vez aprobados.</p></div>';
+ const ids=(data||[]).map(c=>c.id);let awards=[];
+ if(ids.length){const result=await db.from('character_medals').select('character_id,medal_id').in('character_id',ids);awards=result.data||[];}
+ const medalIds=[...new Set(awards.map(a=>a.medal_id))];let catalog=[];
+ if(medalIds.length){const result=await db.from('medal_catalog').select('id,name,icon').in('id',medalIds);catalog=result.data||[];}
+ const medalMap=new Map(catalog.map(m=>[m.id,m]));const grouped=new Map();
+ awards.forEach(a=>{const medal=medalMap.get(a.medal_id);if(medal){if(!grouped.has(a.character_id))grouped.set(a.character_id,[]);grouped.get(a.character_id).push(medal);}});
+ host.innerHTML=data.map(c=>{
+  const image=db.storage.from('smial-media').getPublicUrl(c.image_path).data.publicUrl;
+  const badges=(grouped.get(c.id)||[]).map(m=>'<span class="medal-badge" title="'+escapeHtml(m.name)+'"><b>'+escapeHtml(m.icon)+'</b> '+escapeHtml(m.name)+'</span>').join('');
+  return '<article class="approved-card"><img src="'+image+'" alt=""><div><h3>'+escapeHtml(c.tolkien_name)+'</h3><p class="card-kicker">'+escapeHtml(c.role_title)+' · '+escapeHtml(c.real_name)+'</p><div class="character-levels"><span>Esperanza <b>'+c.hope_level+'/10</b></span><span>Sombra <b>'+c.shadow_level+'/10</b></span></div>'+(c.hope_level<3?'<p class="consumed-label">CONSUMIDO · ANTAGONISTA</p>':'')+'<p>'+escapeHtml(c.story)+'</p>'+(c.achievements?'<p><strong>Logros:</strong> '+escapeHtml(c.achievements)+'</p>':'')+(badges?'<div class="medal-collection"><strong>Medallas de Dol Amroth</strong><div>'+badges+'</div></div>':'')+'</div></article>';
+ }).join('')||'<div class="members-empty"><div class="empty-crest">✧</div><h3>Las primeras historias están por llegar</h3><p>Los personajes aparecerán aquí una vez aprobados.</p></div>';
 }
 function escapeHtml(value=''){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
 async function loadEvents(){
  const host=document.getElementById('event-placeholder-list');if(!host)return;
- const {data,error}=await db.from('events').select('*').eq('status','published').gte('event_date',new Date().toISOString().slice(0,10)).order('event_date');
+ const {data,error}=await db.from('events').select('*').eq('status','published').order('event_date',{ascending:true});
  if(error)return;
- host.innerHTML=data.map(ev=>'<article class="public-event"><p class="card-kicker">'+escapeHtml(ev.event_date)+(ev.event_time?' · '+escapeHtml(ev.event_time.slice(0,5)):'')+'</p><h3>'+escapeHtml(ev.title)+'</h3><p>'+escapeHtml(ev.description)+'</p><small>'+escapeHtml(ev.location)+'</small></article>').join('');
+ host.innerHTML=data.map(ev=>'<article class="public-event"><p class="card-kicker">'+escapeHtml(ev.event_date)+(ev.event_time?' · '+escapeHtml(ev.event_time.slice(0,5)):'')+'</p><h3>'+escapeHtml(ev.title)+'</h3><p>'+escapeHtml(ev.description)+'</p><small>'+escapeHtml(ev.location)+'</small>'+(ev.lore_title?'<div class="event-lore"><span>CRÓNICA DEL SMIAL</span><h4>'+escapeHtml(ev.lore_title)+'</h4><p>'+escapeHtml(ev.lore_intro||'')+'</p>'+(ev.lore_resolution?'<div class="event-resolution"><b>'+escapeHtml((ev.lore_outcome||'').toUpperCase())+'</b><p>'+escapeHtml(ev.lore_resolution)+'</p></div>':'<small>El desenlace se conocerá al cerrar el evento.</small>')+'</div>':'')+'</article>').join('');
+}
+async function loadLoreScenarios(){
+ const select=document.getElementById('event-lore-scenario');if(!select)return;
+ const {data,error}=await db.from('lore_scenarios').select('id,name').eq('active',true).order('name');
+ if(error){select.innerHTML='<option value="">No se pudieron cargar las historias</option>';return;}
+ select.innerHTML='<option value="">Elegir una historia al azar</option>'+(data||[]).map(s=>'<option value="'+s.id+'">'+escapeHtml(s.name)+'</option>').join('');
 }
 const loginForm=document.getElementById('login-form');
 async function refreshAdmin(){
