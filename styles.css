@@ -84,3 +84,31 @@ main>section#la-sombra.active{display:grid}
 .attendance-list small{font-size:9px;color:#75808a}
 .admin-event-actions{display:flex;gap:8px;flex-wrap:wrap}
 @media(max-width:780px){.shadow-meter-grid{grid-template-columns:1fr}.shadow-rules{padding:15px}.admin-event{align-items:flex-start;flex-direction:column}.admin-event-actions{width:100%}}
+
+/* Crónicas narrativas y medallas de Dol Amroth */
+.admin-hint{font-size:11px;line-height:1.7;color:#6b7780;margin:0 0 8px}
+.event-lore{margin-top:16px;padding:15px;border-top:1px solid #596778;background:rgba(255,255,255,.035)}
+.event-lore>span{font-size:8px;letter-spacing:.15em;color:#c6b58d}
+.event-lore h4{font:500 17px var(--serif);color:#e5e8e5;margin:7px 0}
+.event-lore p{line-height:1.7}
+.event-resolution{margin-top:12px;padding:12px;border-left:2px solid #b9a477;background:rgba(185,164,119,.08)}
+.event-resolution>b{font-size:9px;letter-spacing:.14em;color:#d8c79f}
+.event-resolution p{margin:6px 0 0}
+.admin-resolution{color:#dce3e5}
+.medal-collection{margin-top:14px}
+.medal-collection>strong{display:block;font-size:9px;letter-spacing:.1em;color:#8c7952;margin-bottom:7px}
+.medal-collection>div{display:flex;flex-wrap:wrap;gap:6px}
+.medal-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;background:#e7e2d4;border:1px solid #d4c8a9;color:#4b493e;font-size:9px}
+.medal-badge b{font-size:12px}
+.event-medal-manager{margin-top:20px;padding:18px;border:1px solid #d1d6d4;background:#eeede8}
+.event-medal-manager h4{font:500 19px var(--serif);color:#20364d}
+.event-medal-manager>p{font-size:11px;line-height:1.7;color:#65727d}
+.medal-award-form{display:grid;gap:7px;margin-top:16px;padding-top:15px;border-top:1px solid #d2d7d4}
+.medal-award-form label{font-size:10px;font-weight:700;letter-spacing:.08em;color:#526171;margin-top:6px}
+.medal-award-form input,.medal-award-form select{width:100%;padding:11px;background:#faf9f5;border:1px solid #cbd1d0;color:#1a2939;font:12px var(--sans)}
+.medal-award-form button{justify-self:start;margin-top:8px}
+.medal-award-count{font-size:10px;color:#6b7780}
+.medal-award-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #d5dad7;font-size:11px;color:#34485a}
+.medal-award-row small{display:block;color:#71808a;margin-top:4px}
+.medal-award-row .button{font-size:9px;padding:7px 9px}
+@media(max-width:780px){.event-medal-manager{padding:13px}.medal-award-row{align-items:flex-start;flex-direction:column}}
