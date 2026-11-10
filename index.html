@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=1.1.2">
+  <link rel="stylesheet" href="styles.css?v=1.2.0">
 </head>
 <body>
   <div class="announcement"><span class="announcement-mark">✦</span> Un hogar para quienes mantienen viva la llama de la Tierra Media <span class="announcement-mark">✦</span></div>
@@ -100,6 +100,7 @@
         <h3>Publicar un evento</h3>
         <form id="event-form" class="admin-form">
           <label for="event-title">Título</label><input id="event-title" required>
+          <label for="event-lore-scenario">Acontecimiento ficticio asociado</label><select id="event-lore-scenario"><option value="">Elegir una historia al azar</option></select><p class="admin-hint">Cada evento real activará una historia del Smial. Su desenlace se calculará al cerrar la asistencia, sumando asistentes y medallas otorgadas durante la actividad.</p>
           <label for="event-description">Descripción</label><textarea id="event-description" rows="3" required></textarea>
           <label for="event-date">Fecha</label><input id="event-date" type="date" required>
           <label for="event-time">Hora</label><input id="event-time" type="time">
@@ -108,13 +109,13 @@
           <button class="button button-dark" type="submit">Publicar evento</button>
           <p id="event-feedback" class="form-feedback" role="status"></p>
         </form>
-        <h3>Eventos publicados</h3><div id="admin-events"></div><h3>Control de asistencia y cierre de eventos</h3><p>Marca quién asistió. Al cerrar el evento, todos los personajes aprobados reciben el ajuste individual y el Smial recibe las marcas colectivas.</p><div id="attendance-manager" class="attendance-manager">Selecciona un evento para registrar la asistencia.</div>
+        <h3>Eventos publicados</h3><div id="admin-events"></div><h3>Control de asistencia, medallas y desenlace</h3><p>Registra quién asistió y reconoce los aportes destacados con medallas. Al cerrar el evento, la historia ficticia se resolverá automáticamente según la asistencia y los logros reconocidos.</p><div id="attendance-manager" class="attendance-manager">Selecciona un evento para registrar la asistencia.</div>
         <button class="button button-outline-dark" id="logout-button" type="button">Cerrar sesión</button>
       </div>
     </section>
   </main>
 
-  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p>Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><span>NO OFICIAL · COMUNIDAD DE FANS</span><span id="app-version">VERSIÓN 1.1.2</span></div></footer>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>\n  <script src="script.js?v=1.1.2"></script>
+  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p>Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><span>NO OFICIAL · COMUNIDAD DE FANS</span><span id="app-version">VERSIÓN 1.2.0</span></div></footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>\n  <script src="script.js?v=1.2.0"></script>
 </body>
 </html>
