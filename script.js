@@ -101,43 +101,77 @@ async function loadPending(){
 }
 const eventForm=document.getElementById('event-form');
 eventForm.addEventListener('submit',async e=>{
- e.preventDefault();const button=eventForm.querySelector('button');button.disabled=true;say('event-feedback','Publicando...');
+ e.preventDefault();const button=eventForm.querySelector('button[type="submit"]');button.disabled=true;say('event-feedback','Preparando evento y crónica...');
  try{
   const file=document.getElementById('event-image').files[0];const image_path=file?await uploadImage(file,'events'):null;
-  const {error}=await db.from('events').insert({title:document.getElementById('event-title').value.trim(),description:document.getElementById('event-description').value.trim(),event_date:document.getElementById('event-date').value,event_time:document.getElementById('event-time').value||null,location:document.getElementById('event-location').value.trim(),image_path,status:'published'});
-  if(error)throw error;eventForm.reset();say('event-feedback','Evento publicado.');await loadAdminEvents();await loadEvents();
+  const {data:scenarios,error:scenarioError}=await db.from('lore_scenarios').select('*').eq('active',true);
+  if(scenarioError)throw scenarioError;
+  if(!scenarios?.length)throw new Error('No hay historias preconfiguradas activas.');
+  const selectedId=document.getElementById('event-lore-scenario').value;
+  const scenario=selectedId?scenarios.find(s=>s.id===selectedId):scenarios[Math.floor(Math.random()*scenarios.length)];
+  if(!scenario)throw new Error('No se pudo seleccionar una historia.');
+  const payload={title:document.getElementById('event-title').value.trim(),description:document.getElementById('event-description').value.trim(),event_date:document.getElementById('event-date').value,event_time:document.getElementById('event-time').value||null,location:document.getElementById('event-location').value.trim(),image_path,status:'published',lore_scenario_id:scenario.id,lore_title:scenario.name,lore_intro:scenario.intro,lore_low_resolution:scenario.low_resolution,lore_partial_resolution:scenario.partial_resolution,lore_success_resolution:scenario.success_resolution,lore_partial_threshold:scenario.partial_threshold,lore_success_threshold:scenario.success_threshold};
+  const {error}=await db.from('events').insert(payload);if(error)throw error;
+  eventForm.reset();say('event-feedback','Evento publicado con la crónica: '+scenario.name+'.');await Promise.all([loadAdminEvents(),loadEvents()]);
  }catch(err){say('event-feedback',err.message||'No se pudo publicar.');}finally{button.disabled=false;}
 });
 async function loadAdminEvents(){
  const host=document.getElementById('admin-events');const {data,error}=await db.from('events').select('*').order('event_date',{ascending:false});
  if(error){host.textContent=error.message;return;}
- host.innerHTML=data.map(ev=>'<article class="admin-event"><div><strong>'+escapeHtml(ev.title)+'</strong><small>'+escapeHtml(ev.event_date)+' · '+escapeHtml(ev.location)+' · '+escapeHtml(ev.status)+(ev.attendance_closed?' · asistencia cerrada':'')+'</small></div><div class="admin-event-actions">'+(ev.status==='published'&&!ev.attendance_closed?'<button class="button button-outline-dark" data-attendance-event="'+ev.id+'">Registrar asistencia</button>':'')+'<button class="button button-outline-dark" data-delete-event="'+ev.id+'">Eliminar</button></div></article>').join('')||'<p>No hay eventos.</p>';
+ host.innerHTML=data.map(ev=>'<article class="admin-event"><div><strong>'+escapeHtml(ev.title)+'</strong><small>'+escapeHtml(ev.event_date)+' · '+escapeHtml(ev.location)+' · '+escapeHtml(ev.status)+(ev.attendance_closed?' · asistencia cerrada':'')+(ev.lore_outcome?' · crónica: '+escapeHtml(ev.lore_outcome):'')+'</small>'+(ev.lore_title?'<small>Historia: '+escapeHtml(ev.lore_title)+(ev.lore_score!==null?' · puntuación '+ev.lore_score:'')+'</small>':'')+'</div><div class="admin-event-actions">'+(ev.status==='published'&&!ev.attendance_closed?'<button class="button button-outline-dark" data-attendance-event="'+ev.id+'">Asistencia y medallas</button>':'')+'<button class="button button-outline-dark" data-delete-event="'+ev.id+'">Eliminar</button></div></article>').join('')||'<p>No hay eventos.</p>';
  host.querySelectorAll('[data-attendance-event]').forEach(button=>button.addEventListener('click',()=>openAttendance(button.dataset.attendanceEvent)));
  host.querySelectorAll('[data-delete-event]').forEach(button=>button.addEventListener('click',async()=>{if(!confirm('¿Eliminar este evento?'))return;const {error}=await db.from('events').delete().eq('id',button.dataset.deleteEvent);if(error)alert(error.message);await loadAdminEvents();await loadEvents();}));
 }
 async function openAttendance(eventId){
- const host=document.getElementById('attendance-manager');host.textContent='Cargando personajes...';
+ const host=document.getElementById('attendance-manager');host.textContent='Cargando personajes y medallas...';
  const [{data:characters,error:charError},{data:existing,error:attendanceError},{data:eventRow}] = await Promise.all([
   db.from('characters').select('id,tolkien_name,role_title,hope_level,shadow_level').eq('status','approved').order('tolkien_name'),
   db.from('event_attendance').select('character_id,attended').eq('event_id',eventId),
-  db.from('events').select('title,attendance_closed').eq('id',eventId).single()
+  db.from('events').select('title,attendance_closed,lore_title').eq('id',eventId).single()
  ]);
  if(charError||attendanceError||!eventRow){host.textContent=(charError||attendanceError)?.message||'No se pudo cargar el evento.';return;}
  if(eventRow.attendance_closed){host.textContent='La asistencia de este evento ya fue cerrada.';return;}
  const present=new Set((existing||[]).filter(row=>row.attended).map(row=>row.character_id));
- host.innerHTML='<h4>'+escapeHtml(eventRow.title)+'</h4><p>Marca únicamente a los personajes que asistieron. Los demás se registrarán como ausentes al cerrar el evento.</p><form id="attendance-form"><div class="attendance-list">'+characters.map(c=>'<label><input type="checkbox" name="attended" value="'+c.id+'" '+(present.has(c.id)?'checked':'')+'><span><strong>'+escapeHtml(c.tolkien_name)+'</strong><small>'+escapeHtml(c.role_title)+(c.hope_level<3?' · CONSUMIDO':'')+'</small></span></label>').join('')+'</div><button class="button button-dark" type="submit">Guardar asistencia</button> <button class="button button-outline-dark" id="close-attendance" type="button">Cerrar evento y aplicar cambios</button><p id="attendance-feedback" class="form-feedback" role="status"></p></form>';
+ host.innerHTML='<h4>'+escapeHtml(eventRow.title)+'</h4><p>Marca quién asistió. Los demás personajes aprobados se registrarán como ausentes al cerrar. Después puedes reconocer aportes con medallas.</p><form id="attendance-form"><div class="attendance-list">'+characters.map(c=>'<label><input type="checkbox" name="attended" value="'+c.id+'" '+(present.has(c.id)?'checked':'')+'><span><strong>'+escapeHtml(c.tolkien_name)+'</strong><small>'+escapeHtml(c.role_title)+(c.hope_level<3?' · CONSUMIDO':'')+'</small></span></label>').join('')+'</div><button class="button button-dark" type="submit">Guardar asistencia</button> <button class="button button-outline-dark" id="close-attendance" type="button">Cerrar evento y resolver crónica</button><p id="attendance-feedback" class="form-feedback" role="status"></p></form><div id="event-medal-manager" class="event-medal-manager"><h4>Medallas de Dol Amroth</h4><p>Reconoce a quienes ayudaron, organizaron, aportaron recursos o enriquecieron la actividad. Cada medalla otorgada suma un punto al resultado de la crónica.</p><div id="event-medal-awards"></div><form id="event-medal-form" class="medal-award-form"><label for="medal-character">Miembro</label><select id="medal-character" required>'+characters.map(c=>'<option value="'+c.id+'">'+escapeHtml(c.tolkien_name)+'</option>').join('')+'</select><label for="medal-type">Medalla</label><select id="medal-type" required></select><label for="medal-reason">Motivo del reconocimiento</label><input id="medal-reason" maxlength="300" placeholder="Ej. Ayudó a preparar el lugar y recibir a los asistentes" required><button class="button button-dark" type="submit">Otorgar medalla</button><p id="medal-feedback" class="form-feedback" role="status"></p></form></div>';
  const form=document.getElementById('attendance-form');
  form.addEventListener('submit',async e=>{e.preventDefault();const ids=[...form.querySelectorAll('input[name="attended"]:checked')].map(input=>input.value);const rows=characters.map(c=>({event_id:eventId,character_id:c.id,attended:ids.includes(c.id)}));const {error}=await db.from('event_attendance').upsert(rows,{onConflict:'event_id,character_id'});say('attendance-feedback',error?'Error: '+error.message:'Asistencia guardada. Todavía puedes modificarla antes de cerrar el evento.');});
  document.getElementById('close-attendance').addEventListener('click',async()=>{
-  if(!confirm('Al cerrar el evento se aplicarán los cambios a todos los personajes aprobados. Esta operación no se puede deshacer. ¿Continuar?'))return;
+  if(!confirm('Al cerrar el evento se aplicarán los cambios de Esperanza y Sombra y se resolverá la crónica según asistentes y medallas. Esta operación no se puede deshacer. ¿Continuar?'))return;
   const ids=[...form.querySelectorAll('input[name="attended"]:checked')].map(input=>input.value);
   const rows=characters.map(c=>({event_id:eventId,character_id:c.id,attended:ids.includes(c.id)}));
   const {error:saveError}=await db.from('event_attendance').upsert(rows,{onConflict:'event_id,character_id'});
   if(saveError){say('attendance-feedback','Error guardando asistencia: '+saveError.message);return;}
   const {error:closeError}=await db.from('events').update({attendance_closed:true}).eq('id',eventId);
   if(closeError){say('attendance-feedback','Error cerrando evento: '+closeError.message);return;}
-  host.textContent='Evento cerrado. Se actualizaron los valores de los personajes y del Smial.';
-  await Promise.all([loadAdminEvents(),loadApproved(),loadShadowState()]);
+  const {data:closedEvent}=await db.from('events').select('lore_outcome,lore_resolution,lore_score').eq('id',eventId).single();
+  host.innerHTML='<h4>Evento cerrado</h4><p>Se actualizaron los valores de Esperanza y Sombra del Smial y de sus personajes.</p>'+(closedEvent?.lore_resolution?'<div class="event-resolution admin-resolution"><b>'+escapeHtml((closedEvent.lore_outcome||'').toUpperCase())+' · PUNTUACIÓN '+closedEvent.lore_score+'</b><p>'+escapeHtml(closedEvent.lore_resolution)+'</p></div>':'<p>El evento no tenía una crónica asociada.</p>');
+  await Promise.all([loadAdminEvents(),loadApproved(),loadShadowState(),loadEvents()]);
+ });
+ await loadEventMedalManager(eventId,characters);
+}
+async function loadEventMedalManager(eventId,characters){
+ const [{data:catalog,error:catalogError},{data:awards,error:awardsError}]=await Promise.all([
+  db.from('medal_catalog').select('id,name,description,icon').eq('active',true).order('sort_order'),
+  db.from('character_medals').select('id,character_id,medal_id,reason,awarded_at').eq('event_id',eventId).order('awarded_at')
+ ]);
+ const type=document.getElementById('medal-type'),list=document.getElementById('event-medal-awards');
+ if(catalogError||awardsError){list.textContent=(catalogError||awardsError).message;return;}
+ type.innerHTML=(catalog||[]).map(m=>'<option value="'+m.id+'">'+escapeHtml(m.icon)+' '+escapeHtml(m.name)+' — '+escapeHtml(m.description)+'</option>').join('');
+ const members=new Map(characters.map(c=>[c.id,c.tolkien_name]));const medals=new Map(catalog.map(m=>[m.id,m]));
+ const renderAwards=()=>{
+  const rows=awards||[];
+  list.innerHTML=rows.length?'<p class="medal-award-count">Reconocimientos otorgados en este evento: '+rows.length+'</p>'+rows.map(a=>{const m=medals.get(a.medal_id);return '<div class="medal-award-row"><span>'+escapeHtml(m?.icon||'✦')+' <b>'+escapeHtml(m?.name||'Medalla')+'</b> · '+escapeHtml(members.get(a.character_id)||'Miembro')+'<small>'+escapeHtml(a.reason)+'</small></span><button type="button" class="button button-outline-dark" data-remove-medal="'+a.id+'">Retirar</button></div>';}).join(''):'<p class="medal-award-count">Todavía no se han otorgado medallas para este evento.</p>';
+  list.querySelectorAll('[data-remove-medal]').forEach(button=>button.addEventListener('click',async()=>{if(!confirm('¿Retirar esta medalla?'))return;const {error}=await db.from('character_medals').delete().eq('id',button.dataset.removeMedal);if(error){say('medal-feedback',error.message);return;}const refreshed=await db.from('character_medals').select('id,character_id,medal_id,reason,awarded_at').eq('event_id',eventId).order('awarded_at');awards.splice(0,awards.length,...(refreshed.data||[]));renderAwards();}));
+ };
+ renderAwards();
+ document.getElementById('event-medal-form').addEventListener('submit',async e=>{
+  e.preventDefault();const button=e.currentTarget.querySelector('button');button.disabled=true;
+  const {data:{session}}=await db.auth.getSession();
+  const payload={character_id:document.getElementById('medal-character').value,medal_id:type.value,event_id:eventId,reason:document.getElementById('medal-reason').value.trim(),awarded_by:session?.user?.id||null};
+  const {error}=await db.from('character_medals').insert(payload);
+  if(error)say('medal-feedback',error.code==='23505'?'Este miembro ya recibió esa medalla en este evento.':error.message);
+  else{say('medal-feedback','Medalla otorgada.');document.getElementById('medal-reason').value='';const refreshed=await db.from('character_medals').select('id,character_id,medal_id,reason,awarded_at').eq('event_id',eventId).order('awarded_at');awards.splice(0,awards.length,...(refreshed.data||[]));renderAwards();await loadApproved();}
+  button.disabled=false;
  });
 }
 async function loadShadowState(){
@@ -154,4 +188,4 @@ async function loadShadowState(){
  document.getElementById('smial-state-label').textContent=state.light_level<3?'EL SMIAL ESTÁ CONSUMIDO':state.shadow_level>state.light_level?'LA SOMBRA DOMINA':state.light_level>state.shadow_level?'LA ESPERANZA RESISTE':'ESPERANZA Y SOMBRA ESTÁN EN EQUILIBRIO';
  document.getElementById('smial-counts').textContent=(total||0)+' personajes aprobados · '+(consumed||0)+' consumidos · Marcas pendientes: '+state.light_marks+' de Esperanza y '+state.shadow_marks+' de Sombra.';
 }
-loadApproved();loadEvents();loadShadowState();refreshAdmin();
+loadApproved();loadEvents();loadLoreScenarios();loadShadowState();refreshAdmin();
