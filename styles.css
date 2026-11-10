@@ -56,3 +56,31 @@ main>section#la-sombra.active{display:grid}
 .public-event h3{font:500 18px var(--serif);margin:6px 0;color:#edf0ed}
 .public-event p:not(.card-kicker),.public-event small{font-size:11px;color:#bac5cd}
 @media(max-width:780px){.character-submit{padding:22px 16px}.admin-section{padding:65px 7%}.admin-item{flex-direction:column}.admin-item img{width:100%;height:180px}.form-two{grid-template-columns:1fr}.admin-top{align-items:flex-start;flex-direction:column}.approved-card{flex-direction:column}.approved-card img{width:100%;height:auto;aspect-ratio:1}}
+
+/* Sistema de Esperanza y Sombra */
+.shadow-rules{margin:24px 0;padding:20px;border:1px solid #39495a;background:rgba(255,255,255,.025)}
+.shadow-rules h3{font:500 19px var(--serif);color:#e5e8e5;margin:0 0 8px}
+.shadow-rules p{font-size:11px;line-height:1.85;color:#b9c3ca}
+.shadow-meter-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
+.shadow-meter{padding:14px;background:rgba(255,255,255,.04);border:1px solid #3b4a59}
+.shadow-meter span{display:block;font-size:8px;letter-spacing:.14em;color:#bdc7cd}
+.shadow-meter strong{display:block;font:500 25px var(--serif);color:#e4d7b7;margin:4px 0 10px}
+.meter-track{height:5px;background:#334b4c}.meter-track i{display:block;height:100%;background:#9aaf91;transition:width .3s}
+.shadow-track{background:#4a3532}.shadow-track i{background:#bc7656}
+.smial-state-label{font:500 12px var(--serif)!important;letter-spacing:.12em;color:#d6bd91!important}
+.smial-counts{font-size:9px!important;color:#8797a4!important}
+.character-levels{display:flex;flex-wrap:wrap;gap:12px;margin:9px 0;font-size:10px;color:#6b7780}
+.character-levels span{padding:4px 8px;background:#e1e3df}
+.character-levels b{color:#243c53;margin-left:5px}
+.consumed-label{font-size:9px!important;font-weight:700;letter-spacing:.13em;color:#a14f37!important}
+.attendance-manager{padding:18px;background:#f5f3ed;border:1px solid #d1d6d4}
+.attendance-manager h4{font:500 19px var(--serif);margin:0 0 5px;color:#1d344d}
+.attendance-manager>p{font-size:11px;color:#65727d}
+.attendance-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px;margin:16px 0}
+.attendance-list label{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid #d8ddda;background:white;cursor:pointer}
+.attendance-list input{accent-color:#294967;width:17px;height:17px}
+.attendance-list strong,.attendance-list small{display:block}
+.attendance-list strong{font-size:12px;color:#20364d}
+.attendance-list small{font-size:9px;color:#75808a}
+.admin-event-actions{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:780px){.shadow-meter-grid{grid-template-columns:1fr}.shadow-rules{padding:15px}.admin-event{align-items:flex-start;flex-direction:column}.admin-event-actions{width:100%}}
