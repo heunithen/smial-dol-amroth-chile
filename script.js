@@ -28,6 +28,69 @@ const uploadImage=async(file,folder)=>{
  if(error)throw error;
  return path;
 };
+
+const SITE_DEFAULTS={"announcement":"Un hogar para quienes mantienen viva la llama de la Tierra Media","site_title":"SMIAL DOL AMROTH","brand_subtitle":"CHILE · TIERRA MEDIA","hero_eyebrow":"GONDOR · BELFALAS · CHILE","hero_title":"Donde el mar\nencuentra la leyenda.","hero_intro":"Somos el Smial Dol Amroth de Chile: una comunidad que celebra la obra de J. R. R. Tolkien, comparte historias y construye nuevas aventuras en compañía.","hero_caption":"EN LAS COSTAS DE BELFALAS · UNA COMUNIDAD, MUCHAS HISTORIAS","lore_title":"Una historia junto\nal Gran Mar.","lore_intro":"Inspirados por las costas de Gondor y el legado de sus gentes, encontramos en la Tierra Media un lugar para imaginar, aprender y compartir.","events_title":"Las historias\nse viven juntos.","events_intro":"Reuniones, conversaciones, lecturas y actividades para compartir nuestra afición por Tolkien.","members_title":"Rostros e historias\nde nuestra casa.","members_intro":"Cada integrante puede dar vida a un personaje con identidad, historia y lugar dentro del universo narrativo del Smial. Las Medallas de Dol Amroth reconocen la ayuda, la iniciativa, la organización y los aportes que fortalecen nuestra comunidad.","shadow_title":"La Sombra\nse extiende.","shadow_intro":"Desde el Este crece una amenaza. La Sombra de Mordor se cierne sobre nuestras tierras y solo la unión de la comunidad podrá mantenerla a raya.","about_title":"Una casa para\nla imaginación.","about_intro":"El Smial Dol Amroth de Chile es un espacio de encuentro para personas que comparten su interés por el legendarium de J. R. R. Tolkien. Nos reúne la lectura, la conversación, la creatividad y el gusto por construir comunidad.","about_text":"Queremos que este sitio sea la puerta de entrada a nuestras actividades y también el archivo vivo de las historias que vamos creando como grupo.","register_title":"Hay sitio en la mesa\npara una historia más.","register_intro":"¿Te interesa Tolkien, quieres conocer nuestras actividades o formar parte del Smial? Déjanos tus datos y nos pondremos en contacto cuando el registro esté habilitado.","footer_text":"Una comunidad inspirada en la obra de J. R. R. Tolkien.","paper":"#f4f2ed","ink":"#1a2939","navy":"#101f35","blue":"#24486b","gold":"#b9a477","serif":"Cinzel","sans":"Manrope","hero_image_path":"","logo_image_path":""};
+let siteSettings={...SITE_DEFAULTS};
+const settingFields=[...document.querySelectorAll('#site-settings-form [data-setting]')];
+function settingImageUrl(path){return path?db.storage.from('smial-media').getPublicUrl(path).data.publicUrl:'';}
+function applySiteSettings(){
+ const s={...SITE_DEFAULTS,...siteSettings};
+ const root=document.documentElement;
+ ['paper','ink','navy','blue','gold'].forEach(k=>root.style.setProperty('--'+k,s[k]||SITE_DEFAULTS[k]));
+ root.style.setProperty('--serif','"'+String(s.serif||'Cinzel').replace(/[^a-zA-Z ]/g,'')+'",Georgia,serif');
+ root.style.setProperty('--sans','"'+String(s.sans||'Manrope').replace(/[^a-zA-Z ]/g,'')+'",Arial,sans-serif');
+ const text=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value||'';};
+ const title=(id,value)=>{const el=document.getElementById(id);if(el)el.innerHTML=escapeHtml(value||'').replace(/\n/g,'<br>');};
+ text('announcement-copy',s.announcement);text('brand-site-title',s.site_title);text('brand-site-subtitle',s.brand_subtitle);
+ text('hero-eyebrow',s.hero_eyebrow);title('hero-title',s.hero_title);text('hero-intro',s.hero_intro);text('hero-caption',s.hero_caption);
+ title('lore-title',s.lore_title);text('lore-intro',s.lore_intro);title('events-title',s.events_title);text('events-intro',s.events_intro);
+ title('members-title',s.members_title);text('members-intro',s.members_intro);title('shadow-title',s.shadow_title);text('shadow-intro',s.shadow_intro);
+ title('about-title',s.about_title);text('about-intro',s.about_intro);text('about-text',s.about_text);
+ title('register-title',s.register_title);text('register-intro',s.register_intro);text('footer-text',s.footer_text);
+ document.title=(s.site_title||'SMIAL DOL AMROTH')+' | Chile';
+ const hero=s.hero_image_path?settingImageUrl(s.hero_image_path):'';
+ if(hero)root.style.setProperty('--hero-image','url("'+hero.replace(/"/g,'%22')+'")');else root.style.removeProperty('--hero-image');
+ const logo=document.getElementById('brand-logo-image'),svg=document.querySelector('.brand-mark svg');
+ if(s.logo_image_path){logo.src=settingImageUrl(s.logo_image_path);logo.hidden=false;if(svg)svg.hidden=true;}else{logo.removeAttribute('src');logo.hidden=true;if(svg)svg.hidden=false;}
+}
+function fillSiteSettingsForm(){
+ settingFields.forEach(el=>{const key=el.dataset.setting;el.value=siteSettings[key]??SITE_DEFAULTS[key]??'';});
+ ['hero','logo'].forEach(kind=>{const key=kind==='hero'?'hero_image_path':'logo_image_path',host=document.getElementById('site-'+kind+'-preview'),url=settingImageUrl(siteSettings[key]);host.innerHTML=url?'<img src="'+escapeHtml(url)+'" alt="Imagen actual">':(siteSettings[key]?'Imagen configurada':'Sin imagen personalizada');});
+}
+async function loadSiteSettings(){
+ const {data,error}=await db.from('site_settings').select('settings').eq('id',1).maybeSingle();
+ if(!error&&data?.settings)siteSettings={...SITE_DEFAULTS,...data.settings};
+ applySiteSettings();
+}
+async function loadSiteSettingsAdmin(){
+ const {data,error}=await db.from('site_settings').select('settings').eq('id',1).maybeSingle();
+ if(error){say('site-settings-feedback','No se pudo cargar la configuración: '+error.message);return;}
+ siteSettings={...SITE_DEFAULTS,...(data?.settings||{})};fillSiteSettingsForm();applySiteSettings();
+}
+settingFields.forEach(el=>el.addEventListener('input',()=>{siteSettings[el.dataset.setting]=el.value;applySiteSettings();}));
+document.querySelectorAll('[data-site-image]').forEach(input=>input.addEventListener('change',async()=>{
+ const file=input.files?.[0];if(!file)return;
+ try{const path=await uploadImage(file,'site');siteSettings[input.dataset.siteImage]=path;fillSiteSettingsForm();applySiteSettings();say('site-settings-feedback','Imagen cargada. Guarda los cambios para publicarla.');}
+ catch(err){say('site-settings-feedback',err.message||'No se pudo subir la imagen.');}
+}));
+document.getElementById('site-settings-form').addEventListener('submit',async e=>{
+ e.preventDefault();const button=e.currentTarget.querySelector('button[type="submit"]');button.disabled=true;
+ try{
+  const {data:{session}}=await db.auth.getSession();
+  const {error}=await db.from('site_settings').upsert({id:1,settings:siteSettings,updated_at:new Date().toISOString(),updated_by:session?.user?.id||null},{onConflict:'id'});
+  if(error)throw error;
+  say('site-settings-feedback','Cambios publicados correctamente.');applySiteSettings();
+ }catch(err){say('site-settings-feedback','No se pudieron guardar los cambios: '+(err.message||'Error desconocido'));}
+ finally{button.disabled=false;}
+});
+document.getElementById('site-settings-reset').addEventListener('click',async()=>{
+ if(!confirm('¿Restaurar todos los textos, colores, tipografías e imágenes originales?'))return;
+ siteSettings={...SITE_DEFAULTS};fillSiteSettingsForm();applySiteSettings();
+ const {data:{session}}=await db.auth.getSession();
+ const {error}=await db.from('site_settings').upsert({id:1,settings:siteSettings,updated_at:new Date().toISOString(),updated_by:session?.user?.id||null},{onConflict:'id'});
+ say('site-settings-feedback',error?'No se pudo restaurar: '+error.message:'Diseño original restaurado.');
+});
+
 const charForm=document.getElementById('character-form');
 const story=document.getElementById('character-story');
 story.addEventListener('input',()=>say('story-count',story.value.length+'/1000'));
@@ -93,7 +156,7 @@ async function refreshAdmin(){
  const role=session.user.app_metadata?.role;
  if(role!=='admin'){authBox.hidden=false;dashboard.hidden=true;say('auth-feedback','La sesión está iniciada, pero este correo aún no tiene permisos de administrador. Contacta al responsable del proyecto.');return;}
  authBox.hidden=true;dashboard.hidden=false;say('admin-identity','Sesión: '+session.user.email);
- await Promise.all([loadPending(),loadAdminEvents(),loadLoreAdmin(),loadMedalAdmin(),loadLoreChronicleAdmin()]);
+ await Promise.all([loadPending(),loadAdminEvents(),loadLoreAdmin(),loadMedalAdmin(),loadLoreChronicleAdmin(),loadSiteSettingsAdmin()]);
 }
 loginForm.addEventListener('submit',async e=>{e.preventDefault();const {error}=await db.auth.signInWithPassword({email:document.getElementById('admin-email').value.trim(),password:document.getElementById('admin-password').value});say('auth-feedback',error?error.message:'Sesión iniciada.');if(!error)await refreshAdmin();});
 document.getElementById('signup-button').addEventListener('click',async()=>{
@@ -357,4 +420,4 @@ async function loadShadowState(){
  document.getElementById('smial-counts').textContent=(total||0)+' personajes aprobados · '+(consumed||0)+' consumidos · Marcas pendientes: '+state.light_marks+' de Esperanza y '+state.shadow_marks+' de Sombra.';
  await loadActiveShadowEvent();
 }
-loadApproved();loadEvents();loadLoreChronicle();loadLoreScenarios();loadShadowState();refreshAdmin();
+loadApproved();loadEvents();loadLoreChronicle();loadLoreScenarios();loadShadowState();loadSiteSettings();refreshAdmin();
