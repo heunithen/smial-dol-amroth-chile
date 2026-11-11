@@ -629,7 +629,7 @@ body{background:var(--paper);color:var(--text-color)}
 }
 
 
-/* v2.2.9 — fechas dentro de todo el texto del Lore en dorado */
+/* v2.3.1 — fechas civiles y años de la Tierra Media en dorado */
 .lore-chapter .lore-inline-date,
 .event-lore-content .lore-inline-date,
 .public-event .lore-inline-date{color:#B89B68!important;font-weight:700!important;text-decoration:none!important;}
