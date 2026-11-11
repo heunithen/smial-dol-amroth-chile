@@ -859,8 +859,10 @@ body{background:var(--paper);color:var(--text-color)}
 .smial-level-narrative p{font-size:11px;line-height:1.9;color:#c3cbd0;margin:0}
 @media(max-width:780px){.smial-level-narrative{padding:15px}}
 
-/* Evita mostrar el tema predeterminado antes de aplicar el diseño guardado. */
-html.theme-loading body{visibility:hidden;animation:theme-loading-fallback 0s 5s forwards}@keyframes theme-loading-fallback{to{visibility:visible}}
+/* Mantiene oculto el portal hasta resolver el diseño guardado. El timeout se gestiona en script.js. */
+html.theme-loading{background:#0b1728}
+html.theme-loading body{visibility:hidden}
+
 
 
 /* v2.7.8 — emblemas de Esperanza y Sombra */
