@@ -9,10 +9,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=2.7.21">
+  <link rel="stylesheet" href="styles.css?v=2.7.22">
 </head>
 <body>
-  <div class="announcement"><span class="announcement-mark">✦</span> <span id="announcement-copy">Un hogar para quienes mantienen viva la llama de la Tierra Media</span> <span class="announcement-mark">✦</span></div>
+  <div class="music-player-bar" id="music-player">
+  <div class="music-player-controls"><button type="button" id="music-player-toggle" aria-expanded="false" aria-controls="music-player-frame" aria-label="Abrir reproductor de música">▶</button><span class="music-player-label">MÚSICA DEL SMIAL</span><span class="music-player-track">Lista musical de YouTube</span><span class="music-player-source">♪</span></div>
+  <div class="music-player-frame" id="music-player-frame" hidden><iframe id="music-player-iframe" title="Lista musical del Smial Dol Amroth" width="320" height="200" src="https://www.youtube-nocookie.com/embed/UJNeiBaEMIE?list=PLpf9zAOOy1KxwDUc6ZHgeforxG1tLJ13y&autoplay=0&playsinline=1" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+</div>
+<div class="announcement"><span class="announcement-mark">✦</span> <span id="announcement-copy">Un hogar para quienes mantienen viva la llama de la Tierra Media</span> <span class="announcement-mark">✦</span></div>
   <header class="site-header">
     <a class="brand" href="#inicio" aria-label="Smial Dol Amroth, inicio">
       <span class="brand-mark" aria-hidden="true"><img id="brand-logo-image" alt="" hidden>
@@ -326,10 +330,10 @@
     </section>
   </main>
 
-  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p id="footer-text">Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><a href="https://www.sociedadtolkien.cl/smials" target="_blank" rel="noopener noreferrer">STC CHILE ↗</a><span id="app-version">VERSIÓN 2.7.19</span></div></footer>
+  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p id="footer-text">Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><a href="https://www.sociedadtolkien.cl/smials" target="_blank" rel="noopener noreferrer">STC CHILE ↗</a><span id="app-version">VERSIÓN 2.7.22</span></div></footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/tus-js-client@4/dist/tus.min.js"></script>
-  <script src="script.js?v=2.7.21"></script>
+  <script src="script.js?v=2.7.22"></script>
 </body>
 </html>
