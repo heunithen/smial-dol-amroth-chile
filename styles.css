@@ -407,3 +407,37 @@ body{background:var(--paper);color:var(--text-color)}
 .brand-copy .brand-locations{display:block;margin-top:3px;font-size:8px;line-height:1.35;letter-spacing:.16em;font-weight:700;color:#b89b68!important;white-space:nowrap}
 .hero-content>.eyebrow{display:none!important}
 @media(max-width:780px){.brand-copy .brand-locations{font-size:6.5px;letter-spacing:.12em;margin-top:2px}}
+
+
+/* v1.9.8 — lectura del Lore: jerarquía tipográfica, párrafos y ritmo editorial */
+.lore-chapter{padding:clamp(24px,4vw,46px)}
+.lore-chapter .event-lore-content{
+  max-width:820px;
+  margin:24px auto 4px;
+  font-size:clamp(14px,1.05vw,16px);
+  line-height:2;
+  letter-spacing:.005em;
+  overflow-wrap:anywhere;
+  text-wrap:pretty;
+}
+.lore-chapter .event-lore-content p{margin:0 0 1.25em;line-height:2}
+.lore-chapter .event-lore-content p:last-child{margin-bottom:0}
+.lore-chapter .event-lore-content :where(h2,h3,h4){
+  line-height:1.35;
+  letter-spacing:.015em;
+  margin:2em 0 .8em;
+}
+.lore-chapter .event-lore-content h2{font-size:1.55em}
+.lore-chapter .event-lore-content h3{font-size:1.3em}
+.lore-chapter .event-lore-content h4{font-size:1.12em}
+.lore-chapter .event-lore-content :where(ul,ol){padding-left:1.6em;margin:.5em 0 1.35em;line-height:1.9}
+.lore-chapter .event-lore-content li{padding-left:.25em;margin:.35em 0}
+.lore-chapter .event-lore-content blockquote{margin:1.6em 0;padding:15px 22px;line-height:1.9;font-family:var(--serif);font-style:italic}
+.lore-chapter .event-lore-content img{max-width:min(100%,760px);max-height:520px;object-fit:contain;border:1px solid var(--lore-card-border-color,#405168);margin:2em auto;border-radius:2px}
+.lore-chapter-cover{max-height:460px;margin:22px auto 0;object-fit:cover}
+@media(max-width:780px){
+ .lore-chapter{padding:22px 18px}
+ .lore-chapter .event-lore-content{margin-top:18px;font-size:14px;line-height:1.9}
+ .lore-chapter .event-lore-content p{margin-bottom:1.1em}
+ .lore-chapter .event-lore-content blockquote{padding:12px 15px}
+}
