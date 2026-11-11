@@ -1085,3 +1085,65 @@ html.theme-loading body{visibility:hidden}
 @media(prefers-reduced-motion:reduce){
  #miembros .approved-carousel-stage .approved-card,#miembros .approved-carousel-arrow{transition:none}
 }
+
+
+/* v2.7.48 — ajustar tamaño de la ficha central del selector de personajes */
+#miembros .approved-carousel-stage{
+  min-height: min(760px, 82vh);
+  overflow: visible;
+}
+#miembros .approved-carousel-stage .approved-card{
+  width: min(430px, 68%);
+  max-height: min(760px, 82vh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #8e7956 #14283f;
+}
+#miembros .approved-carousel-stage .approved-card[data-position="0"]>img{
+  display:block;
+  width: min(100%, 250px);
+  height: 250px;
+  aspect-ratio: 1/1;
+  object-fit: contain;
+  margin: 14px auto 0;
+}
+#miembros .approved-carousel-stage .approved-card[data-position="0"] .approved-card-content{
+  padding: 14px 16px 16px;
+}
+#miembros .approved-carousel-stage .approved-card[data-position="0"] .approved-card-field{
+  margin-bottom: 6px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+#miembros .approved-carousel-stage .approved-card[data-position="0"] .approved-card-story{
+  margin: 4px 0 9px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+#miembros .approved-carousel-stage .approved-card[data-position="0"] .character-levels{
+  margin: 8px 0 0;
+}
+@media(max-width:700px){
+  #miembros .approved-carousel-stage{
+    min-height: 72vh;
+  }
+  #miembros .approved-carousel-stage .approved-card{
+    width: min(88%, 400px);
+    max-height: 72vh;
+  }
+  #miembros .approved-carousel-stage .approved-card[data-position="0"]>img{
+    width: min(100%, 210px);
+    height: 210px;
+    margin-top: 10px;
+  }
+  #miembros .approved-carousel-stage .approved-card[data-position="0"] .approved-card-content{
+    padding: 12px 14px 14px;
+  }
+}
+@media(max-width:420px){
+  #miembros .approved-carousel-stage .approved-card[data-position="0"]>img{
+    width: min(100%, 180px);
+    height: 180px;
+  }
+}
