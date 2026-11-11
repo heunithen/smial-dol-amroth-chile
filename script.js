@@ -1,4 +1,4 @@
-const SUPABASE_URL='https://heuxofiaijgpwzvrbvoa.supabase.co';
+// Versión 2.7.22\nconst SUPABASE_URL='https://heuxofiaijgpwzvrbvoa.supabase.co';
 const SUPABASE_KEY='sb_publishable_3f_pQw9FSMD9ipequee7Ew_w4sIP_iL';
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const menuButton=document.querySelector('.menu-toggle');
@@ -1010,3 +1010,27 @@ function initAdminTabs(){
  tabs.filter(tab=>tab.dataset.adminTab!=='admin-tab-photos').forEach(tab=>tab.addEventListener('click',()=>{if(storageUsageInterval){clearInterval(storageUsageInterval);storageUsageInterval=null;}}));
 }
 initAdminTabs();
+
+// Reproductor musical del Smial: el reproductor de YouTube se despliega al solicitar reproducción.
+(function initSmialMusicPlayer(){
+ const toggle=document.getElementById('music-player-toggle');
+ const frame=document.getElementById('music-player-frame');
+ const iframe=document.getElementById('music-player-iframe');
+ if(!toggle||!frame||!iframe)return;
+ toggle.addEventListener('click',()=>{
+  const opening=frame.hidden;
+  frame.hidden=!opening;
+  toggle.setAttribute('aria-expanded',String(opening));
+  toggle.setAttribute('aria-label',opening?'Cerrar reproductor de música':'Abrir reproductor de música');
+  toggle.textContent=opening?'×':'▶';
+  if(opening){
+   const url=new URL(iframe.src);
+   url.searchParams.set('autoplay','1');
+   iframe.src=url.toString();
+  }else{
+   const url=new URL(iframe.src);
+   url.searchParams.set('autoplay','0');
+   iframe.src=url.toString();
+  }
+ });
+})();
