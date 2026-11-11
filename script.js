@@ -20,13 +20,21 @@ document.querySelector('#year').textContent=new Date().getFullYear();
 const say=(id,message)=>{const el=document.getElementById(id);if(el)el.textContent=message;};
 const uploadImage=async(file,folder)=>{
  if(!file)return null;
- if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw new Error('Formato no permitido. Usa JPG, PNG o WebP.');
- if(file.size>5*1024*1024)throw new Error('La imagen supera el límite de 5 MB.');
- const ext=file.type==='image/jpeg'?'jpg':file.type.split('/')[1];
- const path=folder+'/'+crypto.randomUUID()+'.'+ext;
- const {error}=await db.storage.from('smial-media').upload(path,file,{contentType:file.type,upsert:false});
- if(error)throw error;
- return path;
+ const mimeByExt={jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp'};
+ const extFromName=(file.name||'').split('.').pop().toLowerCase();
+ const contentType=['image/jpeg','image/png','image/webp'].includes(file.type)?file.type:mimeByExt[extFromName];
+ if(!contentType)throw new Error('Formato no permitido. El archivo debe ser JPG, PNG o WebP. Formato detectado: '+(file.type||extFromName||'desconocido'));
+ if(file.size>5*1024*1024)throw new Error('La imagen pesa '+(file.size/1024/1024).toFixed(2)+' MB y el límite actual es 5 MB. Reduce su tamaño e inténtalo otra vez.');
+ const ext=contentType==='image/jpeg'?'jpg':contentType.split('/')[1];
+ const randomName=(globalThis.crypto&&crypto.randomUUID)?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
+ const path=folder+'/'+randomName+'.'+ext;
+ const {data,error}=await db.storage.from('smial-media').upload(path,file,{contentType,upsert:false,cacheControl:'3600'});
+ if(error){
+  console.error('Error de carga en Supabase Storage:',{message:error.message,statusCode:error.statusCode,error:error.error,name:error.name,path});
+  throw new Error('Supabase Storage rechazó la imagen. '+(error.message||error.error||'Error sin detalle')+(error.statusCode?' (HTTP '+error.statusCode+')':''));
+ }
+ if(!data?.path)throw new Error('Supabase no confirmó la ruta del archivo. Vuelve a intentarlo.');
+ return data.path;
 };
 
 const SITE_DEFAULTS={"announcement":"Un hogar para quienes mantienen viva la llama de la Tierra Media","site_title":"SMIAL DOL AMROTH","brand_subtitle":"CHILE · TIERRA MEDIA","hero_eyebrow":"GONDOR · BELFALAS · CHILE","hero_title":"Donde el mar\nencuentra la leyenda.","hero_intro":"Somos el Smial Dol Amroth de Chile: una comunidad que celebra la obra de J. R. R. Tolkien, comparte historias y construye nuevas aventuras en compañía.","hero_caption":"EN LAS COSTAS DE BELFALAS · UNA COMUNIDAD, MUCHAS HISTORIAS","lore_title":"Una historia junto\nal Gran Mar.","lore_intro":"Inspirados por las costas de Gondor y el legado de sus gentes, encontramos en la Tierra Media un lugar para imaginar, aprender y compartir.","events_title":"Las historias\nse viven juntos.","events_intro":"Reuniones, conversaciones, lecturas y actividades para compartir nuestra afición por Tolkien.","members_title":"Rostros e historias\nde nuestra casa.","members_intro":"Cada integrante puede dar vida a un personaje con identidad, historia y lugar dentro del universo narrativo del Smial. Las Medallas de Dol Amroth reconocen la ayuda, la iniciativa, la organización y los aportes que fortalecen nuestra comunidad.","shadow_title":"La Sombra\nse extiende.","shadow_intro":"Desde el Este crece una amenaza. La Sombra de Mordor se cierne sobre nuestras tierras y solo la unión de la comunidad podrá mantenerla a raya.","about_title":"Una casa para\nla imaginación.","about_intro":"El Smial Dol Amroth de Chile es un espacio de encuentro para personas que comparten su interés por el legendarium de J. R. R. Tolkien. Nos reúne la lectura, la conversación, la creatividad y el gusto por construir comunidad.","about_text":"Queremos que este sitio sea la puerta de entrada a nuestras actividades y también el archivo vivo de las historias que vamos creando como grupo.","register_title":"Hay sitio en la mesa\npara una historia más.","register_intro":"¿Te interesa Tolkien, quieres conocer nuestras actividades o formar parte del Smial? Déjanos tus datos y nos pondremos en contacto cuando el registro esté habilitado.","footer_text":"Una comunidad inspirada en la obra de J. R. R. Tolkien.","paper":"#f4f2ed","ink":"#1a2939","navy":"#101f35","blue":"#24486b","gold":"#b9a477","serif":"Cinzel","sans":"Manrope","hero_image_path":"","logo_image_path":""};
@@ -72,8 +80,18 @@ async function loadSiteSettingsAdmin(){
 settingFields.forEach(el=>el.addEventListener('input',()=>{siteSettings[el.dataset.setting]=el.value;applySiteSettings();}));
 document.querySelectorAll('[data-site-image]').forEach(input=>input.addEventListener('change',async()=>{
  const file=input.files?.[0];if(!file)return;
- try{const path=await uploadImage(file,'site');siteSettings[input.dataset.siteImage]=path;fillSiteSettingsForm();applySiteSettings();say('site-settings-feedback','Imagen cargada. Guarda los cambios para publicarla.');}
- catch(err){say('site-settings-feedback',err.message||'No se pudo subir la imagen.');}
+ const label=input.dataset.siteImage==='logo_image_path'?'emblema del encabezado':'imagen de portada';
+ say('site-settings-feedback','Subiendo '+label+' ('+(file.size/1024/1024).toFixed(2)+' MB)...');
+ input.disabled=true;
+ try{
+  const path=await uploadImage(file,'site');
+  siteSettings[input.dataset.siteImage]=path;
+  fillSiteSettingsForm();applySiteSettings();
+  say('site-settings-feedback','Imagen subida correctamente. Pulsa «Guardar cambios» para publicarla.');
+ }catch(err){
+  console.error('No se pudo subir '+label+':',err);
+  say('site-settings-feedback','ERROR AL SUBIR '+label.toUpperCase()+': '+(err.message||String(err)));
+ }finally{input.disabled=false;}
 }));
 document.getElementById('site-settings-form').addEventListener('submit',async e=>{
  e.preventDefault();const button=e.currentTarget.querySelector('button[type="submit"]');button.disabled=true;
