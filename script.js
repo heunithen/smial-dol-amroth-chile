@@ -112,6 +112,21 @@ document.querySelectorAll('[data-site-image]').forEach(input=>input.addEventList
   say('site-settings-feedback','ERROR AL SUBIR '+label.toUpperCase()+': '+(err.message||String(err)));
  }finally{input.disabled=false;}
 }));
+
+// Guardado independiente de textos: todos persisten en site_settings, desde la pestaña de su sección.
+['home','lore','events','members','shadow','about','register'].forEach(section=>{
+ const form=document.getElementById('site-'+section+'-form');if(!form)return;
+ form.addEventListener('submit',async e=>{
+  e.preventDefault();const button=form.querySelector('button[type="submit"]');button.disabled=true;
+  try{
+   const {data:{session}}=await db.auth.getSession();
+   const {error}=await db.from('site_settings').upsert({id:1,settings:siteSettings,updated_at:new Date().toISOString(),updated_by:session?.user?.id||null},{onConflict:'id'});
+   if(error)throw error;
+   say('site-'+section+'-feedback','Textos guardados correctamente.');applySiteSettings();
+  }catch(err){say('site-'+section+'-feedback','No se pudieron guardar los textos: '+(err.message||'Error desconocido'));}
+  finally{button.disabled=false;}
+ });
+});
 document.getElementById('site-settings-form').addEventListener('submit',async e=>{
  e.preventDefault();const button=e.currentTarget.querySelector('button[type="submit"]');button.disabled=true;
  try{
@@ -191,10 +206,11 @@ async function loadLoreScenarios(){
 const loginForm=document.getElementById('login-form');
 async function refreshAdmin(){
  const {data:{session}}=await db.auth.getSession();
- const authBox=document.getElementById('auth-box'),dashboard=document.getElementById('admin-dashboard');
+ const authBox=document.getElementById('auth-box'),dashboard=document.getElementById('admin-dashboard'),adminNav=document.getElementById('admin-nav-link');
+ const isAdmin=!!session&&session.user.app_metadata?.role==='admin';
+ if(adminNav)adminNav.hidden=!isAdmin;
  if(!session){authBox.hidden=false;dashboard.hidden=true;return;}
- const role=session.user.app_metadata?.role;
- if(role!=='admin'){authBox.hidden=false;dashboard.hidden=true;say('auth-feedback','La sesión está iniciada, pero este correo aún no tiene permisos de administrador. Contacta al responsable del proyecto.');return;}
+ if(!isAdmin){authBox.hidden=false;dashboard.hidden=true;say('auth-feedback','La sesión está iniciada, pero este correo aún no tiene permisos de administrador. Contacta al responsable del proyecto.');return;}
  authBox.hidden=true;dashboard.hidden=false;say('admin-identity','Sesión: '+session.user.email);
  await Promise.all([loadPending(),loadAdminAchievements(),loadAdminEvents(),loadLoreAdmin(),loadMedalAdmin(),loadLoreChronicleAdmin(),loadSiteSettingsAdmin()]);
 }
@@ -483,10 +499,12 @@ function initAdminTabs(){
  const tabs=[...document.querySelectorAll('[data-admin-tab]')];
  const panels=[...document.querySelectorAll('#admin-dashboard .admin-tab-panel')];
  if(!tabs.length||!panels.length)return;
- tabs.forEach(tab=>tab.addEventListener('click',()=>{
+ const activate=tab=>{
   const target=tab.dataset.adminTab;
   tabs.forEach(item=>{const active=item===tab;item.classList.toggle('active',active);item.setAttribute('aria-selected',String(active));});
   panels.forEach(panel=>{const active=panel.id===target;panel.classList.toggle('active',active);panel.hidden=!active;});
- }));
+ };
+ tabs.forEach(tab=>tab.addEventListener('click',()=>activate(tab)));
+ activate(tabs.find(tab=>tab.dataset.adminTab==='admin-tab-home')||tabs[0]);
 }
 initAdminTabs();
