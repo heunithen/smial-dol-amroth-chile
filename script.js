@@ -18,17 +18,41 @@ document.querySelectorAll('a[href^="#"]:not(.main-nav a)').forEach(link=>link.ad
 const initial=location.hash.slice(1);showPanel(panels.some(panel=>panel.id===initial)?initial:'inicio',false);
 document.querySelector('#year').textContent=new Date().getFullYear();
 const say=(id,message)=>{const el=document.getElementById(id);if(el)el.textContent=message;};
+const imageToWebP=async(file)=>{
+ const loadFallback=()=>new Promise((resolve,reject)=>{
+  const url=URL.createObjectURL(file);const image=new Image();
+  image.onload=()=>{URL.revokeObjectURL(url);resolve({source:image,width:image.naturalWidth,height:image.naturalHeight});};
+  image.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('No se pudo leer la imagen seleccionada.'));};
+  image.src=url;
+ });
+ let source,width,height,bitmap=null;
+ try{
+  if(typeof createImageBitmap==='function'){
+   bitmap=await createImageBitmap(file,{imageOrientation:'from-image'});
+   source=bitmap;width=bitmap.width;height=bitmap.height;
+  }else ({source,width,height}=await loadFallback());
+  if(!width||!height)throw new Error('La imagen no tiene dimensiones válidas.');
+  const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
+  const context=canvas.getContext('2d');
+  if(!context)throw new Error('Este navegador no permite convertir la imagen.');
+  context.drawImage(source,0,0,width,height);
+  const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',0.82));
+  if(!blob||blob.type!=='image/webp')throw new Error('El navegador no pudo generar una imagen WebP.');
+  const base=(file.name||'imagen').replace(/\.[^.]+$/,'').replace(/[^a-zA-Z0-9_-]+/g,'-')||'imagen';
+  return new File([blob],base+'.webp',{type:'image/webp',lastModified:Date.now()});
+ }finally{if(bitmap)bitmap.close();}
+};
 const uploadImage=async(file,folder)=>{
  if(!file)return null;
  const mimeByExt={jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp'};
  const extFromName=(file.name||'').split('.').pop().toLowerCase();
  const contentType=['image/jpeg','image/png','image/webp'].includes(file.type)?file.type:mimeByExt[extFromName];
  if(!contentType)throw new Error('Formato no permitido. El archivo debe ser JPG, PNG o WebP. Formato detectado: '+(file.type||extFromName||'desconocido'));
- if(file.size>5*1024*1024)throw new Error('La imagen pesa '+(file.size/1024/1024).toFixed(2)+' MB y el límite actual es 5 MB. Reduce su tamaño e inténtalo otra vez.');
- const ext=contentType==='image/jpeg'?'jpg':contentType.split('/')[1];
+ if(file.size>5*1024*1024)throw new Error('La imagen original pesa '+(file.size/1024/1024).toFixed(2)+' MB y el límite actual es 5 MB. Reduce su tamaño e inténtalo otra vez.');
+ const converted=await imageToWebP(file);
  const randomName=(globalThis.crypto&&crypto.randomUUID)?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
- const path=folder+'/'+randomName+'.'+ext;
- const {data,error}=await db.storage.from('smial-media').upload(path,file,{contentType,upsert:false,cacheControl:'3600'});
+ const path=folder+'/'+randomName+'.webp';
+ const {data,error}=await db.storage.from('smial-media').upload(path,converted,{contentType:'image/webp',upsert:false,cacheControl:'3600'});
  if(error){
   console.error('Error de carga en Supabase Storage:',{message:error.message,statusCode:error.statusCode,error:error.error,name:error.name,path});
   throw new Error('Supabase Storage rechazó la imagen. '+(error.message||error.error||'Error sin detalle')+(error.statusCode?' (HTTP '+error.statusCode+')':''));
