@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=2.7.1">
+  <link rel="stylesheet" href="styles.css?v=2.7.2">
 </head>
 <body>
   <div class="announcement"><span class="announcement-mark">✦</span> <span id="announcement-copy">Un hogar para quienes mantienen viva la llama de la Tierra Media</span> <span class="announcement-mark">✦</span></div>
@@ -22,7 +22,7 @@
     </a>
     <button class="menu-toggle" aria-label="Abrir menú" aria-expanded="false"><span></span><span></span><span></span></button>
     <nav class="main-nav" aria-label="Navegación principal">
-      <a href="#inicio" class="active">Inicio</a><a href="#lore">Lore</a><a href="#eventos">Eventos</a><a href="#miembros">Miembros</a><a href="#la-sombra">La Sombra</a><a href="#nosotros">Quiénes somos</a><a class="nav-register" href="#registro">Registro <span>↗</span></a><a id="admin-nav-link" class="nav-admin" href="#admin" hidden>Administración <span>↗</span></a>
+      <a href="#inicio" class="active">Inicio</a><a href="#lore">Lore</a><a href="#eventos">Eventos</a><a href="#fotografias">Fotografías</a><a href="#miembros">Miembros</a><a href="#la-sombra">La Sombra</a><a href="#nosotros">Quiénes somos</a><a class="nav-register" href="#registro">Registro <span>↗</span></a><a id="admin-nav-link" class="nav-admin" href="#admin" hidden>Administración <span>↗</span></a>
     </nav>
   </header>
 
@@ -53,7 +53,16 @@
       <div class="events-foot"><span>✦</span> CADA ENCUENTRO ES UNA NUEVA PÁGINA DE NUESTRA HISTORIA</div></div>
     </section>
 
-    <section class="section members-section" id="miembros">
+    <section class="photo-gallery-section" id="fotografias">
+ <div class="photo-gallery-inner">
+  <div class="section-heading light-heading"><div><p class="eyebrow">04 / MEMORIA DEL SMIAL</p><h2>Fotografías</h2></div><p class="section-lead">Imágenes de nuestros encuentros, actividades y momentos compartidos en el Smial.</p></div>
+  <div id="photo-gallery-grid" class="photo-gallery-grid" aria-live="polite"><p class="photo-gallery-message">Cargando fotografías...</p></div>
+  <div class="photo-gallery-pagination" id="photo-gallery-pagination" hidden><button class="button button-outline-light" id="photo-gallery-prev" type="button">← Anterior</button><span id="photo-gallery-page-label" aria-live="polite"></span><button class="button button-outline-light" id="photo-gallery-next" type="button">Siguiente →</button></div>
+  <p id="photo-gallery-empty" class="photo-gallery-message" hidden>Aún no hay fotografías publicadas.</p>
+ </div>
+ <dialog id="photo-lightbox" class="photo-lightbox"><button type="button" id="photo-lightbox-close" aria-label="Cerrar fotografía">×</button><img id="photo-lightbox-image" alt=""><p id="photo-lightbox-caption"></p></dialog>
+</section>
+<section class="section members-section" id="miembros">
       <div class="section-heading"><div><p class="eyebrow dark">03 / PERSONAJES</p><h2 id="members-title">Rostros e historias<br>de <em>nuestra casa.</em></h2></div><p class="section-lead" id="members-intro">Cada integrante puede dar vida a un personaje con identidad, historia y lugar dentro del universo narrativo del Smial. Las Medallas de Dol Amroth reconocen la ayuda, la iniciativa, la organización y los aportes que fortalecen nuestra comunidad.</p></div>
       <div class="character-submit"><h3>Presenta tu personaje</h3><p>Completa tu ficha. Un administrador revisará la solicitud antes de publicarla.</p><form id="character-form" class="data-form"><label for="character-image">Retrato del personaje (cuadrado, 512 × 512 px)</label><input id="character-image" name="image" type="file" accept="image/jpeg,image/png,image/webp" required><label for="real-name">Nombre real</label><input id="real-name" name="real_name" maxlength="120" required><label for="tolkien-name">Nombre tolkiendil</label><input id="tolkien-name" name="tolkien_name" maxlength="120" required><label for="character-role">Cargo</label><input id="character-role" name="role_title" maxlength="120" placeholder="Ej. Guardián, bardo, explorador..." required><label for="character-story">Historia <span id="story-count">0/1000</span></label><textarea id="character-story" name="story" maxlength="1000" rows="5" required></textarea><p class="form-note">Los logros y reconocimientos serán asignados exclusivamente por la administración después de aprobar el personaje.</p><button class="button button-dark" type="submit">Enviar a aprobación <span>→</span></button><p id="character-feedback" class="form-feedback" role="status"></p></form></div><div class="members-roster-heading"><h3>Personajes del Smial</h3><p>Una vez aprobados, los personajes aparecen aquí junto a los demás integrantes, con sus niveles actuales de Esperanza y Sombra.</p></div><div id="approved-members" class="approved-members"></div>
     </section>
@@ -97,6 +106,7 @@
 <button type="button" class="admin-tab" role="tab" aria-selected="false" aria-controls="admin-tab-members" data-admin-tab="admin-tab-members">Miembros</button>
 <button type="button" class="admin-tab" role="tab" aria-selected="false" aria-controls="admin-tab-shadow" data-admin-tab="admin-tab-shadow">La Sombra</button>
 <button type="button" class="admin-tab" role="tab" aria-selected="false" aria-controls="admin-tab-about" data-admin-tab="admin-tab-about">Quiénes somos</button>
+<button type="button" class="admin-tab" role="tab" aria-selected="false" aria-controls="admin-tab-photos" data-admin-tab="admin-tab-photos">Fotografías</button>
 <button type="button" class="admin-tab" role="tab" aria-selected="false" aria-controls="admin-tab-register" data-admin-tab="admin-tab-register">Registro</button>
 <button type="button" class="admin-tab" role="tab" aria-selected="false" aria-controls="admin-tab-design" data-admin-tab="admin-tab-design">Color y diseño</button>
 </nav>
@@ -266,6 +276,11 @@
 <section id="admin-tab-about" class="admin-tab-panel" role="tabpanel" hidden>
 <h3>Administrar Quiénes somos</h3><form id="site-about-form" class="admin-form"><div class="customizer-grid"><div class="customizer-group"><h4>Emblema de Quiénes somos</h4><label>Imagen independiente para esta sección<input type="file" id="site-about-logo-image" data-site-image="about_logo_image_path" accept="image/jpeg,image/png,image/webp"></label><div id="site-about-logo-preview" class="site-image-preview">Sin imagen personalizada</div><p class="admin-hint">Si no seleccionas una imagen, se mostrará el emblema ilustrado original. Este cambio no modifica el logo de la portada.</p></div></div><div class="customizer-grid"><div class="customizer-group"><h4>Presentación institucional</h4><label>Título de Quiénes somos<textarea rows="3" data-setting="about_title"></textarea></label><label>Presentación institucional<textarea rows="3" data-setting="about_intro"></textarea></label><label>Segundo párrafo institucional<textarea rows="3" data-setting="about_text"></textarea></label></div></div><div class="editor-actions"><button class="button button-dark" type="submit">Guardar textos institucionales</button></div><p id="site-about-feedback" class="form-feedback" role="status"></p></form>
 </section>
+<section id="admin-tab-photos" class="admin-tab-panel" role="tabpanel" hidden>
+ <h3>Administrar Fotografías</h3><p class="admin-hint">Sube varias imágenes a la galería. Los archivos JPG y PNG se convierten automáticamente a WebP antes de guardarse.</p>
+ <form id="photo-upload-form" class="admin-form"><div class="customizer-group"><label for="photo-upload-files">Seleccionar fotografías (puedes elegir varias)</label><input id="photo-upload-files" type="file" accept="image/jpeg,image/png,image/webp" multiple><p class="admin-hint">Máximo 5 MB por imagen original. Se guardarán en formato WebP.</p></div><div class="editor-actions"><button class="button button-dark" id="photo-upload-submit" type="submit">Subir fotografías</button></div><p id="photo-upload-feedback" class="form-feedback" role="status"></p></form>
+ <div class="storage-usage-panel"><div class="events-admin-heading"><div><span class="admin-hint">SUPABASE STORAGE</span><h4>Espacio utilizado</h4><p>Medición de todos los archivos del depósito smial-media en este proyecto.</p></div><button class="button button-outline-dark" type="button" id="storage-usage-refresh">Actualizar</button></div><div class="storage-usage-values"><strong id="storage-used">Consultando...</strong><span id="storage-remaining"></span></div><div class="storage-usage-track" role="progressbar" aria-label="Uso estimado del almacenamiento" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="storage-usage-bar"></span></div><p id="storage-usage-detail" class="admin-hint">La medición se actualiza al abrir esta pestaña y después periódicamente.</p><p id="storage-usage-feedback" class="form-feedback" role="status"></p></div>
+</section>
 <section id="admin-tab-register" class="admin-tab-panel" role="tabpanel" hidden>
 <h3>Administrar Registro</h3><form id="site-register-form" class="admin-form"><div class="customizer-grid"><div class="customizer-group"><h4>Textos de Registro</h4><label>Título de Registro<textarea rows="3" data-setting="register_title"></textarea></label><label>Texto de Registro<textarea rows="3" data-setting="register_intro"></textarea></label><label>Texto del pie de página<input type="text" data-setting="footer_text"></label></div></div><div class="editor-actions"><button class="button button-dark" type="submit">Guardar textos de Registro</button></div><p id="site-register-feedback" class="form-feedback" role="status"></p></form><h3>Solicitudes de ingreso al Smial</h3><p class="admin-hint">Aprueba una solicitud para habilitar la cuenta. Si la rechazas, la persona no podrá iniciar sesión.</p><div id="membership-requests-list" class="membership-requests-list">Cargando solicitudes...</div>
 </section>
@@ -301,9 +316,9 @@
     </section>
   </main>
 
-  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p id="footer-text">Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><a href="https://www.sociedadtolkien.cl/smials" target="_blank" rel="noopener noreferrer">STC CHILE ↗</a><span id="app-version">VERSIÓN 2.7.1</span></div></footer>
+  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p id="footer-text">Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><a href="https://www.sociedadtolkien.cl/smials" target="_blank" rel="noopener noreferrer">STC CHILE ↗</a><span id="app-version">VERSIÓN 2.7.2</span></div></footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
-  <script src="script.js?v=2.7.1"></script>
+  <script src="script.js?v=2.7.2"></script>
 </body>
 </html>
