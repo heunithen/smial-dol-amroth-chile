@@ -65,11 +65,17 @@ async function loadEvents(){
  const host=document.getElementById('event-placeholder-list');if(!host)return;
  const {data,error}=await db.from('events').select('*').eq('status','published').order('event_date',{ascending:true});
  if(error)return;
+ host.innerHTML=data.map(ev=>{const cover=ev.lore_cover_image_path?db.storage.from('smial-media').getPublicUrl(ev.lore_cover_image_path).data.publicUrl:'';return '<article class="public-event"><p class="card-kicker">'+escapeHtml(ev.event_date)+(ev.event_time?' · '+escapeHtml(ev.event_time.slice(0,5)):'')+'</p><h3>'+escapeHtml(ev.title)+'</h3><p>'+escapeHtml(ev.description)+'</p><small>'+escapeHtml(ev.location)+'</small>'+(ev.lore_title?'<div class="event-lore"><span>CRÓNICA DEL SMIAL</span><h4>'+escapeHtml(ev.lore_title)+'</h4>'+(cover?'<img class="event-lore-cover" src="'+escapeHtml(cover)+'" alt="">':'')+'<div class="event-lore-content">'+sanitizeRich(ev.lore_intro||'')+'</div>'+(ev.lore_resolution?'<div class="event-resolution"><b>'+escapeHtml((ev.lore_outcome||'').toUpperCase())+'</b><div class="event-lore-content">'+sanitizeRich(ev.lore_resolution)+'</div></div>':'<small>El desenlace se conocerá al cerrar el evento.</small>')+'</div>':'')+'</article>';}).join('');
+}
+async function loadLoreScenarios(){
+ const host=document.getElementById('event-placeholder-list');if(!host)return;
+ const {data,error}=await db.from('events').select('*').eq('status','published').order('event_date',{ascending:true});
+ if(error)return;
  host.innerHTML=data.map(ev=>'<article class="public-event"><p class="card-kicker">'+escapeHtml(ev.event_date)+(ev.event_time?' · '+escapeHtml(ev.event_time.slice(0,5)):'')+'</p><h3>'+escapeHtml(ev.title)+'</h3><p>'+escapeHtml(ev.description)+'</p><small>'+escapeHtml(ev.location)+'</small>'+(ev.lore_title?'<div class="event-lore"><span>CRÓNICA DEL SMIAL</span><h4>'+escapeHtml(ev.lore_title)+'</h4><p>'+escapeHtml(ev.lore_intro||'')+'</p>'+(ev.lore_resolution?'<div class="event-resolution"><b>'+escapeHtml((ev.lore_outcome||'').toUpperCase())+'</b><p>'+escapeHtml(ev.lore_resolution)+'</p></div>':'<small>El desenlace se conocerá al cerrar el evento.</small>')+'</div>':'')+'</article>').join('');
 }
 async function loadLoreScenarios(){
  const select=document.getElementById('event-lore-scenario');if(!select)return;
- const {data,error}=await db.from('lore_scenarios').select('id,name').eq('active',true).order('name');
+ const {data,error}=await db.from('lore_scenarios').select('id,name').eq('active',true).order('sort_order').order('name');
  if(error){select.innerHTML='<option value="">No se pudieron cargar las historias</option>';return;}
  select.innerHTML='<option value="">Elegir una historia al azar</option>'+(data||[]).map(s=>'<option value="'+s.id+'">'+escapeHtml(s.name)+'</option>').join('');
 }
@@ -81,7 +87,7 @@ async function refreshAdmin(){
  const role=session.user.app_metadata?.role;
  if(role!=='admin'){authBox.hidden=false;dashboard.hidden=true;say('auth-feedback','La sesión está iniciada, pero este correo aún no tiene permisos de administrador. Contacta al responsable del proyecto.');return;}
  authBox.hidden=true;dashboard.hidden=false;say('admin-identity','Sesión: '+session.user.email);
- await Promise.all([loadPending(),loadAdminEvents()]);
+ await Promise.all([loadPending(),loadAdminEvents(),loadLoreAdmin(),loadMedalAdmin()]);
 }
 loginForm.addEventListener('submit',async e=>{e.preventDefault();const {error}=await db.auth.signInWithPassword({email:document.getElementById('admin-email').value.trim(),password:document.getElementById('admin-password').value});say('auth-feedback',error?error.message:'Sesión iniciada.');if(!error)await refreshAdmin();});
 document.getElementById('signup-button').addEventListener('click',async()=>{
@@ -110,7 +116,7 @@ eventForm.addEventListener('submit',async e=>{
   const selectedId=document.getElementById('event-lore-scenario').value;
   const scenario=selectedId?scenarios.find(s=>s.id===selectedId):scenarios[Math.floor(Math.random()*scenarios.length)];
   if(!scenario)throw new Error('No se pudo seleccionar una historia.');
-  const payload={title:document.getElementById('event-title').value.trim(),description:document.getElementById('event-description').value.trim(),event_date:document.getElementById('event-date').value,event_time:document.getElementById('event-time').value||null,location:document.getElementById('event-location').value.trim(),image_path,status:'published',lore_scenario_id:scenario.id,lore_title:scenario.name,lore_intro:scenario.intro,lore_low_resolution:scenario.low_resolution,lore_partial_resolution:scenario.partial_resolution,lore_success_resolution:scenario.success_resolution,lore_partial_threshold:scenario.partial_threshold,lore_success_threshold:scenario.success_threshold};
+  const payload={title:document.getElementById('event-title').value.trim(),description:document.getElementById('event-description').value.trim(),event_date:document.getElementById('event-date').value,event_time:document.getElementById('event-time').value||null,location:document.getElementById('event-location').value.trim(),image_path,status:'published',lore_scenario_id:scenario.id,lore_title:scenario.name,lore_cover_image_path:scenario.cover_image_path||null,lore_intro:scenario.intro,lore_low_resolution:scenario.low_resolution,lore_partial_resolution:scenario.partial_resolution,lore_success_resolution:scenario.success_resolution,lore_partial_threshold:scenario.partial_threshold,lore_success_threshold:scenario.success_threshold};
   const {error}=await db.from('events').insert(payload);if(error)throw error;
   eventForm.reset();say('event-feedback','Evento publicado con la crónica: '+scenario.name+'.');await Promise.all([loadAdminEvents(),loadEvents()]);
  }catch(err){say('event-feedback',err.message||'No se pudo publicar.');}finally{button.disabled=false;}
@@ -151,12 +157,12 @@ async function openAttendance(eventId){
 }
 async function loadEventMedalManager(eventId,characters){
  const [{data:catalog,error:catalogError},{data:awards,error:awardsError}]=await Promise.all([
-  db.from('medal_catalog').select('id,name,description,icon').eq('active',true).order('sort_order'),
+  db.from('medal_catalog').select('id,name,description,icon,active').order('sort_order'),
   db.from('character_medals').select('id,character_id,medal_id,reason,awarded_at').eq('event_id',eventId).order('awarded_at')
  ]);
  const type=document.getElementById('medal-type'),list=document.getElementById('event-medal-awards');
  if(catalogError||awardsError){list.textContent=(catalogError||awardsError).message;return;}
- type.innerHTML=(catalog||[]).map(m=>'<option value="'+m.id+'">'+escapeHtml(m.icon)+' '+escapeHtml(m.name)+' — '+escapeHtml(m.description)+'</option>').join('');
+ type.innerHTML=(catalog||[]).filter(m=>m.active).map(m=>'<option value="'+m.id+'">'+escapeHtml(m.icon)+' '+escapeHtml(m.name)+' — '+escapeHtml(m.description)+'</option>').join('');
  const members=new Map(characters.map(c=>[c.id,c.tolkien_name]));const medals=new Map(catalog.map(m=>[m.id,m]));
  const renderAwards=()=>{
   const rows=awards||[];
@@ -174,6 +180,149 @@ async function loadEventMedalManager(eventId,characters){
   button.disabled=false;
  });
 }
+
+function sanitizeRich(value=''){
+ const config={ALLOWED_TAGS:['p','br','strong','b','em','i','u','h2','h3','h4','ul','ol','li','blockquote','img','a'],ALLOWED_ATTR:['href','src','alt','title','target','rel'],ALLOW_DATA_ATTR:false};
+ if(window.DOMPurify)return window.DOMPurify.sanitize(String(value),config);
+ return escapeHtml(value).replace(/\n/g,'<br>');
+}
+function richEditorValue(value=''){
+ const text=String(value||'');
+ return /<\/?[a-z][\s\S]*>/i.test(text)?sanitizeRich(text):text?'<p>'+escapeHtml(text).replace(/\n/g,'<br>')+'</p>':'';
+}
+function initRichEditors(){
+ document.querySelectorAll('[data-editor-command]').forEach(button=>{
+  button.addEventListener('mousedown',e=>e.preventDefault());
+  button.addEventListener('click',()=>{
+   const editor=document.getElementById(button.dataset.editorTarget);if(!editor)return;
+   editor.focus();const command=button.dataset.editorCommand;
+   const value=button.dataset.editorValue;
+   document.execCommand(command,false,value?(command==='formatBlock'?'<'+value+'>':value):null);
+  });
+ });
+ document.querySelectorAll('[data-editor-image]').forEach(input=>{
+  input.addEventListener('change',async()=>{
+   const file=input.files?.[0];if(!file)return;
+   const editor=document.getElementById(input.dataset.editorImage);if(!editor)return;
+   input.disabled=true;
+   try{
+    const path=await uploadImage(file,'lore');
+    const url=db.storage.from('smial-media').getPublicUrl(path).data.publicUrl;
+    editor.focus();document.execCommand('insertHTML',false,'<p><img src="'+escapeHtml(url)+'" alt="'+escapeHtml(file.name)+'"></p>');
+   }catch(err){alert(err.message||'No se pudo subir la imagen.');}
+   finally{input.disabled=false;input.value='';}
+  });
+ });
+}
+function resetLoreEditor(){
+ const form=document.getElementById('lore-scenario-form');form.reset();
+ document.getElementById('lore-scenario-id').value='';
+ document.getElementById('lore-editor-heading').textContent='Crear una historia';
+ document.getElementById('lore-cover-existing').value='';
+ document.getElementById('lore-cover-preview').innerHTML='';
+ ['lore-intro-editor','lore-low-editor','lore-partial-editor','lore-success-editor'].forEach(id=>document.getElementById(id).innerHTML='');
+ document.getElementById('lore-scenario-active').checked=true;
+ document.getElementById('lore-partial-threshold').value=2;
+ document.getElementById('lore-success-threshold').value=5;
+ say('lore-editor-feedback','');
+}
+async function loadLoreAdmin(){
+ const host=document.getElementById('lore-scenario-list');if(!host)return;
+ const {data,error}=await db.from('lore_scenarios').select('*').order('sort_order').order('name');
+ if(error){host.textContent=error.message;return;}
+ host.innerHTML=(data||[]).map(s=>'<div class="library-row"><span><b>'+escapeHtml(s.name)+'</b><small>'+((s.active)?'ACTIVA':'INACTIVA')+' · '+s.partial_threshold+' / '+s.success_threshold+' puntos</small></span><span class="library-row-actions"><button type="button" class="button button-outline-dark" data-edit-lore="'+s.id+'">Editar</button><button type="button" class="button button-outline-dark" data-toggle-lore="'+s.id+'" data-active="'+s.active+'">'+(s.active?'Desactivar':'Activar')+'</button></span></div>').join('')||'<p>No hay historias creadas.</p>';
+ host.querySelectorAll('[data-edit-lore]').forEach(button=>button.addEventListener('click',()=>editLoreScenario(data.find(s=>s.id===button.dataset.editLore))));
+ host.querySelectorAll('[data-toggle-lore]').forEach(button=>button.addEventListener('click',async()=>{
+  const active=button.dataset.active!=='true';const {error}=await db.from('lore_scenarios').update({active,updated_at:new Date().toISOString()}).eq('id',button.dataset.toggleLore);
+  if(error){say('lore-editor-feedback',error.message);return;}await Promise.all([loadLoreAdmin(),loadLoreScenarios()]);
+ }));
+}
+function editLoreScenario(s){
+ if(!s)return;
+ document.getElementById('lore-scenario-id').value=s.id;
+ document.getElementById('lore-scenario-name').value=s.name;
+ document.getElementById('lore-scenario-active').checked=s.active;
+ document.getElementById('lore-cover-existing').value=s.cover_image_path||'';
+ const cover=s.cover_image_path?db.storage.from('smial-media').getPublicUrl(s.cover_image_path).data.publicUrl:'';
+ document.getElementById('lore-cover-preview').innerHTML=cover?'<img src="'+escapeHtml(cover)+'" alt="Imagen principal actual">':'';
+ document.getElementById('lore-intro-editor').innerHTML=richEditorValue(s.intro);
+ document.getElementById('lore-low-editor').innerHTML=richEditorValue(s.low_resolution);
+ document.getElementById('lore-partial-editor').innerHTML=richEditorValue(s.partial_resolution);
+ document.getElementById('lore-success-editor').innerHTML=richEditorValue(s.success_resolution);
+ document.getElementById('lore-partial-threshold').value=s.partial_threshold;
+ document.getElementById('lore-success-threshold').value=s.success_threshold;
+ document.getElementById('lore-editor-heading').textContent='Editar historia';
+ say('lore-editor-feedback','Editando: '+s.name);
+ document.getElementById('lore-scenario-form').scrollIntoView({behavior:'smooth',block:'start'});
+}
+document.getElementById('lore-scenario-form').addEventListener('submit',async e=>{
+ e.preventDefault();const button=e.currentTarget.querySelector('button[type="submit"]');button.disabled=true;
+ try{
+  const partial=Number(document.getElementById('lore-partial-threshold').value),success=Number(document.getElementById('lore-success-threshold').value);
+  if(success<=partial)throw new Error('La puntuación de victoria debe ser mayor que la de éxito parcial.');
+  const editors=['lore-intro-editor','lore-low-editor','lore-partial-editor','lore-success-editor'];
+  const content=editors.map(id=>sanitizeRich(document.getElementById(id).innerHTML));
+  if(content.some(value=>!value.trim()))throw new Error('Completa la introducción y las tres resoluciones.');
+  let cover=document.getElementById('lore-cover-existing').value||null;
+  const file=document.getElementById('lore-cover-image').files[0];if(file)cover=await uploadImage(file,'lore-covers');
+  const id=document.getElementById('lore-scenario-id').value;
+  const payload={name:document.getElementById('lore-scenario-name').value.trim(),active:document.getElementById('lore-scenario-active').checked,intro:content[0],low_resolution:content[1],partial_resolution:content[2],success_resolution:content[3],partial_threshold:partial,success_threshold:success,cover_image_path:cover,updated_at:new Date().toISOString()};
+  const result=id?await db.from('lore_scenarios').update(payload).eq('id',id):await db.from('lore_scenarios').insert(payload);
+  if(result.error)throw result.error;
+  say('lore-editor-feedback',id?'Historia actualizada.':'Historia creada.');
+  resetLoreEditor();await Promise.all([loadLoreAdmin(),loadLoreScenarios()]);
+ }catch(err){say('lore-editor-feedback',err.message||'No se pudo guardar la historia.');}
+ finally{button.disabled=false;}
+});
+document.getElementById('lore-editor-reset').addEventListener('click',resetLoreEditor);
+function resetMedalEditor(){
+ const form=document.getElementById('medal-catalog-form');form.reset();
+ document.getElementById('medal-catalog-id').value='';
+ document.getElementById('medal-editor-heading').textContent='Crear una medalla';
+ document.getElementById('medal-active').checked=true;
+ document.getElementById('medal-icon').value='✦';
+ document.getElementById('medal-sort-order').value=0;
+ say('medal-editor-feedback','');
+}
+async function loadMedalAdmin(){
+ const host=document.getElementById('medal-catalog-list');if(!host)return;
+ const {data,error}=await db.from('medal_catalog').select('*').order('sort_order').order('name');
+ if(error){host.textContent=error.message;return;}
+ host.innerHTML=(data||[]).map(m=>'<div class="library-row"><span><b>'+escapeHtml(m.icon)+' '+escapeHtml(m.name)+'</b><small>'+escapeHtml(m.description)+' · '+(m.active?'ACTIVA':'INACTIVA')+'</small></span><span class="library-row-actions"><button type="button" class="button button-outline-dark" data-edit-medal="'+m.id+'">Editar</button><button type="button" class="button button-outline-dark" data-toggle-medal="'+m.id+'" data-active="'+m.active+'">'+(m.active?'Desactivar':'Activar')+'</button></span></div>').join('')||'<p>No hay medallas creadas.</p>';
+ host.querySelectorAll('[data-edit-medal]').forEach(button=>button.addEventListener('click',()=>editMedal(data.find(m=>m.id===button.dataset.editMedal))));
+ host.querySelectorAll('[data-toggle-medal]').forEach(button=>button.addEventListener('click',async()=>{
+  const active=button.dataset.active!=='true';const {error}=await db.from('medal_catalog').update({active,updated_at:new Date().toISOString()}).eq('id',button.dataset.toggleMedal);
+  if(error){say('medal-editor-feedback',error.message);return;}await loadMedalAdmin();
+ }));
+}
+function editMedal(m){
+ if(!m)return;
+ document.getElementById('medal-catalog-id').value=m.id;
+ document.getElementById('medal-code').value=m.code;
+ document.getElementById('medal-name').value=m.name;
+ document.getElementById('medal-icon').value=m.icon;
+ document.getElementById('medal-description').value=m.description;
+ document.getElementById('medal-sort-order').value=m.sort_order;
+ document.getElementById('medal-active').checked=m.active;
+ document.getElementById('medal-editor-heading').textContent='Editar medalla';
+ say('medal-editor-feedback','Editando: '+m.name);
+ document.getElementById('medal-catalog-form').scrollIntoView({behavior:'smooth',block:'start'});
+}
+document.getElementById('medal-catalog-form').addEventListener('submit',async e=>{
+ e.preventDefault();const button=e.currentTarget.querySelector('button[type="submit"]');button.disabled=true;
+ try{
+  const id=document.getElementById('medal-catalog-id').value;
+  const payload={code:document.getElementById('medal-code').value.trim().toLowerCase(),name:document.getElementById('medal-name').value.trim(),icon:document.getElementById('medal-icon').value.trim(),description:document.getElementById('medal-description').value.trim(),sort_order:Number(document.getElementById('medal-sort-order').value)||0,active:document.getElementById('medal-active').checked,updated_at:new Date().toISOString()};
+  const result=id?await db.from('medal_catalog').update(payload).eq('id',id):await db.from('medal_catalog').insert(payload);
+  if(result.error)throw result.error;
+  say('medal-editor-feedback',id?'Medalla actualizada.':'Medalla creada.');
+  resetMedalEditor();await loadMedalAdmin();
+ }catch(err){say('medal-editor-feedback',err.message||'No se pudo guardar la medalla.');}
+ finally{button.disabled=false;}
+});
+document.getElementById('medal-editor-reset').addEventListener('click',resetMedalEditor);
+initRichEditors();
+
 async function loadShadowState(){
  const [{data:state,error},{count:total},{count:consumed}] = await Promise.all([
   db.from('smial_state').select('*').eq('id',1).single(),
