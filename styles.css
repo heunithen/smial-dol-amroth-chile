@@ -927,3 +927,10 @@ html.theme-loading body{visibility:hidden}
 #admin .photo-admin-meta .photo-admin-position{max-width:110px}
 #admin .photo-admin-save{justify-self:start;white-space:nowrap;padding:7px 11px;font-size:11px}
 @media(max-width:560px){#admin .photo-admin-item{grid-template-columns:58px minmax(0,1fr)}#admin .photo-admin-meta label{grid-template-columns:1fr;gap:4px}#admin .photo-admin-meta .photo-admin-position{max-width:100%}}
+
+
+/* Aviso de solicitudes de personajes pendientes */
+.character-pending-notice{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:14px 0 20px;padding:14px 16px;border:1px solid #c9ad72;border-left:4px solid #9b7840;border-radius:8px;background:#f6f0e3;color:#29394a;font-size:14px}
+.character-pending-notice[hidden]{display:none}
+.character-pending-notice .button{margin:0;padding:8px 13px;font-size:12px}
+.admin-tab[aria-controls="admin-tab-members"]{white-space:nowrap}
