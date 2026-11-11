@@ -619,3 +619,11 @@ body{background:var(--paper);color:var(--text-color)}
  #admin #admin-tab-events .event-form-grid{grid-template-columns:1fr}
  #admin #admin-tab-events .event-form-grid>label{grid-column:1/-1}
 }
+
+
+/* v2.2.5 — logotipo cargado un 15% más grande */
+.brand-mark{width:110.4px;height:110.4px;flex:0 0 110.4px}
+.brand-mark img{max-width:none;max-height:none}
+@media(max-width:780px){
+ .brand-mark{width:87.4px;height:87.4px;flex:0 0 87.4px}
+}
