@@ -390,20 +390,20 @@ function setupApprovedCarousel(host){
   cards.forEach((card,index)=>{
    let offset=(index-active+cards.length)%cards.length;
    if(offset>Math.floor(cards.length/2))offset-=cards.length;
-   if(cards.length%2===0&&Math.abs(offset)===cards.length/2)offset=offset>0?1:-1;
    card.dataset.position=String(offset);
    card.setAttribute('aria-hidden',String(Math.abs(offset)>1));
    card.tabIndex=offset===0?0:-1;
   });
   counter.textContent=(active+1)+' / '+cards.length;
   previous.disabled=cards.length<2;next.disabled=cards.length<2;
+  requestAnimationFrame(()=>{stage.style.height=Math.max(460,cards[active].offsetHeight+40)+'px';});
  };
  const move=step=>{if(cards.length<2)return;active=(active+step+cards.length)%cards.length;update();};
  previous.addEventListener('click',()=>move(-1));next.addEventListener('click',()=>move(1));
  stage.addEventListener('pointerdown',event=>{startX=event.clientX;});
  stage.addEventListener('pointerup',event=>{if(startX===null)return;const dx=event.clientX-startX;startX=null;if(Math.abs(dx)>35)move(dx<0?1:-1);});
  stage.addEventListener('pointercancel',()=>{startX=null;});
- cards.forEach((card,index)=>card.addEventListener('click',()=>{if(index===active)return;let offset=(index-active+cards.length)%cards.length;if(offset>Math.floor(cards.length/2))offset-=cards.length;active=(active+Math.sign(offset)+cards.length)%cards.length;update();}));
+ cards.forEach((card,index)=>{card.addEventListener('click',()=>{if(index===active)return;let offset=(index-active+cards.length)%cards.length;if(offset>Math.floor(cards.length/2))offset-=cards.length;active=(active+Math.sign(offset)+cards.length)%cards.length;update();});const image=card.querySelector('img');if(image)image.addEventListener('load',update,{once:true});});
  update();
 }
 
