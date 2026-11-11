@@ -918,3 +918,12 @@ html.theme-loading body{visibility:hidden}
 #admin .setting-rich-toolbar button:nth-child(2){font-style:italic}
 #admin .setting-rich-toolbar button:nth-child(3){text-decoration:underline}
 #admin .setting-rich-toolbar button:nth-child(4){text-decoration:line-through}
+
+
+/* v2.7.16 — edición de nombre y posición de fotografías */
+#admin .photo-admin-item{grid-template-columns:76px minmax(0,1fr) auto;align-items:start}
+#admin .photo-admin-meta label{display:grid;grid-template-columns:minmax(110px,.7fr) minmax(130px,1fr);align-items:center;gap:8px;color:#35485b;font-size:12px;font-weight:700}
+#admin .photo-admin-meta input{width:100%;min-width:0;box-sizing:border-box;padding:8px 9px;border:1px solid #cbd2d0;border-radius:5px;background:#fff;color:#26384a;font:13px "Manrope",Arial,sans-serif}
+#admin .photo-admin-meta .photo-admin-position{max-width:110px}
+#admin .photo-admin-save{justify-self:start;white-space:nowrap;padding:7px 11px;font-size:11px}
+@media(max-width:560px){#admin .photo-admin-item{grid-template-columns:58px minmax(0,1fr)}#admin .photo-admin-meta label{grid-template-columns:1fr;gap:4px}#admin .photo-admin-meta .photo-admin-position{max-width:100%}}
