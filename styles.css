@@ -885,3 +885,9 @@ html.theme-loading body{visibility:hidden}
 .shadow-meter-dark .shadow-track{background:#493b2b}
 .shadow-meter-dark .shadow-track i{background:linear-gradient(90deg,#a8782e,#e7c36b)}
 @media(max-width:520px){.shadow-meter{padding:13px 10px;min-height:176px}.meter-emblem{width:66px;height:66px}}
+
+.saved-designs-panel{margin-top:22px;padding:16px;border:1px solid var(--border-color,#344457);border-radius:8px;background:rgba(127,140,155,.06)}
+.saved-designs-panel h4{margin:0 0 7px;color:var(--heading-color,inherit);font-family:var(--serif,Georgia,serif)}
+.saved-designs-panel .customizer-group{display:flex;flex-direction:column;align-items:stretch;gap:10px}
+.saved-designs-panel .customizer-group label{display:flex;flex-direction:column;gap:6px}
+.saved-designs-panel .customizer-group .button{align-self:flex-start}
