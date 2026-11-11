@@ -613,7 +613,7 @@ async function loadEventMedalManager(eventId,members){
 }
 
 function sanitizeRich(value=''){
- const config={ALLOWED_TAGS:['p','br','strong','b','em','i','u','h2','h3','h4','ul','ol','li','blockquote','img','a','font'],ALLOWED_ATTR:['href','src','alt','title','target','rel','color','size'],ALLOW_DATA_ATTR:false};
+ const config={ALLOWED_TAGS:['p','div','br','strong','b','em','i','u','h2','h3','h4','ul','ol','li','blockquote','img','a','font'],ALLOWED_ATTR:['href','src','alt','title','target','rel','color','size'],ALLOW_DATA_ATTR:false};
  if(window.DOMPurify)return window.DOMPurify.sanitize(String(value),config);
  return escapeHtml(value).replace(/\n/g,'<br>');
 }
