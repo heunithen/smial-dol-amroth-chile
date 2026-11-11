@@ -773,6 +773,7 @@ loadApproved();loadEvents();loadLoreChronicle();loadLoreScenarios();loadShadowSt
 
 /* v2.7.2 — galería pública y medidor de almacenamiento */
 let photoGalleryItems=[];
+const galleryVisibleTitle=name=>String(name||'').replace(/\.[^.]+$/,'').replace(/__[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,'');
 let photoGalleryPage=1;
 const PHOTO_PAGE_SIZE=10;
 const STORAGE_FREE_QUOTA=1000000000;
@@ -788,8 +789,8 @@ function renderPhotoGallery(){
  if(!photoGalleryItems.length){host.innerHTML='';empty.hidden=false;pager.hidden=true;return;}empty.hidden=true;
  const pages=Math.max(1,Math.ceil(photoGalleryItems.length/PHOTO_PAGE_SIZE));photoGalleryPage=Math.min(Math.max(1,photoGalleryPage),pages);
  const visible=photoGalleryItems.slice((photoGalleryPage-1)*PHOTO_PAGE_SIZE,photoGalleryPage*PHOTO_PAGE_SIZE);
- host.innerHTML=visible.map((item,index)=>{const label=item.name.replace(/\.[^.]+$/,'').replace(/[-_]+/g,' ');return'<button type="button" class="photo-gallery-card" data-photo-index="'+((photoGalleryPage-1)*PHOTO_PAGE_SIZE+index)+'" aria-label="Ampliar fotografía: '+escapeHtml(label)+'"><img src="'+escapeHtml(item.url)+'" alt="'+escapeHtml(label)+'" loading="lazy"><span>'+escapeHtml(label)+'</span></button>';}).join('');
- host.querySelectorAll('[data-photo-index]').forEach(button=>button.addEventListener('click',()=>{const item=photoGalleryItems[Number(button.dataset.photoIndex)];if(!item)return;const dialog=document.getElementById('photo-lightbox');document.getElementById('photo-lightbox-image').src=item.url;document.getElementById('photo-lightbox-image').alt=item.name;document.getElementById('photo-lightbox-caption').textContent=item.name.replace(/\.[^.]+$/,'');if(dialog.showModal)dialog.showModal();else window.open(item.url,'_blank','noopener');}));
+ host.innerHTML=visible.map((item,index)=>{const label=galleryVisibleTitle(item.name).replace(/[-_]+/g,' ');return'<button type="button" class="photo-gallery-card" data-photo-index="'+((photoGalleryPage-1)*PHOTO_PAGE_SIZE+index)+'" aria-label="Ampliar fotografía: '+escapeHtml(label)+'"><img src="'+escapeHtml(item.url)+'" alt="'+escapeHtml(label)+'" loading="lazy"><span>'+escapeHtml(label)+'</span></button>';}).join('');
+ host.querySelectorAll('[data-photo-index]').forEach(button=>button.addEventListener('click',()=>{const item=photoGalleryItems[Number(button.dataset.photoIndex)];if(!item)return;const dialog=document.getElementById('photo-lightbox');document.getElementById('photo-lightbox-image').src=item.url;document.getElementById('photo-lightbox-image').alt=item.name;document.getElementById('photo-lightbox-caption').textContent=galleryVisibleTitle(item.name);if(dialog.showModal)dialog.showModal();else window.open(item.url,'_blank','noopener');}));
  pager.hidden=pages<=1;document.getElementById('photo-gallery-page-label').textContent='Página '+photoGalleryPage+' de '+pages+' · '+photoGalleryItems.length+' fotografías';document.getElementById('photo-gallery-prev').disabled=photoGalleryPage<=1;document.getElementById('photo-gallery-next').disabled=photoGalleryPage>=pages;
 }
 document.getElementById('photo-gallery-prev')?.addEventListener('click',()=>{photoGalleryPage--;renderPhotoGallery();});
