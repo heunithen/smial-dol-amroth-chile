@@ -491,7 +491,7 @@ async function loadPending(){
  }
  const membersTab=document.querySelector('[data-admin-tab="admin-tab-members"]');
  if(membersTab){
-  const baseLabel=membersTab.dataset.baseLabel||(membersTab.dataset.baseLabel=membersTab.textContent.trim().replace(/\\s+\\d+\\s*$/,''));
+  const baseLabel='Miembros';
   membersTab.textContent=baseLabel+(data?.length?' · '+data.length:'');
   membersTab.setAttribute('aria-label',baseLabel+(data?.length?', '+data.length+' solicitudes pendientes':''));
  }
