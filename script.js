@@ -182,10 +182,23 @@ function escapeHtml(value=''){return String(value).replace(/[&<>"']/g,ch=>({'&':
 function formatLoreDate(value=''){if(!value)return '';const match=String(value).match(/^(\d{4})-(\d{2})-(\d{2})/);if(!match)return '';const date=new Date(Date.UTC(Number(match[1]),Number(match[2])-1,Number(match[3]),12));return new Intl.DateTimeFormat('es-CL',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(date);}
 function highlightLoreDates(root){
  if(!root)return;
- const datePattern=/\\b(?:\\d{1,2}\\s+de\\s+(?:enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|setiembre|octubre|noviembre|diciembre)(?:\\s+de\\s+\\d{4})?|\\d{1,2}[\\/-]\\d{1,2}[\\/-]\\d{2,4})\\b/gi;
- const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode(node){return node.parentElement?.closest('a, .lore-date, script, style')?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT;}});
+ // Fechas habituales escritas en español: 12 de mayo de 2024, 12/05/2024 o 12-05-24.
+ const datePattern=/\b(?:\d{1,2}\s+de\s+(?:enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|setiembre|octubre|noviembre|diciembre)(?:\s+de\s+\d{4})?|\d{1,2}[\/-]\d{1,2}[\/-]\d{2,4})\b/gi;
+ const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode(node){
+  return node.parentElement?.closest('a, .lore-date, script, style, .lore-inline-date')?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT;
+ }});
  const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
- nodes.forEach(node=>{const text=node.nodeValue;if(!datePattern.test(text)){datePattern.lastIndex=0;return;}datePattern.lastIndex=0;const fragment=document.createDocumentFragment();let last=0;for(const match of text.matchAll(datePattern)){fragment.append(document.createTextNode(text.slice(last,match.index)));const mark=document.createElement('span');mark.className='lore-inline-date';mark.textContent=match[0];fragment.append(mark);last=match.index+match[0].length;}fragment.append(document.createTextNode(text.slice(last)));node.replaceWith(fragment);});
+ nodes.forEach(node=>{
+  const text=node.nodeValue;datePattern.lastIndex=0;
+  if(!datePattern.test(text))return;
+  datePattern.lastIndex=0;const fragment=document.createDocumentFragment();let last=0;
+  for(const match of text.matchAll(datePattern)){
+   fragment.append(document.createTextNode(text.slice(last,match.index)));
+   const mark=document.createElement('span');mark.className='lore-inline-date';mark.textContent=match[0];fragment.append(mark);
+   last=match.index+match[0].length;
+  }
+  fragment.append(document.createTextNode(text.slice(last)));node.replaceWith(fragment);
+ });
 }
 async function loadLoreChronicle(){
  const host=document.getElementById('lore-chronicle');if(!host)return;
