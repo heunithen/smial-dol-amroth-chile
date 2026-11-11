@@ -1,4 +1,4 @@
-// Versión 2.7.46
+// Versión 2.7.47
 const SUPABASE_URL='https://heuxofiaijgpwzvrbvoa.supabase.co';
 const SUPABASE_KEY='sb_publishable_3f_pQw9FSMD9ipequee7Ew_w4sIP_iL';
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -106,7 +106,7 @@ function buildSettingRichEditors(){
 buildSettingRichEditors();
 async function saveSingleShadowField(field,editor,button,status){
  const key=field.dataset.setting;
- const value=(editor.innerText??editor.textContent??'').replace(/\u00a0/g,' ').trim();
+ const value=editor.innerHTML.trim();
  const previous=button.textContent;
  button.disabled=true;button.textContent='Guardando…';status.textContent='';
  try{
@@ -116,12 +116,12 @@ async function saveSingleShadowField(field,editor,button,status){
   if(!/^shadow_level_[1-9]_(title|text)$/.test(key||''))throw new Error('El campo narrativo no es válido.');
   const {data:saved,error:writeError}=await db.rpc('save_smial_narrative',{p_key:key,p_value:value});
   if(writeError)throw writeError;
-  if(saved!==value)throw new Error('La base de datos no confirmó el mismo texto enviado.');
+  if(saved!==value)throw new Error('La base de datos no confirmó el mismo formato enviado.');
   const {data:check,error:checkError}=await db.from('site_settings').select('settings').eq('id',1).single();
   if(checkError)throw checkError;
-  if(check?.settings?.[key]!==value)throw new Error('La lectura de comprobación no coincide con el texto guardado.');
+  if(check?.settings?.[key]!==value)throw new Error('La lectura de comprobación no coincide con el formato guardado.');
   siteSettings={...siteSettings,...check.settings};field.value=value;applySiteSettings();renderSmialLevelNarrative();
-  status.textContent='Guardado en la base de datos y verificado.';
+  status.textContent='Texto y formato guardados y verificados.';
  }catch(error){
   console.error('Error al guardar '+key+':',error);
   status.textContent='ERROR: '+(error.message||'No se pudo guardar el texto.');
@@ -950,8 +950,8 @@ function renderSmialLevelNarrative(){
  const body=siteSettings['shadow_level_'+level+'_text']||fallback.text;
  const titleEl=document.getElementById('smial-level-title');
  const textEl=document.getElementById('smial-level-text');
- if(titleEl)titleEl.textContent=title;
- if(textEl)textEl.textContent=body;
+ if(titleEl)titleEl.innerHTML=richDisplayValue(title);
+ if(textEl)textEl.innerHTML=richDisplayValue(body);
 }
 
 async function loadShadowState(){
