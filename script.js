@@ -108,7 +108,7 @@ document.getElementById('site-settings-form').addEventListener('submit',async e=
  finally{button.disabled=false;}
 });
 document.getElementById('site-settings-reset').addEventListener('click',async()=>{
- if(!confirm('¿Restaurar todos los textos, colores, tipografías e imágenes originales?'))return;
+ if(!confirm('¿Restaurar los textos, fondos, bordes, colores institucionales e imágenes originales?'))return;
  siteSettings={...SITE_DEFAULTS};fillSiteSettingsForm();applySiteSettings();
  const {data:{session}}=await db.auth.getSession();
  const {error}=await db.from('site_settings').upsert({id:1,settings:siteSettings,updated_at:new Date().toISOString(),updated_by:session?.user?.id||null},{onConflict:'id'});
