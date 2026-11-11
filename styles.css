@@ -573,3 +573,49 @@ body{background:var(--paper);color:var(--text-color)}
 #admin .admin-tab-panel .customizer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
 #admin .admin-tab-panel .customizer-group{min-width:0}
 @media(max-width:780px){#admin .admin-tab-panel .customizer-grid{grid-template-columns:1fr}}
+
+
+/* v2.2.4 — panel de Eventos: bloques claros y formulario ordenado */
+#admin #admin-tab-events{max-width:1120px}
+#admin #admin-tab-events>.events-admin-block{
+  margin:22px 0 28px;padding:24px clamp(16px,2.5vw,30px);
+  background:#f5f3ed;border:1px solid #cbd2d0;border-radius:12px;
+  box-shadow:0 5px 18px rgba(25,42,58,.045);
+}
+#admin #admin-tab-events .events-admin-heading{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px}
+#admin #admin-tab-events .events-admin-heading .admin-hint{display:block;margin:0 0 6px;color:#8b7954!important;font-size:9px;font-weight:800;letter-spacing:.15em}
+#admin #admin-tab-events .events-admin-heading h4{margin:0 0 6px;font-size:17px}
+#admin #admin-tab-events .events-admin-heading p{margin:0;max-width:760px;color:#687681!important;font-size:13px;line-height:1.6}
+#admin #admin-tab-events .events-admin-copy .customizer-grid{display:block}
+#admin #admin-tab-events .events-admin-copy .customizer-group{display:grid;grid-template-columns:1fr 1.5fr;gap:16px;padding:0;background:transparent!important;border:0!important}
+#admin #admin-tab-events .event-rules-note{
+ display:grid;gap:5px;margin:0 0 20px;padding:14px 17px;
+ background:#e9e6dc;border-left:3px solid #9b8355;border-radius:5px;
+ color:#526171;font-size:12px;line-height:1.5
+}
+#admin #admin-tab-events .event-rules-note strong{color:#263c52;font-family:"Cinzel",Georgia,serif;font-size:13px}
+#admin #admin-tab-events .event-form-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px 18px;align-items:start}
+#admin #admin-tab-events .event-form-grid>label{display:flex;flex-direction:column;gap:7px;min-width:0;color:#35485b;font-size:12px;font-weight:700}
+#admin #admin-tab-events .event-form-grid input,
+#admin #admin-tab-events .event-form-grid textarea,
+#admin #admin-tab-events .event-form-grid select{width:100%;min-width:0;box-sizing:border-box}
+#admin #admin-tab-events .event-field-title{grid-column:span 1}
+#admin #admin-tab-events .event-field-scenario{grid-column:span 2}
+#admin #admin-tab-events .event-field-description{grid-column:1/-1}
+#admin #admin-tab-events .event-field-location{grid-column:span 2}
+#admin #admin-tab-events .event-field-image{grid-column:1/-1}
+#admin #admin-tab-events .event-publish-form>.editor-actions{margin-top:18px}
+#admin #admin-tab-events .admin-events-list:empty{min-height:54px;display:flex;align-items:center}
+#admin #admin-tab-events .admin-events-list:empty:before{content:"No hay eventos publicados.";color:#687681;font-size:13px}
+#admin #admin-tab-events .attendance-manager{margin:0;padding:18px 20px;border-radius:8px;line-height:1.6}
+#admin #admin-tab-events .admin-event{padding:16px 18px;margin:10px 0;background:#fff;border:1px solid #d5dbd8;border-radius:8px}
+@media(max-width:760px){
+ #admin #admin-tab-events>.events-admin-block{padding:18px 15px;margin:16px 0 22px}
+ #admin #admin-tab-events .events-admin-copy .customizer-group{grid-template-columns:1fr}
+ #admin #admin-tab-events .event-form-grid{grid-template-columns:1fr 1fr}
+ #admin #admin-tab-events .event-field-scenario,#admin #admin-tab-events .event-field-description,#admin #admin-tab-events .event-field-location,#admin #admin-tab-events .event-field-image{grid-column:1/-1}
+}
+@media(max-width:480px){
+ #admin #admin-tab-events .event-form-grid{grid-template-columns:1fr}
+ #admin #admin-tab-events .event-form-grid>label{grid-column:1/-1}
+}
