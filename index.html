@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=2.2.2">
+  <link rel="stylesheet" href="styles.css?v=2.2.3">
 </head>
 <body>
   <div class="announcement"><span class="announcement-mark">✦</span> <span id="announcement-copy">Un hogar para quienes mantienen viva la llama de la Tierra Media</span> <span class="announcement-mark">✦</span></div>
@@ -35,7 +35,7 @@
         <div class="hero-actions"><a class="button button-light" href="#nosotros">Conoce el Smial <span>→</span></a><a class="text-link" href="#eventos">Explorar actividades <span>↗</span></a></div>
       </div>
       <div class="hero-caption"><span>✧</span> <span id="hero-caption">EN LAS COSTAS DE BELFALAS · UNA COMUNIDAD, MUCHAS HISTORIAS</span> <span class="caption-line"></span></div>
-      <div class="hero-seal" aria-hidden="true"><span>✦</span><b>DOL<br>AMROTH</b><small>EST. IN MIDDLE-EARTH</small></div>
+      <div class="hero-seal" aria-hidden="true"><span>✦</span><b id="hero-seal-title">DOL<br>AMROTH</b><small id="hero-seal-subtitle">EST. IN MIDDLE-EARTH</small></div>
     </section>
 
     <section class="intro-strip">
@@ -104,7 +104,7 @@
 <h3>Portada e identidad</h3><p class="admin-hint">Administra la identidad y los contenidos que aparecen en la portada del portal.</p>
 <form id="site-home-form" class="admin-form"><div class="customizer-grid">
 <div class="customizer-group"><h4>Identidad institucional</h4><label>Frase superior<input type="text" data-setting="announcement"></label><label>Nombre del Smial<input type="text" data-setting="site_title"></label><label>Subtítulo del emblema<input type="text" data-setting="brand_subtitle"></label></div>
-<div class="customizer-group"><h4>Portada</h4><label>Texto pequeño de portada<input type="text" data-setting="hero_eyebrow"></label><label>Título principal<textarea rows="3" data-setting="hero_title"></textarea></label><label>Presentación de portada<textarea rows="3" data-setting="hero_intro"></textarea></label><label>Texto inferior de portada<input type="text" data-setting="hero_caption"></label></div>
+<div class="customizer-group"><h4>Portada</h4><label>Texto pequeño de portada<input type="text" data-setting="hero_eyebrow"></label><label>Título principal<textarea rows="3" data-setting="hero_title"></textarea></label><label>Presentación de portada<textarea rows="3" data-setting="hero_intro"></textarea></label><label>Texto inferior de portada<input type="text" data-setting="hero_caption"></label><label>Leyenda principal del sello circular<textarea rows="2" data-setting="hero_seal_title"></textarea></label><label>Texto pequeño del sello circular<input type="text" data-setting="hero_seal_subtitle"></label></div>
 <div class="customizer-group"><h4>Imágenes</h4><label>Imagen de fondo de portada<input type="file" id="site-hero-image" data-site-image="hero_image_path" accept="image/jpeg,image/png,image/webp"></label><div id="site-hero-preview" class="site-image-preview"></div><label>Emblema del encabezado<input type="file" id="site-logo-image" data-site-image="logo_image_path" accept="image/jpeg,image/png,image/webp"></label><div id="site-logo-preview" class="site-image-preview"></div></div>
 </div><div class="editor-actions"><button class="button button-dark" type="submit">Guardar cambios de Inicio</button></div><p id="site-home-feedback" class="form-feedback" role="status"></p></form>
 </section>
@@ -217,9 +217,9 @@
     </section>
   </main>
 
-  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p id="footer-text">Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><span>NO OFICIAL · COMUNIDAD DE FANS</span><span id="app-version">VERSIÓN 2.2.2</span></div></footer>
+  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p id="footer-text">Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><span>NO OFICIAL · COMUNIDAD DE FANS</span><span id="app-version">VERSIÓN 2.2.3</span></div></footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
-  <script src="script.js?v=2.2.2"></script>
+  <script src="script.js?v=2.2.3"></script>
 </body>
 </html>
