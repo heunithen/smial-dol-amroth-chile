@@ -147,8 +147,8 @@ function applySiteSettings(){
  root.style.setProperty('--sans',cssFonts[s.sans]||cssFonts.Manrope);
  const themeMeta=document.querySelector('meta[name="theme-color"]');if(themeMeta)themeMeta.content=s.navy||SITE_DEFAULTS.navy;
  
- const text=(id,value)=>{const el=document.getElementById(id);if(el)el.innerHTML=richEditorValue(value||'');};
- const title=(id,value)=>{const el=document.getElementById(id);if(el)el.innerHTML=richEditorValue(value||'');};
+ const text=(id,value)=>{const el=document.getElementById(id);if(el)el.innerHTML=richDisplayValue(value||'');};
+ const title=(id,value)=>{const el=document.getElementById(id);if(el)el.innerHTML=richDisplayValue(value||'');};
  text('announcement-copy',s.announcement);text('brand-site-title',s.site_title);text('brand-site-subtitle',s.brand_subtitle);
  text('hero-eyebrow',s.hero_eyebrow);title('hero-title',s.hero_title);text('hero-intro',s.hero_intro);text('hero-caption',s.hero_caption);title('hero-seal-title',s.hero_seal_title);text('hero-seal-subtitle',s.hero_seal_subtitle);
  title('lore-title',s.lore_title);text('lore-intro',s.lore_intro);title('events-title',s.events_title);text('events-intro',s.events_intro);
@@ -621,6 +621,7 @@ function richEditorValue(value=''){
  const text=String(value||'');
  return /<\/?[a-z][\s\S]*>/i.test(text)?sanitizeRich(text):text?'<p>'+escapeHtml(text).replace(/\n/g,'<br>')+'</p>':'';
 }
+function richDisplayValue(value=''){const text=String(value||'');return /<\/?[a-z][\s\S]*>/i.test(text)?sanitizeRich(text):escapeHtml(text).replace(/\n/g,'<br>');}
 function initRichEditors(){
  document.querySelectorAll('.rich-toolbar').forEach(toolbar=>{
   if(toolbar.dataset.extended==='true')return;toolbar.dataset.extended='true';
