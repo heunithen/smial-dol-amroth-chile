@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=2.7.19">
+  <link rel="stylesheet" href="styles.css?v=2.7.20">
 </head>
 <body>
   <div class="announcement"><span class="announcement-mark">✦</span> <span id="announcement-copy">Un hogar para quienes mantienen viva la llama de la Tierra Media</span> <span class="announcement-mark">✦</span></div>
@@ -64,7 +64,7 @@
 </section>
 <section class="section members-section" id="miembros">
       <div class="section-heading"><div><p class="eyebrow dark">03 / PERSONAJES</p><h2 id="members-title">Rostros e historias<br>de <em>nuestra casa.</em></h2></div><p class="section-lead" id="members-intro">Cada integrante puede dar vida a un personaje con identidad, historia y lugar dentro del universo narrativo del Smial. Las Medallas de Dol Amroth reconocen la ayuda, la iniciativa, la organización y los aportes que fortalecen nuestra comunidad.</p></div>
-      <div class="character-submit"><h3>Presenta tu personaje</h3><p>Completa tu ficha. Un administrador revisará la solicitud antes de publicarla.</p><form id="character-form" class="data-form"><label for="character-image">Retrato del personaje (cuadrado, 512 × 512 px)</label><input id="character-image" name="image" type="file" accept="image/jpeg,image/png,image/webp" required><label for="real-name">Nombre real</label><input id="real-name" name="real_name" maxlength="120" required><label for="tolkien-name">Nombre tolkiendil</label><input id="tolkien-name" name="tolkien_name" maxlength="120" required><label for="character-role">Cargo</label><input id="character-role" name="role_title" maxlength="120" placeholder="Ej. Guardián, bardo, explorador..." required><label for="character-story">Historia <span id="story-count">0/1000</span></label><textarea id="character-story" name="story" maxlength="1000" rows="5" required></textarea><p class="form-note">Los logros y reconocimientos serán asignados exclusivamente por la administración después de aprobar el personaje.</p><button class="button button-dark" type="submit">Enviar a aprobación <span>→</span></button><p id="character-feedback" class="form-feedback" role="status"></p></form></div><div class="members-roster-heading"><h3>Personajes del Smial</h3><p>Una vez aprobados, los personajes aparecen aquí junto a los demás integrantes, con sus niveles actuales de Esperanza y Sombra.</p></div><div id="approved-members" class="approved-members"></div>
+      <div class="character-submit"><div class="character-submit-intro"><h3>¿Tienes un personaje?</h3><p>Registra tu ficha para que la administración la revise y, si es aprobada, aparezca junto a los demás personajes del Smial.</p><button id="character-register-toggle" class="button button-dark" type="button" aria-expanded="false" aria-controls="character-form-panel">Registrar un personaje <span>→</span></button></div><div id="character-form-panel" hidden><h3>Presenta tu personaje</h3><p>Completa tu ficha. Un administrador revisará la solicitud antes de publicarla.</p><form id="character-form" class="data-form"><label for="character-image">Retrato del personaje (cuadrado, 512 × 512 px)</label><input id="character-image" name="image" type="file" accept="image/jpeg,image/png,image/webp" required><label for="real-name">Nombre real</label><input id="real-name" name="real_name" maxlength="120" required><label for="tolkien-name">Nombre tolkiendil</label><input id="tolkien-name" name="tolkien_name" maxlength="120" required><label for="character-role">Cargo</label><input id="character-role" name="role_title" maxlength="120" placeholder="Ej. Guardián, bardo, explorador..." required><label for="character-story">Historia <span id="story-count">0/1000</span></label><textarea id="character-story" name="story" maxlength="1000" rows="5" required></textarea><p class="form-note">Los logros y reconocimientos serán asignados exclusivamente por la administración después de aprobar el personaje.</p><button class="button button-dark" type="submit">Enviar a aprobación <span>→</span></button><p id="character-feedback" class="form-feedback" role="status"></p></form></div></div><div class="members-roster-heading"><h3>Personajes del Smial</h3><p>Una vez aprobados, los personajes aparecen aquí junto a los demás integrantes, con sus niveles actuales de Esperanza y Sombra.</p></div><div id="approved-members" class="approved-members"></div>
     </section>
 
     <section class="shadow-section" id="la-sombra">
@@ -330,6 +330,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/tus-js-client@4/dist/tus.min.js"></script>
-  <script src="script.js?v=2.7.19"></script>
+  <script src="script.js?v=2.7.20"></script>
 </body>
 </html>
