@@ -1,4 +1,4 @@
-// Versión 2.7.43
+// Versión 2.7.44
 const SUPABASE_URL='https://heuxofiaijgpwzvrbvoa.supabase.co';
 const SUPABASE_KEY='sb_publishable_3f_pQw9FSMD9ipequee7Ew_w4sIP_iL';
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -122,7 +122,7 @@ async function saveSingleShadowField(field,editor,button,status){
   const {data:check,error:checkError}=await db.from('site_settings').select('settings').eq('id',1).single();
   if(checkError)throw checkError;
   if(check?.settings?.[key]!==value)throw new Error('Supabase no devolvió el mismo texto que se intentó guardar. El cambio no quedó confirmado.');
-  siteSettings={...siteSettings,...check.settings};field.value=value;applySiteSettings();
+  siteSettings={...siteSettings,...check.settings};field.value=value;applySiteSettings();renderSmialLevelNarrative();
   status.textContent='Guardado y verificado.';
  }catch(error){
   console.error('Error al guardar '+key+':',error);
@@ -250,13 +250,14 @@ async function loadSiteSettings(){
   if(timeoutId)clearTimeout(timeoutId);
   applySiteSettings();
   await waitForInitialDesignAssets();
+  renderSmialLevelNarrative();
   document.documentElement.classList.remove('theme-loading');
  }
 }
 async function loadSiteSettingsAdmin(){
  const {data,error}=await db.from('site_settings').select('settings').eq('id',1).maybeSingle();
  if(error){say('site-settings-feedback','No se pudo cargar la configuración: '+error.message);return;}
- siteSettings=normalizeShadowNarratives(data?.settings||{});fillSiteSettingsForm();applySiteSettings();await loadSavedSiteDesigns();
+ siteSettings=normalizeShadowNarratives(data?.settings||{});fillSiteSettingsForm();applySiteSettings();renderSmialLevelNarrative();await loadSavedSiteDesigns();
 }
 
 document.querySelectorAll('[data-site-image]').forEach(input=>input.addEventListener('change',async()=>{
