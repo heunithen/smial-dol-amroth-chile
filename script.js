@@ -104,7 +104,7 @@ charForm.addEventListener('submit',async e=>{
   const bitmap=await createImageBitmap(file);
   if(bitmap.width!==512||bitmap.height!==512)throw new Error('La imagen debe medir exactamente 512 × 512 píxeles.');
   const image_path=await uploadImage(file,'characters');
-  const payload={real_name:document.getElementById('real-name').value.trim(),tolkien_name:document.getElementById('tolkien-name').value.trim(),role_title:document.getElementById('character-role').value.trim(),story:story.value.trim(),achievements:document.getElementById('character-achievements').value.trim(),image_path,status:'pending'};
+  const payload={real_name:document.getElementById('real-name').value.trim(),tolkien_name:document.getElementById('tolkien-name').value.trim(),role_title:document.getElementById('character-role').value.trim(),story:story.value.trim(),image_path,status:'pending'};
   const {error}=await db.from('characters').insert(payload);if(error)throw error;
   charForm.reset();say('story-count','0/1000');say('character-feedback','Solicitud enviada. Quedará pendiente hasta que un administrador la revise.');
  }catch(err){say('character-feedback',err.message||'No se pudo enviar la solicitud.');}finally{button.disabled=false;}
@@ -158,7 +158,7 @@ async function refreshAdmin(){
  const role=session.user.app_metadata?.role;
  if(role!=='admin'){authBox.hidden=false;dashboard.hidden=true;say('auth-feedback','La sesión está iniciada, pero este correo aún no tiene permisos de administrador. Contacta al responsable del proyecto.');return;}
  authBox.hidden=true;dashboard.hidden=false;say('admin-identity','Sesión: '+session.user.email);
- await Promise.all([loadPending(),loadAdminEvents(),loadLoreAdmin(),loadMedalAdmin(),loadLoreChronicleAdmin(),loadSiteSettingsAdmin()]);
+ await Promise.all([loadPending(),loadAdminAchievements(),loadAdminEvents(),loadLoreAdmin(),loadMedalAdmin(),loadLoreChronicleAdmin(),loadSiteSettingsAdmin()]);
 }
 loginForm.addEventListener('submit',async e=>{e.preventDefault();const {error}=await db.auth.signInWithPassword({email:document.getElementById('admin-email').value.trim(),password:document.getElementById('admin-password').value});say('auth-feedback',error?error.message:'Sesión iniciada.');if(!error)await refreshAdmin();});
 document.getElementById('signup-button').addEventListener('click',async()=>{
@@ -174,8 +174,23 @@ async function loadPending(){
  const host=document.getElementById('pending-characters');const {data,error}=await db.from('characters').select('*').eq('status','pending').order('submitted_at');
  if(error){host.textContent='Error cargando solicitudes: '+error.message;return;}
  host.innerHTML=data.map(c=>{const image=db.storage.from('smial-media').getPublicUrl(c.image_path).data.publicUrl;return '<article class="admin-item"><img src="'+image+'" alt=""><div><h4>'+escapeHtml(c.tolkien_name)+' — '+escapeHtml(c.real_name)+'</h4><p><b>'+escapeHtml(c.role_title)+'</b></p><p>'+escapeHtml(c.story)+'</p><p>Logros: '+escapeHtml(c.achievements)+'</p><button data-review="approved" data-id="'+c.id+'" class="button button-dark">Aprobar</button> <button data-review="rejected" data-id="'+c.id+'" class="button button-outline-dark">Rechazar</button></div></article>';}).join('')||'<p>No hay solicitudes pendientes.</p>';
- host.querySelectorAll('[data-review]').forEach(button=>button.addEventListener('click',async()=>{button.disabled=true;const {error}=await db.from('characters').update({status:button.dataset.review,reviewed_at:new Date().toISOString()}).eq('id',button.dataset.id);if(error)alert(error.message);await loadPending();await loadApproved();}));
+ host.querySelectorAll('[data-review]').forEach(button=>button.addEventListener('click',async()=>{button.disabled=true;const {error}=await db.from('characters').update({status:button.dataset.review,reviewed_at:new Date().toISOString()}).eq('id',button.dataset.id);if(error)alert(error.message);await loadPending();await loadApproved();await loadAdminAchievements();}));
 }
+
+async function loadAdminAchievements(){
+ const host=document.getElementById('admin-character-achievements');if(!host)return;
+ const {data,error}=await db.from('characters').select('id,tolkien_name,real_name,role_title,achievements,hope_level,shadow_level').eq('status','approved').order('tolkien_name');
+ if(error){host.textContent='No se pudieron cargar los personajes: '+error.message;return;}
+ host.innerHTML=(data||[]).map(c=>'<article class="admin-achievement-row"><div class="admin-achievement-heading"><strong>'+escapeHtml(c.tolkien_name)+'</strong><small>'+escapeHtml(c.real_name)+' · '+escapeHtml(c.role_title)+'</small><small>Esperanza '+c.hope_level+'/10 · Sombra '+c.shadow_level+'/10</small></div><label for="achievement-'+c.id+'">Logros reconocidos por la administración</label><textarea id="achievement-'+c.id+'" rows="3" maxlength="2000" data-achievements-id="'+c.id+'">'+escapeHtml(c.achievements||'')+'</textarea><button class="button button-dark" type="button" data-save-achievements="'+c.id+'">Guardar logros</button></article>').join('')||'<p>Aún no hay personajes aprobados.</p>';
+ host.querySelectorAll('[data-save-achievements]').forEach(button=>button.addEventListener('click',async()=>{
+  const id=button.dataset.saveAchievements,field=host.querySelector('[data-achievements-id="'+id+'"]');
+  button.disabled=true;const {error}=await db.from('characters').update({achievements:field.value.trim()}).eq('id',id).eq('status','approved');
+  if(error)alert('No se pudieron guardar los logros: '+error.message);
+  else{button.textContent='Guardado';await loadApproved();}
+  button.disabled=false;
+ }));
+}
+
 const eventForm=document.getElementById('event-form');
 eventForm.addEventListener('submit',async e=>{
  e.preventDefault();const button=eventForm.querySelector('button[type="submit"]');button.disabled=true;say('event-feedback','Preparando evento y crónica...');
