@@ -733,3 +733,19 @@ body{background:var(--paper);color:var(--text-color)}
 /* v2.5.2 — edición de eventos publicados */
 #event-edit-cancel[hidden]{display:none!important}
 .admin-event-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+
+/* v2.5.3 — validación en vivo y visibilidad de contraseñas en Registro */
+#register-form .password-input-wrap{position:relative;display:flex;align-items:center;width:100%;margin:0 0 17px}
+#register-form .password-input-wrap input{width:100%;padding-right:54px;margin:0}
+#register-form .password-visibility-toggle{
+ position:absolute;right:8px;top:50%;transform:translateY(-50%);width:38px;height:36px;
+ display:grid;place-items:center;border:1px solid rgba(184,155,104,.45);border-radius:4px;
+ background:rgba(16,31,53,.08);color:var(--gold);font-size:18px;cursor:pointer
+}
+#register-form .password-visibility-toggle:hover{background:rgba(184,155,104,.16)}
+#register-form .password-validation-feedback{min-height:18px;margin:-7px 0 16px;font-size:12px;line-height:1.5;color:#f0b6a8}
+#register-form .password-validation-feedback:empty{display:none}
+#register-form .password-validation-feedback.is-valid{color:#b8d6ad}
+#register-form .password-validation-feedback.is-invalid{color:#f0b6a8}
+#register-form input[aria-invalid="true"]{border-color:#d98b7c}
