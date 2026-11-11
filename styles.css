@@ -394,3 +394,10 @@ body{background:var(--paper);color:var(--text-color)}
  border-color:#b89b68!important;
  outline:1px solid #b89b68!important;
 }
+
+
+/* v1.9.6: ubicaciones del hero en una sola línea, alineadas a la derecha */
+.hero-content>.eyebrow{display:flex;justify-content:flex-end;align-items:center;width:fit-content;max-width:100%;margin:0 0 22px auto;text-align:right;color:#b89b68!important;white-space:nowrap;letter-spacing:.18em}
+.hero-content>.eyebrow>span:first-child{display:none!important}
+#hero-eyebrow{display:inline;color:#b89b68!important}
+@media(max-width:780px){.hero-content>.eyebrow{font-size:8px;letter-spacing:.12em;margin-left:auto;margin-right:0;white-space:normal;text-align:right}}
