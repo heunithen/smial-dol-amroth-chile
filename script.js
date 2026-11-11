@@ -170,7 +170,7 @@ async function loadSiteSettings(){
 async function loadSiteSettingsAdmin(){
  const {data,error}=await db.from('site_settings').select('settings').eq('id',1).maybeSingle();
  if(error){say('site-settings-feedback','No se pudo cargar la configuración: '+error.message);return;}
- siteSettings={...SITE_DEFAULTS,...(data?.settings||{})};fillSiteSettingsForm();applySiteSettings();
+ siteSettings={...SITE_DEFAULTS,...(data?.settings||{})};fillSiteSettingsForm();applySiteSettings();await loadSavedSiteDesigns();
 }
 settingFields.forEach(el=>el.addEventListener('input',()=>{siteSettings[el.dataset.setting]=el.value;applySiteSettings();}));
 document.querySelectorAll('[data-site-image]').forEach(input=>input.addEventListener('change',async()=>{
