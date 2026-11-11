@@ -1,4 +1,4 @@
-// Versión 2.7.38
+// Versión 2.7.39
 const SUPABASE_URL='https://heuxofiaijgpwzvrbvoa.supabase.co';
 const SUPABASE_KEY='sb_publishable_3f_pQw9FSMD9ipequee7Ew_w4sIP_iL';
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -237,7 +237,18 @@ document.querySelectorAll('[data-site-image]').forEach(input=>input.addEventList
 ['home','lore','events','members','shadow','about','register'].forEach(section=>{
  const form=document.getElementById('site-'+section+'-form');if(!form)return;
  form.addEventListener('submit',async e=>{
-  e.preventDefault();const button=form.querySelector('button[type="submit"]');button.disabled=true;
+  e.preventDefault();
+  form.querySelectorAll('[data-setting]').forEach(field=>{
+   const key=field.dataset.setting;
+   const editor=field.parentElement.querySelector('.setting-rich-editor');
+   if(key&&key.startsWith('shadow_level_')&&editor){
+    siteSettings[key]=editor.innerText??editor.textContent??'';
+    field.value=siteSettings[key];
+   }else if(key&&field.dataset.settingStorage){
+    siteSettings[key]=editor?editor.innerHTML:field.value;
+   }
+  });
+  const button=form.querySelector('button[type="submit"]');button.disabled=true;
   try{
    const {data:{session}}=await db.auth.getSession();
    const {error}=await db.from('site_settings').upsert({id:1,settings:siteSettings,updated_at:new Date().toISOString(),updated_by:session?.user?.id||null},{onConflict:'id'});
