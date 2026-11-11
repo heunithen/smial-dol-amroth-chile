@@ -44,15 +44,15 @@ function settingImageUrl(path){return path?db.storage.from('smial-media').getPub
 function applySiteSettings(){
  const s={...SITE_DEFAULTS,...siteSettings};
  const root=document.documentElement;
- ['paper','ink','navy','blue','gold'].forEach(k=>root.style.setProperty('--'+k,s[k]||SITE_DEFAULTS[k]));
- root.style.setProperty('--heading-color',s.heading_color||s.navy||SITE_DEFAULTS.heading_color);
- root.style.setProperty('--text-color',s.text_color||s.ink||SITE_DEFAULTS.text_color);
- root.style.setProperty('--muted-color',s.muted_color||SITE_DEFAULTS.muted_color);
- root.style.setProperty('--border-color',s.border_color||SITE_DEFAULTS.border_color);
+ ['paper','navy','blue','gold'].forEach(k=>root.style.setProperty('--'+k,s[k]||SITE_DEFAULTS[k]));
+ root.style.setProperty('--ink','#1a2939');
+ root.style.setProperty('--heading-color','#101f35');
+ root.style.setProperty('--text-color','#1a2939');
+ root.style.setProperty('--muted-color','#687582');
+ root.style.setProperty('--border-color',s.border_color||'#c8d2dc');
  root.style.setProperty('--navy2',s.navy||SITE_DEFAULTS.navy);
  const themeMeta=document.querySelector('meta[name="theme-color"]');if(themeMeta)themeMeta.content=s.navy||SITE_DEFAULTS.navy;
- root.style.setProperty('--serif','"'+String(s.serif||'Cinzel').replace(/[^a-zA-Z ]/g,'')+'",Georgia,serif');
- root.style.setProperty('--sans','"'+String(s.sans||'Manrope').replace(/[^a-zA-Z ]/g,'')+'",Arial,sans-serif');
+ 
  const text=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value||'';};
  const title=(id,value)=>{const el=document.getElementById(id);if(el)el.innerHTML=escapeHtml(value||'').replace(/\n/g,'<br>');};
  text('announcement-copy',s.announcement);text('brand-site-title',s.site_title);text('brand-site-subtitle',s.brand_subtitle);
