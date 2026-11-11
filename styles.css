@@ -903,3 +903,18 @@ html.theme-loading body{visibility:hidden}
 .photo-admin-meta strong{overflow-wrap:anywhere;color:#263b50;font-size:13px}
 .photo-admin-delete{white-space:nowrap}
 @media(max-width:560px){.photo-admin-item{grid-template-columns:58px minmax(0,1fr);gap:9px}.photo-admin-item>img{width:58px;height:52px}.photo-admin-delete{grid-column:2;justify-self:start;padding:7px 10px}}
+
+
+/* v2.7.15 — formato de texto en todos los campos editables de administración */
+#admin .setting-rich-field{display:flex;flex-direction:column;gap:0;min-width:0;width:100%}
+#admin .setting-rich-toolbar{margin:7px 0 0!important;border-radius:7px 7px 0 0!important}
+#admin .setting-rich-toolbar button{min-width:32px;min-height:30px}
+#admin .setting-rich-toolbar select{width:auto;min-width:112px;max-width:145px;min-height:32px;padding:4px 6px;border:1px solid #c5cdc9;border-radius:5px;background:#faf9f5;color:#26384a;font:12px "Manrope",Arial,sans-serif}
+#admin .setting-rich-toolbar input[type=color]{width:36px;height:32px;padding:2px;border:1px solid #c5cdc9;border-radius:5px;background:#faf9f5;cursor:pointer}
+#admin .setting-rich-editor{min-height:76px;padding:10px 12px;border:1px solid #cbd2d0;border-radius:0 0 7px 7px;background:#fff;color:#26384a;font:14px/1.6 "Manrope",Arial,sans-serif;white-space:pre-wrap;overflow-wrap:anywhere;outline:none}
+#admin .setting-rich-editor:focus{border-color:#9b8355;box-shadow:0 0 0 2px rgba(155,131,85,.13)}
+#admin .setting-rich-editor:empty:before{content:attr(data-placeholder);color:#87919a;pointer-events:none}
+#admin .setting-rich-toolbar button:nth-child(1){font-weight:900}
+#admin .setting-rich-toolbar button:nth-child(2){font-style:italic}
+#admin .setting-rich-toolbar button:nth-child(3){text-decoration:underline}
+#admin .setting-rich-toolbar button:nth-child(4){text-decoration:line-through}
