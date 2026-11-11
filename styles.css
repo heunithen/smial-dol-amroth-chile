@@ -944,3 +944,14 @@ html.theme-loading body{visibility:hidden}
 #character-register-toggle{margin:0 auto}
 #character-form-panel{margin-top:28px;padding-top:24px;border-top:1px solid #cbd1ce;scroll-margin-top:120px}
 #character-form-panel[hidden]{display:none!important}
+
+
+/* v2.7.21 — medidores de Esperanza y Sombra en las fichas de personajes */
+.approved-card .character-levels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0}
+.approved-card .character-levels .shadow-meter{min-width:0;min-height:0;padding:10px 8px 11px;border-radius:4px}
+.approved-card .character-levels .meter-emblem{width:42px;height:42px;margin:0 auto 5px}
+.approved-card .character-levels .shadow-meter>span{font-size:8px;letter-spacing:.1em;text-align:center}
+.approved-card .character-levels .shadow-meter>strong{font-size:19px;margin:2px 0 7px}
+.approved-card .character-levels .meter-track{height:5px;width:100%;border-radius:5px;overflow:hidden}
+.approved-card .character-levels .meter-track i{border-radius:5px}
+@media(max-width:520px){.approved-card .character-levels{gap:6px}.approved-card .character-levels .shadow-meter{padding:9px 6px}.approved-card .character-levels .meter-emblem{width:36px;height:36px}}
