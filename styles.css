@@ -149,3 +149,20 @@ main>section#la-sombra.active{display:grid}
 .event-lore-content ul,.event-lore-content ol{padding-left:22px}
 @media(max-width:900px){.library-columns,.medal-library{grid-template-columns:1fr}}
 @media(max-width:600px){.admin-library{padding:13px}.library-list-panel,.library-editor-form{padding:12px}.threshold-fields{grid-template-columns:1fr}.library-row{align-items:flex-start;flex-direction:column}.library-row-actions{width:100%}}
+
+/* Lore oficial acumulado y acontecimiento activo */
+.lore-chronicle{display:grid;gap:22px;margin-top:32px}
+.lore-chapter{padding:28px;background:#efeee9;border:1px solid #d6d9d6}
+.lore-chapter h3{font:500 clamp(23px,3vw,32px) var(--serif);color:#20364d;margin:5px 0 15px}
+.lore-chapter .card-kicker{font-size:9px;letter-spacing:.16em;color:#9a8558}
+.lore-chapter-cover{display:block;width:100%;max-height:430px;object-fit:cover;margin:14px 0}
+.lore-chapter .event-lore-content{color:#465766;font-size:14px;line-height:1.9}
+.lore-admin-editor{display:grid;grid-template-columns:minmax(220px,.72fr) minmax(0,1.6fr);gap:22px;margin:20px 0 28px;align-items:start}
+.shadow-active-event{margin:22px 0}
+.shadow-active-card{padding:20px;border:1px solid #59616a;background:rgba(255,255,255,.035)}
+.shadow-active-card .card-kicker{font-size:8px;letter-spacing:.16em;color:#c6b58d}
+.shadow-active-card h3{font:500 23px var(--serif);color:#f0eee8;margin:7px 0}
+.shadow-active-card p{font-size:12px;line-height:1.8;color:#c3cbd0}
+.shadow-active-card small{font-size:9px;color:#9ba9b2}
+.shadow-pending{font-size:9px!important;letter-spacing:.14em;color:#d2b987!important;border-top:1px solid #465362;padding-top:12px}
+@media(max-width:900px){.lore-admin-editor{grid-template-columns:1fr}}
