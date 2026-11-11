@@ -78,7 +78,7 @@ function applySiteSettings(){
  title('register-title',s.register_title);text('register-intro',s.register_intro);text('footer-text',s.footer_text);
  document.title=(s.site_title||'SMIAL DOL AMROTH')+' | Chile';
  const shadowArt=document.querySelector('#la-sombra .shadow-art');
- if(shadowArt){const shadowBg=s.shadow_background_image_path?settingImageUrl(s.shadow_background_image_path):'';if(shadowBg){shadowArt.style.backgroundImage='linear-gradient(rgba(7,15,26,.28),rgba(7,15,26,.48)),url("'+shadowBg.replace(/"/g,'%22')+'")';shadowArt.classList.add('has-custom-background');}else{shadowArt.style.removeProperty('background-image');shadowArt.classList.remove('has-custom-background');}}
+ if(shadowArt){const shadowBg=s.shadow_background_image_path?settingImageUrl(s.shadow_background_image_path):'';if(shadowBg){shadowArt.style.backgroundImage='url("'+shadowBg.replace(/"/g,'%22')+'")';shadowArt.classList.add('has-custom-background');}else{shadowArt.style.removeProperty('background-image');shadowArt.classList.remove('has-custom-background');}}
  const hero=s.hero_image_path?settingImageUrl(s.hero_image_path):'';
  if(hero)root.style.setProperty('--hero-image','url("'+hero.replace(/"/g,'%22')+'")');else root.style.removeProperty('--hero-image');
  const logo=document.getElementById('brand-logo-image'),mark=document.querySelector('.brand-mark'),svg=mark?.querySelector('svg'),aboutLogo=document.getElementById('about-logo-image'),aboutMark=document.querySelector('.about-emblem'),aboutSvg=aboutMark?.querySelector('svg');
