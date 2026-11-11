@@ -271,15 +271,27 @@ body{color:var(--text-color)}
 }
 
 
-/* v1.8.0 — la apariencia institucional no modifica el contenido escrito */
-body{color:#1a2939!important;font-family:"Manrope",Arial,sans-serif!important}
-.brand-copy strong,.section h2,.section-heading h2,.admin-inner>h2,.character-submit h3,
-.members-roster-heading h3,.button-outline-dark{color:#101f35!important}
-.announcement-mark,.hero-caption>span,.hero-seal>span,.eyebrow.dark,.card-kicker,
-.lore-chapter .card-kicker{color:#b9a477!important}
-.section-lead,.section p:not(.eyebrow),.about-copy>p:not(.eyebrow),
-.members-empty p,.members-roster-heading p,.form-note,.lore-card p:not(.card-kicker),
-.lore-chapter .event-lore-content,.character-submit>p,.admin-hint,
-.small-note,.site-customizer>p{color:inherit}
-.site-header .brand-copy,.site-header .brand-copy *{font-family:"Cinzel",Georgia,serif!important}
-.site-header .main-nav,.site-header .main-nav *{font-family:"Manrope",Arial,sans-serif!important}
+/* v1.9.0 — aislamiento total del diseño administrativo.
+   La personalización guardada se hereda en el portal público; Administración
+   recupera variables y tipografías propias, sin depender de esos valores. */
+body{font-family:var(--sans);color:var(--text-color)}
+#admin.admin-section{
+ --paper:#e9e8e2;
+ --ink:#1a2939;
+ --text-color:#1a2939;
+ --heading-color:#172b40;
+ --muted:#687582;
+ --muted-color:#687582;
+ --silver:#cbd2d0;
+ --border-color:#cbd2d0;
+ --navy:#101f35;
+ --navy2:#172b46;
+ --blue:#24486b;
+ --gold:#b9a477;
+ --serif:"Cinzel",Georgia,serif;
+ --sans:"Manrope",Arial,sans-serif;
+ color:#1a2939;
+ font-family:"Manrope",Arial,sans-serif;
+}
+#admin.admin-section :where(h1,h2,h3,h4,h5,h6){font-family:"Cinzel",Georgia,serif}
+#admin.admin-section :where(p,label,small,input,textarea,select,button){font-family:"Manrope",Arial,sans-serif}
