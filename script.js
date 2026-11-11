@@ -144,6 +144,22 @@ function fillSiteSettingsForm(){
  settingFields.forEach(el=>{const key=el.dataset.setting;el.value=siteSettings[key]??SITE_DEFAULTS[key]??'';});
  [['hero','hero_image_path'],['logo','logo_image_path'],['about-logo','about_logo_image_path'],['shadow-background','shadow_background_image_path']].forEach(([kind,key])=>{const host=document.getElementById('site-'+kind+'-preview'),url=settingImageUrl(siteSettings[key]);if(host)host.innerHTML=url?'<img src="'+escapeHtml(url)+'" alt="Imagen actual">':'Sin imagen personalizada';});
 }
+async function waitForInitialDesignAssets(){
+ const s={...SITE_DEFAULTS,...siteSettings};
+ const paths=['hero_image_path','logo_image_path','about_logo_image_path','shadow_background_image_path'];
+ const urls=paths.map(key=>s[key]?settingImageUrl(s[key]):'').filter(Boolean);
+ const imagePromises=urls.map(url=>new Promise(resolve=>{
+  const img=new Image();let finished=false;
+  const done=()=>{if(finished)return;finished=true;resolve();};
+  img.onload=done;img.onerror=done;img.src=url;
+  if(img.complete)done();
+ }));
+ const fontPromise=document.fonts?.ready?Promise.resolve(document.fonts.ready).catch(()=>{}):Promise.resolve();
+ await Promise.race([
+  Promise.allSettled([...imagePromises,fontPromise]),
+  new Promise(resolve=>setTimeout(resolve,4500))
+ ]);
+}
 async function loadSiteSettings(){
  let timeoutId;
  try{
@@ -164,6 +180,7 @@ async function loadSiteSettings(){
  }finally{
   if(timeoutId)clearTimeout(timeoutId);
   applySiteSettings();
+  await waitForInitialDesignAssets();
   document.documentElement.classList.remove('theme-loading');
  }
 }
