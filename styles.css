@@ -562,3 +562,14 @@ body{background:var(--paper);color:var(--text-color)}
 /* El área administrativa solo se muestra al entrar explícitamente en #admin */
 #admin.admin-section{display:none}
 #admin.admin-section:target{display:block}
+
+/* Administración como pestaña adicional, visible solo para administradores autenticados */
+#admin-nav-link[hidden]{display:none!important}
+.main-nav a.nav-admin{border:1px solid rgba(184,155,104,.65);padding:9px 13px;color:var(--gold);border-radius:3px}
+.main-nav a.nav-admin:hover,.main-nav a.nav-admin.active{background:rgba(184,155,104,.12);color:var(--gold)}
+#admin .admin-tab-panel>h3{margin-top:8px}
+#admin .admin-tab-panel>.admin-form{margin:18px 0 30px}
+#admin .admin-tab-panel>.admin-library{margin:24px 0}
+#admin .admin-tab-panel .customizer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+#admin .admin-tab-panel .customizer-group{min-width:0}
+@media(max-width:780px){#admin .admin-tab-panel .customizer-grid{grid-template-columns:1fr}}
