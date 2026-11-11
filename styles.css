@@ -712,3 +712,8 @@ body{background:var(--paper);color:var(--text-color)}
  .about-emblem.has-custom-logo{width:min(338px,82vw)}
  .about-emblem.has-custom-logo img{padding:18px 16px 34px}
 }
+
+
+/* v2.3.3 — retirar el sol/ojos y sus órbitas vectoriales de La Sombra */
+#la-sombra .shadow-orbit,
+#la-sombra .shadow-eye{display:none!important}
