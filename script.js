@@ -145,9 +145,14 @@ function fillSiteSettingsForm(){
  [['hero','hero_image_path'],['logo','logo_image_path'],['about-logo','about_logo_image_path'],['shadow-background','shadow_background_image_path']].forEach(([kind,key])=>{const host=document.getElementById('site-'+kind+'-preview'),url=settingImageUrl(siteSettings[key]);if(host)host.innerHTML=url?'<img src="'+escapeHtml(url)+'" alt="Imagen actual">':'Sin imagen personalizada';});
 }
 async function loadSiteSettings(){
- const {data,error}=await db.from('site_settings').select('settings').eq('id',1).maybeSingle();
- if(!error&&data?.settings)siteSettings={...SITE_DEFAULTS,...data.settings};
- applySiteSettings();
+ try{
+  const {data,error}=await db.from('site_settings').select('settings').eq('id',1).maybeSingle();
+  if(!error&&data?.settings)siteSettings={...SITE_DEFAULTS,...data.settings};
+ }catch(error){console.warn('No se pudo cargar el diseño guardado; se usarán los valores base.',error);}
+ finally{
+  applySiteSettings();
+  document.documentElement.classList.remove('theme-loading');
+ }
 }
 async function loadSiteSettingsAdmin(){
  const {data,error}=await db.from('site_settings').select('settings').eq('id',1).maybeSingle();
