@@ -1148,4 +1148,35 @@ html.theme-loading body{visibility:hidden}
   }
 }
 
-/* v2.7.49 — reducción adicional y moderada de la ficha central */
+/* v2.7.51 — tarjeta central más compacta */
+#miembros .approved-carousel-stage .approved-card{
+  width:min(350px,56%);
+}
+#miembros .approved-carousel-stage .approved-card[data-position="0"]>img{
+  width:min(100%,195px);
+  height:195px;
+  margin-top:11px;
+}
+#miembros .approved-carousel-stage .approved-card[data-position="0"] .approved-card-content{
+  padding:11px 13px 13px;
+}
+#miembros .approved-carousel-stage .approved-card[data-position="0"] .approved-card-field{
+  font-size:11px;
+  margin-bottom:5px;
+}
+#miembros .approved-carousel-stage .approved-card[data-position="0"] .approved-card-story{
+  font-size:11px;
+  line-height:1.45;
+  margin:3px 0 7px;
+}
+@media(max-width:700px){
+  #miembros .approved-carousel-stage .approved-card{width:min(76%,330px)}
+  #miembros .approved-carousel-stage .approved-card[data-position="0"]>img{
+    width:min(100%,170px);height:170px;
+  }
+}
+@media(max-width:420px){
+  #miembros .approved-carousel-stage .approved-card[data-position="0"]>img{
+    width:min(100%,150px);height:150px;
+  }
+}
