@@ -213,13 +213,41 @@ document.getElementById('site-settings-form').addEventListener('submit',async e=
  }catch(err){say('site-settings-feedback','No se pudieron guardar los cambios: '+(err.message||'Error desconocido'));}
  finally{button.disabled=false;}
 });
-document.getElementById('site-settings-reset').addEventListener('click',async()=>{
- if(!confirm('¿Restaurar los textos, fondos, bordes, colores institucionales e imágenes originales?'))return;
- siteSettings={...SITE_DEFAULTS};fillSiteSettingsForm();applySiteSettings();
- const {data:{session}}=await db.auth.getSession();
- const {error}=await db.from('site_settings').upsert({id:1,settings:siteSettings,updated_at:new Date().toISOString(),updated_by:session?.user?.id||null},{onConflict:'id'});
- say('site-settings-feedback',error?'No se pudo restaurar: '+error.message:'Diseño original restaurado.');
+async function loadSavedSiteDesigns(selectedId=''){
+ const select=document.getElementById('saved-design-select');if(!select)return;
+ select.innerHTML='<option value="">Cargando diseños...</option>';
+ const {data,error}=await db.from('saved_site_designs').select('id,name,created_at').order('created_at',{ascending:false});
+ if(error){select.innerHTML='<option value="">No se pudieron cargar</option>';say('saved-design-feedback','No se pudieron cargar los diseños: '+error.message);return;}
+ select.innerHTML='<option value="">Selecciona un diseño guardado</option>'+(data||[]).map(item=>'<option value="'+escapeHtml(item.id)+'">'+escapeHtml(item.name)+' · '+escapeHtml(new Date(item.created_at).toLocaleDateString('es-CL'))+'</option>').join('');
+ if(selectedId)select.value=selectedId;
+ if(!(data||[]).length)say('saved-design-feedback','Todavía no hay diseños guardados.');
+}
+document.getElementById('saved-design-save').addEventListener('click',async()=>{
+ const nameInput=document.getElementById('saved-design-name');const name=nameInput.value.trim();const button=document.getElementById('saved-design-save');
+ if(!name){say('saved-design-feedback','Escribe un nombre para guardar el diseño.');nameInput.focus();return;}
+ button.disabled=true;say('saved-design-feedback','Guardando diseño...');
+ try{
+  const {data:{session}}=await db.auth.getSession();if(!session)throw new Error('La sesión ha caducado. Inicia sesión nuevamente.');
+  const {data,error}=await db.from('saved_site_designs').insert({name,settings:{...siteSettings},created_by:session.user.id}).select('id').single();
+  if(error)throw error;
+  nameInput.value='';await loadSavedSiteDesigns(data.id);say('saved-design-feedback','Diseño «'+name+'» guardado. No se ha publicado; puedes seguir editándolo.');
+ }catch(error){say('saved-design-feedback','No se pudo guardar el diseño: '+(error.message||'Error desconocido'));}
+ finally{button.disabled=false;}
 });
+document.getElementById('saved-design-load').addEventListener('click',async()=>{
+ const select=document.getElementById('saved-design-select');const id=select.value;const button=document.getElementById('saved-design-load');
+ if(!id){say('saved-design-feedback','Selecciona primero un diseño guardado.');return;}
+ button.disabled=true;say('saved-design-feedback','Cargando diseño...');
+ try{
+  const {data,error}=await db.from('saved_site_designs').select('id,name,settings').eq('id',id).single();
+  if(error)throw error;
+  if(!data?.settings||typeof data.settings!=='object'||Array.isArray(data.settings))throw new Error('El diseño guardado no contiene una configuración válida.');
+  siteSettings={...SITE_DEFAULTS,...data.settings};fillSiteSettingsForm();applySiteSettings();
+  say('saved-design-feedback','Diseño «'+data.name+'» cargado en el editor. Para aplicarlo al portal, pulsa «Guardar y publicar diseño».');
+ }catch(error){say('saved-design-feedback','No se pudo cargar el diseño: '+(error.message||'Error desconocido'));}
+ finally{button.disabled=false;}
+});
+
 
 const charForm=document.getElementById('character-form');
 const story=document.getElementById('character-story');
