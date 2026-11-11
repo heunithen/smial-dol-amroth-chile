@@ -842,7 +842,7 @@ async function loadGalleryAdmin(){
    const url=db.storage.from('smial-media').getPublicUrl(path).data.publicUrl;
    const format=(item.name.split('.').pop()||item.metadata?.mimetype||'desconocido').toUpperCase();
    const size=item.metadata?.size?formatStorageBytes(item.metadata.size):'Tamaño no informado';
-   return '<article class="photo-admin-item"><img src="'+escapeHtml(url)+'" alt="" loading="lazy"><div class="photo-admin-meta"><strong>'+escapeHtml(item.name)+'</strong><span>Formato guardado: '+escapeHtml(format)+'</span><span>'+escapeHtml(size)+'</span></div><button type="button" class="button button-outline-dark photo-admin-delete" data-photo-path="'+escapeHtml(path)+'">Eliminar</button></article>';
+   return '<article class="photo-admin-item"><img src="'+escapeHtml(url)+'" alt="" loading="lazy"><div class="photo-admin-meta"><strong>'+escapeHtml(galleryVisibleTitle(item.name))+'</strong><span>Formato guardado: '+escapeHtml(format)+'</span><span>'+escapeHtml(size)+'</span></div><button type="button" class="button button-outline-dark photo-admin-delete" data-photo-path="'+escapeHtml(path)+'">Eliminar</button></article>';
   }).join('');
   host.querySelectorAll('[data-photo-path]').forEach(button=>button.addEventListener('click',async()=>{
    const path=button.dataset.photoPath;
