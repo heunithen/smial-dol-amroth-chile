@@ -559,9 +559,9 @@ body{background:var(--paper);color:var(--text-color)}
 @media(max-width:640px){#admin .admin-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}#admin .admin-tab{padding:11px 8px}}
 
 
-/* El área administrativa solo se muestra al entrar explícitamente en #admin */
+/* La administración sigue el mismo sistema de pestañas que el resto del portal */
 #admin.admin-section{display:none}
-#admin.admin-section:target{display:block}
+#admin.admin-section.active{display:block}
 
 /* Administración como pestaña adicional, visible solo para administradores autenticados */
 #admin-nav-link[hidden]{display:none!important}
