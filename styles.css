@@ -858,3 +858,6 @@ body{background:var(--paper);color:var(--text-color)}
 .smial-level-narrative h4{font:500 13px/1.5 var(--serif);letter-spacing:.09em;color:#d6bd91;margin:0 0 8px}
 .smial-level-narrative p{font-size:11px;line-height:1.9;color:#c3cbd0;margin:0}
 @media(max-width:780px){.smial-level-narrative{padding:15px}}
+
+/* Evita mostrar el tema predeterminado antes de aplicar el diseño guardado. */
+html.theme-loading body{visibility:hidden;animation:theme-loading-fallback 0s 5s forwards}@keyframes theme-loading-fallback{to{visibility:visible}}
