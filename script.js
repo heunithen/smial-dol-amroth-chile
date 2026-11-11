@@ -237,8 +237,67 @@ async function refreshAdmin(){
  if(!session){authBox.hidden=false;dashboard.hidden=true;return;}
  if(!isAdmin){authBox.hidden=false;dashboard.hidden=true;say('auth-feedback','La sesión está iniciada, pero este correo aún no tiene permisos de administrador. Contacta al responsable del proyecto.');return;}
  authBox.hidden=true;dashboard.hidden=false;say('admin-identity','Sesión: '+session.user.email);
- await Promise.all([loadPending(),loadAdminAchievements(),loadAdminEvents(),loadLoreAdmin(),loadMedalAdmin(),loadLoreChronicleAdmin(),loadSiteSettingsAdmin()]);
+ await Promise.all([loadPending(),loadMembershipRequests(),loadAdminAchievements(),loadAdminEvents(),loadLoreAdmin(),loadMedalAdmin(),loadLoreChronicleAdmin(),loadSiteSettingsAdmin()]);
 }
+
+async function loadMembershipRequests(){
+ const host=document.getElementById('membership-requests-list');if(!host)return;
+ host.textContent='Cargando solicitudes...';
+ const {data,error}=await db.functions.invoke('membership-admin',{body:{action:'list'}});
+ if(error){host.textContent='No se pudieron cargar las solicitudes: '+(data?.error||error.message);return;}
+ const requests=data?.requests||[];
+ if(!requests.length){host.innerHTML='<p>No hay solicitudes de ingreso pendientes.</p>';return;}
+ host.innerHTML=requests.map(r=>'<article class="admin-item membership-request-item"><div><h4>'+escapeHtml(r.first_name+' '+r.last_name)+'</h4><p>'+escapeHtml(r.email)+'</p><p class="admin-hint">Recibida: '+escapeHtml(new Date(r.submitted_at).toLocaleString('es-CL'))+'</p><button type="button" class="button button-dark" data-membership-review="approved" data-user-id="'+escapeHtml(r.user_id)+'">Aprobar y habilitar cuenta</button> <button type="button" class="button button-outline-dark" data-membership-review="rejected" data-user-id="'+escapeHtml(r.user_id)+'">Rechazar</button></div></article>').join('');
+ host.querySelectorAll('[data-membership-review]').forEach(button=>button.addEventListener('click',async()=>{
+  const decision=button.dataset.membershipReview;
+  const label=decision==='approved'?'aprobar y habilitar esta cuenta':'rechazar esta solicitud';
+  if(!confirm('¿Confirmas '+label+'?'))return;
+  button.disabled=true;
+  const {data,error}=await db.functions.invoke('membership-admin',{body:{action:'review',user_id:button.dataset.userId,status:decision}});
+  if(error){alert(data?.error||error.message);button.disabled=false;return;}
+  await loadMembershipRequests();
+ }));
+}
+const registerForm=document.getElementById('register-form');
+registerForm.addEventListener('submit',async e=>{
+ e.preventDefault();
+ const button=registerForm.querySelector('button[type="submit"]');
+ const password=document.getElementById('register-password').value;
+ const confirmation=document.getElementById('register-confirm-password').value;
+ if(password!==confirmation){say('form-feedback','Las contraseñas no coinciden.');document.getElementById('register-confirm-password').focus();return;}
+ button.disabled=true;say('form-feedback','Enviando solicitud...');
+ try{
+  const {data,error}=await db.functions.invoke('membership-request',{body:{
+   first_name:document.getElementById('register-first-name').value.trim(),
+   last_name:document.getElementById('register-last-name').value.trim(),
+   email:document.getElementById('register-email').value.trim(),
+   password,confirm_password:confirmation
+  }});
+  if(error)throw new Error(data?.error||error.message||'No se pudo enviar la solicitud.');
+  registerForm.reset();
+  say('form-feedback','Solicitud enviada correctamente. La administración revisará tus datos y, si la aprueba, tu cuenta quedará habilitada para ingresar.');
+ }catch(err){say('form-feedback',err.message||'No se pudo enviar la solicitud.');}
+ finally{button.disabled=false;}
+});
+const memberLoginForm=document.getElementById('member-login-form');
+memberLoginForm.addEventListener('submit',async e=>{
+ e.preventDefault();const button=memberLoginForm.querySelector('button[type="submit"]');button.disabled=true;
+ const {data,error}=await db.auth.signInWithPassword({email:document.getElementById('member-login-email').value.trim(),password:document.getElementById('member-login-password').value});
+ if(error)say('member-login-feedback','No fue posible ingresar. Comprueba tus datos y que tu solicitud haya sido aprobada.');
+ else{say('member-login-feedback','Sesión iniciada correctamente.');say('member-session-state','Sesión activa: '+(data.user?.user_metadata?.first_name||data.user?.email||''));document.getElementById('member-logout-button').hidden=false;memberLoginForm.hidden=true;}
+ button.disabled=false;
+});
+document.getElementById('member-logout-button').addEventListener('click',async()=>{
+ await db.auth.signOut();memberLoginForm.hidden=false;memberLoginForm.reset();document.getElementById('member-logout-button').hidden=true;say('member-session-state','');say('member-login-feedback','Sesión cerrada.');
+});
+async function refreshMemberLogin(){
+ const {data:{session}}=await db.auth.getSession();
+ const form=document.getElementById('member-login-form'),logout=document.getElementById('member-logout-button');
+ if(session && session.user.app_metadata?.role!=='admin'){
+  form.hidden=true;logout.hidden=false;say('member-session-state','Sesión activa: '+(session.user.user_metadata?.first_name||session.user.email));
+ }else if(!session){form.hidden=false;logout.hidden=true;say('member-session-state','');}
+}
+
 loginForm.addEventListener('submit',async e=>{e.preventDefault();const {error}=await db.auth.signInWithPassword({email:document.getElementById('admin-email').value.trim(),password:document.getElementById('admin-password').value});say('auth-feedback',error?error.message:'Sesión iniciada.');if(!error)await refreshAdmin();});
 document.getElementById('signup-button').addEventListener('click',async()=>{
  const email=document.getElementById('admin-email').value.trim(),password=document.getElementById('admin-password').value;
@@ -247,7 +306,7 @@ document.getElementById('signup-button').addEventListener('click',async()=>{
  const {error}=await db.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname+'#admin'}});
  say('auth-feedback',error?error.message:'Cuenta creada. Revisa tu correo para confirmar la dirección y luego inicia sesión. El administrador debe recibir el rol admin antes de usar el panel.');
 });
-db.auth.onAuthStateChange(()=>{setTimeout(refreshAdmin,0);});
+db.auth.onAuthStateChange(()=>{setTimeout(()=>{refreshAdmin();refreshMemberLogin();},0);});
 document.getElementById('logout-button').addEventListener('click',async()=>{await db.auth.signOut();await refreshAdmin();});
 async function loadPending(){
  const host=document.getElementById('pending-characters');const {data,error}=await db.from('characters').select('*').eq('status','pending').order('submitted_at');
@@ -521,7 +580,7 @@ async function loadShadowState(){
  document.getElementById('smial-counts').textContent=(total||0)+' personajes aprobados · '+(consumed||0)+' consumidos · Marcas pendientes: '+state.light_marks+' de Esperanza y '+state.shadow_marks+' de Sombra.';
  await loadActiveShadowEvent();
 }
-loadApproved();loadEvents();loadLoreChronicle();loadLoreScenarios();loadShadowState();loadSiteSettings();refreshAdmin();
+loadApproved();loadEvents();loadLoreChronicle();loadLoreScenarios();loadShadowState();loadSiteSettings();refreshAdmin();refreshMemberLogin();
 
 
 /* Navegación interna del panel de administración */
