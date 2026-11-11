@@ -714,3 +714,17 @@ body{background:var(--paper);color:var(--text-color)}
  .lore-chapter .event-lore-content{font-size:16px!important;line-height:1.7!important}
  .lore-chapter .event-lore-content p{line-height:1.7!important}
 }
+
+
+/* v2.5.0 — formulario de membresía y solicitudes de ingreso */
+.member-login-box{max-width:560px;margin:42px auto 0;padding-top:30px;border-top:1px solid rgba(218,197,151,.35)}
+.member-login-box h3{margin:0 0 8px;font-family:var(--serif);font-size:24px;color:var(--gold)}
+.member-login-box>p{color:rgba(255,255,255,.78);line-height:1.6}
+.member-login-form{margin-top:20px}
+.member-login-form[hidden]{display:none!important}
+#member-session-state{margin-top:14px;color:var(--gold)}
+.membership-requests-list{display:grid;gap:14px;margin:18px 0 28px}
+.membership-request-item{grid-template-columns:1fr!important}
+.membership-request-item h4{margin:0 0 8px}
+.membership-request-item p{margin:6px 0}
+#register-form input:focus,#member-login-form input:focus{outline:2px solid var(--gold);outline-offset:2px}
