@@ -1,4 +1,4 @@
-// Versión 2.7.44
+// Versión 2.7.45
 const SUPABASE_URL='https://heuxofiaijgpwzvrbvoa.supabase.co';
 const SUPABASE_KEY='sb_publishable_3f_pQw9FSMD9ipequee7Ew_w4sIP_iL';
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -374,6 +374,39 @@ charForm.addEventListener('submit',async e=>{
   charForm.reset();say('story-count','0/1000');say('character-feedback','Solicitud enviada. Quedará pendiente hasta que un administrador la revise.');characterFormPanel.hidden=true;characterRegisterToggle.setAttribute('aria-expanded','false');characterRegisterToggle.innerHTML='Registrar un personaje <span>→</span>';
  }catch(err){say('character-feedback',err.message||'No se pudo enviar la solicitud.');}finally{button.disabled=false;}
 });
+
+function setupApprovedCarousel(host){
+ const cards=[...host.querySelectorAll('.approved-card')];if(!cards.length)return;
+ host.classList.add('approved-carousel');
+ const stage=document.createElement('div');stage.className='approved-carousel-stage';stage.setAttribute('aria-label','Selector circular de personajes');
+ cards.forEach(card=>stage.append(card));
+ const controls=document.createElement('div');controls.className='approved-carousel-controls';
+ const previous=document.createElement('button');previous.type='button';previous.className='approved-carousel-arrow';previous.setAttribute('aria-label','Personaje anterior');previous.textContent='‹';
+ const counter=document.createElement('span');counter.className='approved-carousel-counter';counter.setAttribute('aria-live','polite');
+ const next=document.createElement('button');next.type='button';next.className='approved-carousel-arrow';next.setAttribute('aria-label','Personaje siguiente');next.textContent='›';
+ controls.append(previous,counter,next);host.replaceChildren(stage,controls);
+ let active=0,startX=null;
+ const update=()=>{
+  cards.forEach((card,index)=>{
+   let offset=(index-active+cards.length)%cards.length;
+   if(offset>Math.floor(cards.length/2))offset-=cards.length;
+   if(cards.length%2===0&&Math.abs(offset)===cards.length/2)offset=offset>0?1:-1;
+   card.dataset.position=String(offset);
+   card.setAttribute('aria-hidden',String(Math.abs(offset)>1));
+   card.tabIndex=offset===0?0:-1;
+  });
+  counter.textContent=(active+1)+' / '+cards.length;
+  previous.disabled=cards.length<2;next.disabled=cards.length<2;
+ };
+ const move=step=>{if(cards.length<2)return;active=(active+step+cards.length)%cards.length;update();};
+ previous.addEventListener('click',()=>move(-1));next.addEventListener('click',()=>move(1));
+ stage.addEventListener('pointerdown',event=>{startX=event.clientX;});
+ stage.addEventListener('pointerup',event=>{if(startX===null)return;const dx=event.clientX-startX;startX=null;if(Math.abs(dx)>35)move(dx<0?1:-1);});
+ stage.addEventListener('pointercancel',()=>{startX=null;});
+ cards.forEach((card,index)=>card.addEventListener('click',()=>{if(index===active)return;let offset=(index-active+cards.length)%cards.length;if(offset>Math.floor(cards.length/2))offset-=cards.length;active=(active+Math.sign(offset)+cards.length)%cards.length;update();}));
+ update();
+}
+
 async function loadApproved(){
  const host=document.getElementById('approved-members');if(!host)return;
  const {data,error}=await db.from('characters').select('id,real_name,tolkien_name,role_title,story,achievements,image_path,hope_level,shadow_level').eq('status','approved').order('reviewed_at',{ascending:false});
@@ -384,11 +417,12 @@ async function loadApproved(){
  if(medalIds.length){const result=await db.from('medal_catalog').select('id,name,icon').in('id',medalIds);catalog=result.data||[];}
  const medalMap=new Map(catalog.map(m=>[m.id,m]));const grouped=new Map();
  awards.forEach(a=>{const medal=medalMap.get(a.medal_id);if(medal){if(!grouped.has(a.character_id))grouped.set(a.character_id,[]);grouped.get(a.character_id).push(medal);}});
- host.innerHTML=data.map(c=>{
+ const cards=data.map(c=>{
   const image=db.storage.from('smial-media').getPublicUrl(c.image_path).data.publicUrl;
   const badges=(grouped.get(c.id)||[]).map(m=>'<span class="medal-badge" title="'+escapeHtml(m.name)+'"><b>'+escapeHtml(m.icon)+'</b> '+escapeHtml(m.name)+'</span>').join('');
   return '<article class="approved-card"><img src="'+image+'" alt="Retrato de '+escapeHtml(c.tolkien_name)+'"><div class="approved-card-content"><p class="approved-card-field"><strong>Nombre real:</strong> '+escapeHtml(c.real_name)+'</p><p class="approved-card-field"><strong>Nombre tolkiendil:</strong> '+escapeHtml(c.tolkien_name)+'</p><div class="approved-card-story"><strong>Historia:</strong><p>'+escapeHtml(c.story)+'</p></div><div class="shadow-meter-grid character-levels"><article class="shadow-meter hope-meter"><div class="meter-emblem leaf-emblem" aria-hidden="true"><svg viewBox="0 0 100 100"><path class="leaf-shape" d="M50 7C35 25 15 44 19 63c3 17 17 27 31 30 14-3 28-13 31-30C85 44 65 25 50 7Z"/><path class="leaf-vein" d="M50 91C48 67 49 39 50 12M49 70 29 52M50 57 70 39M49 82 34 68M51 76 68 59"/></svg></div><span>ESPERANZA</span><strong>'+c.hope_level+'/10</strong><div class="meter-track"><i style="width:'+(Number(c.hope_level)*10)+'%"></i></div></article><article class="shadow-meter shadow-meter-dark"><div class="meter-emblem ring-emblem" aria-hidden="true"><svg viewBox="0 0 100 100"><ellipse class="ring-shadow" cx="50" cy="55" rx="31" ry="17"/><ellipse class="ring-band" cx="50" cy="49" rx="31" ry="17"/><path class="ring-highlight" d="M19 49c4-12 58-24 68 0M23 57c10 10 44 13 57 0"/><path class="ring-script" d="m27 42 3-5 2 5 3-7 3 6 4-8 3 6 4-8 3 7 4-6 3 7 4-4 3 7 3-3"/></svg></div><span>SOMBRA</span><strong>'+c.shadow_level+'/10</strong><div class="meter-track shadow-track"><i style="width:'+(Number(c.shadow_level)*10)+'%"></i></div></article></div>'+(c.hope_level<3?'<p class="consumed-label">CONSUMIDO · ANTAGONISTA</p>':'')+(c.achievements?'<p><strong>Logros:</strong> '+escapeHtml(c.achievements)+'</p>':'')+(badges?'<div class="medal-collection"><strong>Medallas de Dol Amroth</strong><div>'+badges+'</div></div>':'')+'</div></article>';
- }).join('')||'<div class="members-empty"><div class="empty-crest">✧</div><h3>Las primeras historias están por llegar</h3><p>Los personajes aparecerán aquí una vez aprobados.</p></div>';
+ }).join('');
+ if(data?.length){host.innerHTML=cards;setupApprovedCarousel(host);}else{host.innerHTML='<div class="members-empty"><div class="empty-crest">✧</div><h3>Las primeras historias están por llegar</h3><p>Los personajes aparecerán aquí una vez aprobados.</p></div>';}
 }
 function escapeHtml(value=''){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
 function formatLoreDate(value=''){if(!value)return '';const match=String(value).match(/^(\d{4})-(\d{2})-(\d{2})/);if(!match)return '';const date=new Date(Date.UTC(Number(match[1]),Number(match[2])-1,Number(match[3]),12));return new Intl.DateTimeFormat('es-CL',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(date);}
