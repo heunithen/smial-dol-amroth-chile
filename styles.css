@@ -366,3 +366,31 @@ body{background:var(--paper);color:var(--text-color)}
 .button-dark{background:#203a55;color:#f5f6f7}
 .button-dark:hover{background:#31516e}
 .button-outline-dark{border-color:#b89b68;color:#d4bd8c}
+
+
+/* v1.9.5 — ficha «Presenta tu personaje» integrada en la paleta oscura */
+#members .character-submit{
+ background:#1a293c!important;
+ border:1px solid #405168!important;
+ color:#edf1f5!important;
+ box-shadow:0 12px 30px rgba(0,0,0,.16);
+}
+#members .character-submit h3{color:#ffffff!important}
+#members .character-submit>p,
+#members .character-submit .form-note,
+#members .character-submit .form-feedback{color:#b6c0cb!important}
+#members .character-submit .data-form label{color:#d6dde5!important}
+#members .character-submit .data-form label span{color:#c2a36d!important}
+#members .character-submit .data-form input,
+#members .character-submit .data-form textarea{
+ background:#111b2b!important;
+ border:1px solid #405168!important;
+ color:#f0f3f6!important;
+}
+#members .character-submit .data-form input::placeholder,
+#members .character-submit .data-form textarea::placeholder{color:#8795a5!important}
+#members .character-submit .data-form input:focus,
+#members .character-submit .data-form textarea:focus{
+ border-color:#b89b68!important;
+ outline:1px solid #b89b68!important;
+}
