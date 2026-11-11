@@ -825,7 +825,7 @@ body{background:var(--paper);color:var(--text-color)}
   }
 }
 
-/* v2.7.2 — álbum de fotografías */
+/* v2.7.3 — álbum de fotografías */
 .photo-gallery-section{background:#0b1728;color:#edf1f5;padding:88px 24px 96px}
 .photo-gallery-inner{max-width:1200px;margin:0 auto}
 .photo-gallery-section .section-heading{margin-bottom:34px}
