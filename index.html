@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=2.1.1">
+  <link rel="stylesheet" href="styles.css?v=2.2.0">
 </head>
 <body>
   <div class="announcement"><span class="announcement-mark">✦</span> <span id="announcement-copy">Un hogar para quienes mantienen viva la llama de la Tierra Media</span> <span class="announcement-mark">✦</span></div>
@@ -22,7 +22,7 @@
     </a>
     <button class="menu-toggle" aria-label="Abrir menú" aria-expanded="false"><span></span><span></span><span></span></button>
     <nav class="main-nav" aria-label="Navegación principal">
-      <a href="#inicio" class="active">Inicio</a><a href="#lore">Lore</a><a href="#eventos">Eventos</a><a href="#miembros">Miembros</a><a href="#la-sombra">La Sombra</a><a href="#nosotros">Quiénes somos</a><a class="nav-register" href="#registro">Registro <span>↗</span></a>
+      <a href="#inicio" class="active">Inicio</a><a href="#lore">Lore</a><a href="#eventos">Eventos</a><a href="#miembros">Miembros</a><a href="#la-sombra">La Sombra</a><a href="#nosotros">Quiénes somos</a><a class="nav-register" href="#registro">Registro <span>↗</span></a><a id="admin-nav-link" class="nav-admin" href="#admin" hidden>Administración <span>↗</span></a>
     </nav>
   </header>
 
@@ -89,21 +89,46 @@
         </form>
       </div>
       <div id="admin-dashboard" class="admin-panel" hidden>
-        <p id="admin-identity"></p>
-        <nav class="admin-tabs" role="tablist" aria-label="Secciones de administración">
-          <button type="button" class="admin-tab active" role="tab" aria-selected="true" aria-controls="admin-tab-characters" data-admin-tab="admin-tab-characters">Personajes</button>
-          <button type="button" class="admin-tab" role="tab" aria-selected="false" aria-controls="admin-tab-events" data-admin-tab="admin-tab-events">Eventos</button>
-          <button type="button" class="admin-tab" role="tab" aria-selected="false" aria-controls="admin-tab-lore" data-admin-tab="admin-tab-lore">Lore y medallas</button>
-          <button type="button" class="admin-tab" role="tab" aria-selected="false" aria-controls="admin-tab-design" data-admin-tab="admin-tab-design">Diseño del portal</button>
-        </nav>
-        <section id="admin-tab-characters" class="admin-tab-panel active" role="tabpanel">
-        <h3>Solicitudes de personajes</h3>
-        <div id="pending-characters"></div>
-        <h3>Personajes aprobados y sus logros</h3>
-        <p class="admin-hint">Solo la administración puede escribir o modificar los logros reconocidos.</p>
-        <div id="admin-character-achievements" class="admin-character-achievements"></div>
-        </section>
-        <section id="admin-tab-events" class="admin-tab-panel" role="tabpanel" hidden>
+<p id="admin-identity"></p>
+<nav class="admin-tabs" role="tablist" aria-label="Secciones de administración">
+<button type="button" class="admin-tab active" role="tab" aria-selected="true" aria-controls="admin-tab-home" data-admin-tab="admin-tab-home">Inicio</button>
+<button type="button" class="admin-tab" role="tab" aria-selected="false" aria-controls="admin-tab-lore" data-admin-tab="admin-tab-lore">Lore</button>
+<button type="button" class="admin-tab" role="tab" aria-selected="false" aria-controls="admin-tab-events" data-admin-tab="admin-tab-events">Eventos</button>
+<button type="button" class="admin-tab" role="tab" aria-selected="false" aria-controls="admin-tab-members" data-admin-tab="admin-tab-members">Miembros</button>
+<button type="button" class="admin-tab" role="tab" aria-selected="false" aria-controls="admin-tab-shadow" data-admin-tab="admin-tab-shadow">La Sombra</button>
+<button type="button" class="admin-tab" role="tab" aria-selected="false" aria-controls="admin-tab-about" data-admin-tab="admin-tab-about">Quiénes somos</button>
+<button type="button" class="admin-tab" role="tab" aria-selected="false" aria-controls="admin-tab-register" data-admin-tab="admin-tab-register">Registro</button>
+<button type="button" class="admin-tab" role="tab" aria-selected="false" aria-controls="admin-tab-design" data-admin-tab="admin-tab-design">Color y diseño</button>
+</nav>
+<section id="admin-tab-home" class="admin-tab-panel active" role="tabpanel">
+<h3>Portada e identidad</h3><p class="admin-hint">Administra la identidad y los contenidos que aparecen en la portada del portal.</p>
+<form id="site-home-form" class="admin-form"><div class="customizer-grid">
+<div class="customizer-group"><h4>Identidad institucional</h4><label>Frase superior<input type="text" data-setting="announcement"></label><label>Nombre del Smial<input type="text" data-setting="site_title"></label><label>Subtítulo del emblema<input type="text" data-setting="brand_subtitle"></label></div>
+<div class="customizer-group"><h4>Portada</h4><label>Texto pequeño de portada<input type="text" data-setting="hero_eyebrow"></label><label>Título principal<textarea rows="3" data-setting="hero_title"></textarea></label><label>Presentación de portada<textarea rows="3" data-setting="hero_intro"></textarea></label><label>Texto inferior de portada<input type="text" data-setting="hero_caption"></label></div>
+<div class="customizer-group"><h4>Imágenes</h4><label>Imagen de fondo de portada<input type="file" id="site-hero-image" data-site-image="hero_image_path" accept="image/jpeg,image/png,image/webp"></label><div id="site-hero-preview" class="site-image-preview"></div><label>Emblema del encabezado<input type="file" id="site-logo-image" data-site-image="logo_image_path" accept="image/jpeg,image/png,image/webp"></label><div id="site-logo-preview" class="site-image-preview"></div></div>
+</div><div class="editor-actions"><button class="button button-dark" type="submit">Guardar cambios de Inicio</button></div><p id="site-home-feedback" class="form-feedback" role="status"></p></form>
+</section>
+<section id="admin-tab-lore" class="admin-tab-panel" role="tabpanel" hidden>
+<h3>Administrar Lore</h3><form id="site-lore-form" class="admin-form"><div class="customizer-grid"><div class="customizer-group"><h4>Presentación de Lore</h4><label>Título de Lore<textarea rows="3" data-setting="lore_title"></textarea></label><label>Presentación de Lore<textarea rows="3" data-setting="lore_intro"></textarea></label></div></div><div class="editor-actions"><button class="button button-dark" type="submit">Guardar textos de Lore</button></div><p id="site-lore-feedback" class="form-feedback" role="status"></p></form>
+<section class="admin-library"><div class="lore-admin-editor">
+            <div id="lore-chronicle-admin-list" class="library-list-panel"></div>
+            <form id="lore-chronicle-form" class="admin-form library-editor-form">
+              <h4 id="lore-chronicle-heading">Añadir al lore oficial</h4>
+              <input id="lore-chronicle-id" type="hidden"><input id="lore-chronicle-cover-existing" type="hidden">
+              <label for="lore-chronicle-title">Título del capítulo</label><input id="lore-chronicle-title" maxlength="180" required>
+              <label for="lore-chronicle-cover">Imagen principal (opcional)</label><input id="lore-chronicle-cover" type="file" accept="image/jpeg,image/png,image/webp">
+              <div id="lore-chronicle-cover-preview" class="lore-cover-preview"></div>
+              <label>Texto del lore</label>
+              <div class="rich-toolbar"><button type="button" data-editor-command="bold" data-editor-target="lore-chronicle-editor"><b>B</b></button><button type="button" data-editor-command="italic" data-editor-target="lore-chronicle-editor"><i>I</i></button><button type="button" data-editor-command="underline" data-editor-target="lore-chronicle-editor"><u>U</u></button><button type="button" data-editor-command="formatBlock" data-editor-value="h3" data-editor-target="lore-chronicle-editor">Título</button><button type="button" data-editor-command="insertUnorderedList" data-editor-target="lore-chronicle-editor">Lista</button><button type="button" data-editor-command="formatBlock" data-editor-value="blockquote" data-editor-target="lore-chronicle-editor">Cita</button><label class="editor-image-button">+ Imagen<input type="file" accept="image/jpeg,image/png,image/webp" data-editor-image="lore-chronicle-editor"></label></div>
+              <div id="lore-chronicle-editor" class="rich-editor" contenteditable="true" data-placeholder="Escribe el lore oficial del Smial..."></div>
+              <div class="editor-actions"><button class="button button-dark" type="submit">Guardar capítulo</button><button class="button button-outline-dark" id="lore-chronicle-reset" type="button">Nuevo capítulo / cancelar</button></div>
+              <p id="lore-chronicle-feedback" class="form-feedback" role="status"></p>
+            </form>
+          </div></section>
+</section>
+<section id="admin-tab-events" class="admin-tab-panel" role="tabpanel" hidden>
+<h3>Administrar Eventos</h3><form id="site-events-form" class="admin-form"><div class="customizer-grid"><div class="customizer-group"><h4>Presentación de Eventos</h4><label>Título de Eventos<textarea rows="3" data-setting="events_title"></textarea></label><label>Presentación de Eventos<textarea rows="3" data-setting="events_intro"></textarea></label></div></div><div class="editor-actions"><button class="button button-dark" type="submit">Guardar textos de Eventos</button></div><p id="site-events-feedback" class="form-feedback" role="status"></p></form>
+
         <h3>Publicar un evento</h3>
         <form id="event-form" class="admin-form">
           <label for="event-title">Título</label><input id="event-title" required>
@@ -118,27 +143,35 @@
         </form>
         <h3>Eventos publicados</h3><div id="admin-events"></div><h3>Control de asistencia, medallas y desenlace</h3><p>Registra quién asistió y reconoce los aportes destacados con medallas. Al cerrar el evento, la historia ficticia se resolverá automáticamente según la asistencia y los logros reconocidos.</p><div id="attendance-manager" class="attendance-manager">Selecciona un evento para registrar la asistencia.</div>
         
-        </section>
-        <section id="admin-tab-lore" class="admin-tab-panel" role="tabpanel" hidden>
-        <section class="admin-library">
-          <h3>Lore oficial del Smial</h3>
-          <p>Escribe y administra el lore del Smial. Puedes editar una entrada existente o eliminarla; los finales de acontecimientos resueltos se conservan como crónicas automáticas y no se modifican desde aquí.</p>
-          <div class="lore-admin-editor">
-            <div id="lore-chronicle-admin-list" class="library-list-panel"></div>
-            <form id="lore-chronicle-form" class="admin-form library-editor-form">
-              <h4 id="lore-chronicle-heading">Añadir al lore oficial</h4>
-              <input id="lore-chronicle-id" type="hidden"><input id="lore-chronicle-cover-existing" type="hidden">
-              <label for="lore-chronicle-title">Título del capítulo</label><input id="lore-chronicle-title" maxlength="180" required>
-              <label for="lore-chronicle-cover">Imagen principal (opcional)</label><input id="lore-chronicle-cover" type="file" accept="image/jpeg,image/png,image/webp">
-              <div id="lore-chronicle-cover-preview" class="lore-cover-preview"></div>
-              <label>Texto del lore</label>
-              <div class="rich-toolbar"><button type="button" data-editor-command="bold" data-editor-target="lore-chronicle-editor"><b>B</b></button><button type="button" data-editor-command="italic" data-editor-target="lore-chronicle-editor"><i>I</i></button><button type="button" data-editor-command="underline" data-editor-target="lore-chronicle-editor"><u>U</u></button><button type="button" data-editor-command="formatBlock" data-editor-value="h3" data-editor-target="lore-chronicle-editor">Título</button><button type="button" data-editor-command="insertUnorderedList" data-editor-target="lore-chronicle-editor">Lista</button><button type="button" data-editor-command="formatBlock" data-editor-value="blockquote" data-editor-target="lore-chronicle-editor">Cita</button><label class="editor-image-button">+ Imagen<input type="file" accept="image/jpeg,image/png,image/webp" data-editor-image="lore-chronicle-editor"></label></div>
-              <div id="lore-chronicle-editor" class="rich-editor" contenteditable="true" data-placeholder="Escribe el lore oficial del Smial..."></div>
-              <div class="editor-actions"><button class="button button-dark" type="submit">Guardar capítulo</button><button class="button button-outline-dark" id="lore-chronicle-reset" type="button">Nuevo capítulo / cancelar</button></div>
-              <p id="lore-chronicle-feedback" class="form-feedback" role="status"></p>
+        
+</section>
+<section id="admin-tab-members" class="admin-tab-panel" role="tabpanel" hidden>
+<h3>Administrar Miembros</h3><form id="site-members-form" class="admin-form"><div class="customizer-grid"><div class="customizer-group"><h4>Presentación de Miembros</h4><label>Título de Miembros<textarea rows="3" data-setting="members_title"></textarea></label><label>Presentación de Miembros<textarea rows="3" data-setting="members_intro"></textarea></label></div></div><div class="editor-actions"><button class="button button-dark" type="submit">Guardar textos de Miembros</button></div><p id="site-members-feedback" class="form-feedback" role="status"></p></form>
+
+        <h3>Solicitudes de personajes</h3>
+        <div id="pending-characters"></div>
+        <h3>Personajes aprobados y sus logros</h3>
+        <p class="admin-hint">Solo la administración puede escribir o modificar los logros reconocidos.</p>
+        <div id="admin-character-achievements" class="admin-character-achievements"></div>
+        <section class="admin-library"><div class="medal-library">
+            <div class="library-list-panel"><h4>Medallas de Dol Amroth</h4><div id="medal-catalog-list"></div></div>
+            <form id="medal-catalog-form" class="admin-form library-editor-form">
+              <h4 id="medal-editor-heading">Crear una medalla</h4>
+              <input id="medal-catalog-id" type="hidden">
+              <label for="medal-code">Código interno (sin espacios)</label><input id="medal-code" pattern="[a-z0-9-]+" maxlength="80" required>
+              <label for="medal-name">Nombre</label><input id="medal-name" maxlength="100" required>
+              <label for="medal-icon">Símbolo</label><input id="medal-icon" maxlength="8" value="✦" required>
+              <label for="medal-description">Descripción / motivo de entrega</label><textarea id="medal-description" rows="3" maxlength="500" required></textarea>
+              <label for="medal-sort-order">Orden de aparición</label><input id="medal-sort-order" type="number" min="0" value="0">
+              <label class="inline-check"><input id="medal-active" type="checkbox" checked> Medalla activa</label>
+              <div class="editor-actions"><button class="button button-dark" type="submit">Guardar medalla</button><button class="button button-outline-dark" id="medal-editor-reset" type="button">Nueva medalla / cancelar</button></div>
+              <p id="medal-editor-feedback" class="form-feedback" role="status"></p>
             </form>
-          </div>
-          <div class="library-columns">
+          </div></section>
+</section>
+<section id="admin-tab-shadow" class="admin-tab-panel" role="tabpanel" hidden>
+<h3>Administrar La Sombra</h3><form id="site-shadow-form" class="admin-form"><div class="customizer-grid"><div class="customizer-group"><h4>Presentación de La Sombra</h4><label>Título de La Sombra<textarea rows="3" data-setting="shadow_title"></textarea></label><label>Presentación de La Sombra<textarea rows="3" data-setting="shadow_intro"></textarea></label></div></div><div class="editor-actions"><button class="button button-dark" type="submit">Guardar textos de La Sombra</button></div><p id="site-shadow-feedback" class="form-feedback" role="status"></p></form>
+<div class="library-columns">
             <div class="library-list-panel">
               <h4>Historias y acontecimientos preconfigurados</h4>
               <div id="lore-scenario-list"></div>
@@ -163,81 +196,30 @@
               <p id="lore-editor-feedback" class="form-feedback" role="status"></p>
             </form>
           </div>
-          <div class="medal-library">
-            <div class="library-list-panel"><h4>Medallas de Dol Amroth</h4><div id="medal-catalog-list"></div></div>
-            <form id="medal-catalog-form" class="admin-form library-editor-form">
-              <h4 id="medal-editor-heading">Crear una medalla</h4>
-              <input id="medal-catalog-id" type="hidden">
-              <label for="medal-code">Código interno (sin espacios)</label><input id="medal-code" pattern="[a-z0-9-]+" maxlength="80" required>
-              <label for="medal-name">Nombre</label><input id="medal-name" maxlength="100" required>
-              <label for="medal-icon">Símbolo</label><input id="medal-icon" maxlength="8" value="✦" required>
-              <label for="medal-description">Descripción / motivo de entrega</label><textarea id="medal-description" rows="3" maxlength="500" required></textarea>
-              <label for="medal-sort-order">Orden de aparición</label><input id="medal-sort-order" type="number" min="0" value="0">
-              <label class="inline-check"><input id="medal-active" type="checkbox" checked> Medalla activa</label>
-              <div class="editor-actions"><button class="button button-dark" type="submit">Guardar medalla</button><button class="button button-outline-dark" id="medal-editor-reset" type="button">Nueva medalla / cancelar</button></div>
-              <p id="medal-editor-feedback" class="form-feedback" role="status"></p>
-            </form>
-          </div>
-        </section>
-
-        </section>
-        <section id="admin-tab-design" class="admin-tab-panel" role="tabpanel" hidden>
-        <section class="admin-library site-customizer" id="site-customizer">
-          <h3>Personalización del portal</h3>
-          <p>Modifica la portada, las imágenes, los textos institucionales y la apariencia general. Los cambios se guardan en el portal público sin alterar el lore ni los datos de los miembros.</p>
-          <form id="site-settings-form" class="admin-form">
-            <div class="customizer-grid">
-              <div class="customizer-group">
-                <h4>Portada e identidad</h4>
-                <label>Frase superior<input  data-setting="announcement" type="text"></input></label><label>Nombre del Smial<input  data-setting="site_title" type="text"></input></label><label>Subtítulo del emblema<input  data-setting="brand_subtitle" type="text"></input></label><label>Texto pequeño de portada<input  data-setting="hero_eyebrow" type="text"></input></label><label>Título principal<textarea rows="3" data-setting="hero_title" ></textarea></label><label>Presentación de portada<textarea rows="3" data-setting="hero_intro" ></textarea></label><label>Texto inferior de portada<input  data-setting="hero_caption" type="text"></input></label>
-                <label>Imagen de fondo de portada<input type="file" id="site-hero-image" data-site-image="hero_image_path" accept="image/jpeg,image/png,image/webp"></label><div id="site-hero-preview" class="site-image-preview"></div>
-                <label>Emblema del encabezado<input type="file" id="site-logo-image" data-site-image="logo_image_path" accept="image/jpeg,image/png,image/webp"></label><div id="site-logo-preview" class="site-image-preview"></div>
-              </div>
-              <div class="customizer-group">
-                <h4>Textos de secciones</h4>
-                <label>Título de Lore<textarea rows="3" data-setting="lore_title" ></textarea></label><label>Presentación de Lore<textarea rows="3" data-setting="lore_intro" ></textarea></label><label>Título de Eventos<textarea rows="3" data-setting="events_title" ></textarea></label><label>Presentación de Eventos<textarea rows="3" data-setting="events_intro" ></textarea></label><label>Título de Miembros<textarea rows="3" data-setting="members_title" ></textarea></label><label>Presentación de Miembros<textarea rows="3" data-setting="members_intro" ></textarea></label><label>Título de La Sombra<textarea rows="3" data-setting="shadow_title" ></textarea></label><label>Presentación de La Sombra<textarea rows="3" data-setting="shadow_intro" ></textarea></label><label>Título de Quiénes somos<textarea rows="3" data-setting="about_title" ></textarea></label><label>Presentación institucional<textarea rows="3" data-setting="about_intro" ></textarea></label><label>Segundo párrafo institucional<textarea rows="3" data-setting="about_text" ></textarea></label><label>Título de Registro<textarea rows="3" data-setting="register_title" ></textarea></label><label>Texto de Registro<textarea rows="3" data-setting="register_intro" ></textarea></label><label>Texto del pie de página<input  data-setting="footer_text" type="text"></input></label>
-              </div>
-              <div class="customizer-group">
-                <h4>Apariencia del portal público</h4>
-                <label>Fondo general<input data-setting="paper" type="color"></label>
-                <label>Color del texto de la franja superior<input data-setting="announcement_text_color" type="color"></label>
-                <label>Color de los enlaces del menú<input data-setting="nav_text_color" type="color"></label>
-                <label>Color del enlace seleccionado y al pasar el cursor<input data-setting="nav_active_color" type="color"></label>
-                <label>Color del texto del botón Registro<input data-setting="nav_register_text_color" type="color"></label>
-                <label>Color del borde del botón Registro<input data-setting="nav_register_border_color" type="color"></label>
-                <label>Color de títulos<input data-setting="heading_color" type="color"></label>
-                <label>Color del texto principal<input data-setting="text_color" type="color"></label>
-                <label>Color del texto secundario<input data-setting="muted_color" type="color"></label>
-                <label>Color de bordes y separadores<input data-setting="border_color" type="color"></label>
-                <label>Azul oscuro institucional<input data-setting="navy" type="color"></label>
-                <label>Azul secundario<input data-setting="blue" type="color"></label>
-                <label>Dorado institucional<input data-setting="gold" type="color"></label>
-                <label>Tipografía de títulos<select data-setting="serif"><option value="Cinzel">Cinzel</option><option value="Georgia">Georgia</option></select></label>
-                <label>Tipografía general<select data-setting="sans"><option value="Manrope">Manrope</option><option value="Arial">Arial</option><option value="Georgia">Georgia</option></select></label>
-              </div>
-              <div class="customizer-group">
-                <h4>Bloques de Lore</h4>
-                <label>Fondo de las entradas de Lore<input data-setting="lore_card_background" type="color"></label>
-                <label>Color de los títulos de Lore<input data-setting="lore_card_title_color" type="color"></label>
-                <label>Color del texto de Lore<input data-setting="lore_card_text_color" type="color"></label>
-                <label>Color de las etiquetas de Lore<input data-setting="lore_card_label_color" type="color"></label>
-                <label>Color del borde de las entradas<input data-setting="lore_card_border_color" type="color"></label>
-              </div>
-            </div>
-            <div class="editor-actions"><button class="button button-dark" type="submit">Guardar y publicar cambios</button><button class="button button-outline-dark" id="site-settings-reset" type="button">Restaurar diseño original</button></div>
-            <p id="site-settings-feedback" class="form-feedback" role="status"></p>
-          </form>
-        </section>
-
-        </section>
-        <button class="button button-outline-dark" id="logout-button" type="button">Cerrar sesión</button>
-      </div>
+</section>
+<section id="admin-tab-about" class="admin-tab-panel" role="tabpanel" hidden>
+<h3>Administrar Quiénes somos</h3><form id="site-about-form" class="admin-form"><div class="customizer-grid"><div class="customizer-group"><h4>Presentación institucional</h4><label>Título de Quiénes somos<textarea rows="3" data-setting="about_title"></textarea></label><label>Presentación institucional<textarea rows="3" data-setting="about_intro"></textarea></label><label>Segundo párrafo institucional<textarea rows="3" data-setting="about_text"></textarea></label></div></div><div class="editor-actions"><button class="button button-dark" type="submit">Guardar textos institucionales</button></div><p id="site-about-feedback" class="form-feedback" role="status"></p></form>
+</section>
+<section id="admin-tab-register" class="admin-tab-panel" role="tabpanel" hidden>
+<h3>Administrar Registro</h3><form id="site-register-form" class="admin-form"><div class="customizer-grid"><div class="customizer-group"><h4>Textos de Registro</h4><label>Título de Registro<textarea rows="3" data-setting="register_title"></textarea></label><label>Texto de Registro<textarea rows="3" data-setting="register_intro"></textarea></label><label>Texto del pie de página<input type="text" data-setting="footer_text"></label></div></div><div class="editor-actions"><button class="button button-dark" type="submit">Guardar textos de Registro</button></div><p id="site-register-feedback" class="form-feedback" role="status"></p></form>
+</section>
+<section id="admin-tab-design" class="admin-tab-panel" role="tabpanel" hidden>
+<h3>Color y diseño</h3><p class="admin-hint">Estos controles modifican únicamente la apariencia del portal público. El diseño de administración permanece independiente.</p>
+<form id="site-settings-form" class="admin-form"><div class="customizer-grid">
+<div class="customizer-group"><h4>Colores generales</h4><label>Fondo general<input data-setting="paper" type="color"></label><label>Texto de la franja superior<input data-setting="announcement_text_color" type="color"></label><label>Enlaces del menú<input data-setting="nav_text_color" type="color"></label><label>Enlace seleccionado y hover<input data-setting="nav_active_color" type="color"></label><label>Texto del botón Registro<input data-setting="nav_register_text_color" type="color"></label><label>Borde del botón Registro<input data-setting="nav_register_border_color" type="color"></label><label>Títulos<input data-setting="heading_color" type="color"></label><label>Texto principal<input data-setting="text_color" type="color"></label><label>Texto secundario<input data-setting="muted_color" type="color"></label><label>Bordes y separadores<input data-setting="border_color" type="color"></label></div>
+<div class="customizer-group"><h4>Colores institucionales</h4><label>Azul oscuro institucional<input data-setting="navy" type="color"></label><label>Azul secundario<input data-setting="blue" type="color"></label><label>Dorado institucional<input data-setting="gold" type="color"></label></div>
+<div class="customizer-group"><h4>Tipografías</h4><label>Tipografía de títulos<select data-setting="serif"><option value="Cinzel">Cinzel</option><option value="Georgia">Georgia</option></select></label><label>Tipografía general<select data-setting="sans"><option value="Manrope">Manrope</option><option value="Arial">Arial</option><option value="Georgia">Georgia</option></select></label></div>
+<div class="customizer-group"><h4>Bloques de Lore</h4><label>Fondo de las entradas de Lore<input data-setting="lore_card_background" type="color"></label><label>Títulos de Lore<input data-setting="lore_card_title_color" type="color"></label><label>Texto de Lore<input data-setting="lore_card_text_color" type="color"></label><label>Etiquetas de Lore<input data-setting="lore_card_label_color" type="color"></label><label>Borde de las entradas<input data-setting="lore_card_border_color" type="color"></label></div>
+</div><div class="editor-actions"><button class="button button-dark" type="submit">Guardar y publicar diseño</button><button class="button button-outline-dark" id="site-settings-reset" type="button">Restaurar diseño original</button></div><p id="site-settings-feedback" class="form-feedback" role="status"></p></form>
+</section>
+<button class="button button-outline-dark" id="logout-button" type="button">Cerrar sesión</button>
+</div>
     </section>
   </main>
 
-  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p id="footer-text">Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><span>NO OFICIAL · COMUNIDAD DE FANS</span><span id="app-version">VERSIÓN 2.1.1</span></div></footer>
+  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p id="footer-text">Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><span>NO OFICIAL · COMUNIDAD DE FANS</span><span id="app-version">VERSIÓN 2.2.0</span></div></footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
-  <script src="script.js?v=2.1.1"></script>
+  <script src="script.js?v=2.2.0"></script>
 </body>
 </html>
