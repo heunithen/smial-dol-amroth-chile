@@ -145,11 +145,24 @@ function fillSiteSettingsForm(){
  [['hero','hero_image_path'],['logo','logo_image_path'],['about-logo','about_logo_image_path'],['shadow-background','shadow_background_image_path']].forEach(([kind,key])=>{const host=document.getElementById('site-'+kind+'-preview'),url=settingImageUrl(siteSettings[key]);if(host)host.innerHTML=url?'<img src="'+escapeHtml(url)+'" alt="Imagen actual">':'Sin imagen personalizada';});
 }
 async function loadSiteSettings(){
+ let timeoutId;
  try{
-  const {data,error}=await db.from('site_settings').select('settings').eq('id',1).maybeSingle();
-  if(!error&&data?.settings)siteSettings={...SITE_DEFAULTS,...data.settings};
- }catch(error){console.warn('No se pudo cargar el diseño guardado; se usarán los valores base.',error);}
- finally{
+  const settingsRequest=db.from('site_settings').select('settings').eq('id',1).maybeSingle();
+  const result=await Promise.race([
+   settingsRequest,
+   new Promise(resolve=>{timeoutId=setTimeout(()=>resolve({timeout:true}),8000);})
+  ]);
+  if(result.timeout){
+   console.warn('La configuración visual tardó demasiado. Se mostrará el diseño base.');
+  }else if(result.error){
+   console.warn('No se pudo cargar el diseño guardado; se usarán los valores base.',result.error);
+  }else if(result.data?.settings){
+   siteSettings={...SITE_DEFAULTS,...result.data.settings};
+  }
+ }catch(error){
+  console.warn('No se pudo cargar el diseño guardado; se usarán los valores base.',error);
+ }finally{
+  if(timeoutId)clearTimeout(timeoutId);
   applySiteSettings();
   document.documentElement.classList.remove('theme-loading');
  }
