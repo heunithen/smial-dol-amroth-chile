@@ -232,7 +232,7 @@ body{background:var(--paper);color:var(--ink)}
 @media(max-width:780px){.site-header{height:100px}.brand-mark{width:76px;height:76px;flex:0 0 76px}}
 
 
-/* Personalización independiente de títulos, textos y bordes (v1.7.0) */
+/* Personalización independiente de títulos, textos y bordes (v1.8.0) */
 :root{
  --heading-color:#101f35;
  --text-color:#1a2939;
@@ -269,3 +269,17 @@ body{color:var(--text-color)}
 @media(max-width:780px){
  .site-header{border-bottom-color:var(--border-color)}
 }
+
+
+/* v1.8.0 — la apariencia institucional no modifica el contenido escrito */
+body{color:#1a2939!important;font-family:"Manrope",Arial,sans-serif!important}
+.brand-copy strong,.section h2,.section-heading h2,.admin-inner>h2,.character-submit h3,
+.members-roster-heading h3,.button-outline-dark{color:#101f35!important}
+.announcement-mark,.hero-caption>span,.hero-seal>span,.eyebrow.dark,.card-kicker,
+.lore-chapter .card-kicker{color:#b9a477!important}
+.section-lead,.section p:not(.eyebrow),.about-copy>p:not(.eyebrow),
+.members-empty p,.members-roster-heading p,.form-note,.lore-card p:not(.card-kicker),
+.lore-chapter .event-lore-content,.character-submit>p,.admin-hint,
+.small-note,.site-customizer>p{color:inherit}
+.site-header .brand-copy,.site-header .brand-copy *{font-family:"Cinzel",Georgia,serif!important}
+.site-header .main-nav,.site-header .main-nav *{font-family:"Manrope",Arial,sans-serif!important}
