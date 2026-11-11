@@ -1,4 +1,4 @@
-// Versión 2.7.50
+// Versión 2.7.51
 const SUPABASE_URL='https://heuxofiaijgpwzvrbvoa.supabase.co';
 const SUPABASE_KEY='sb_publishable_3f_pQw9FSMD9ipequee7Ew_w4sIP_iL';
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -363,7 +363,7 @@ characterRegisterToggle?.addEventListener('click',()=>{
  if(opening){characterFormPanel.scrollIntoView({behavior:'smooth',block:'start'});setTimeout(()=>document.getElementById('character-image')?.focus({preventScroll:true}),350);}
 });
 const story=document.getElementById('character-story');
-story.addEventListener('input',()=>say('story-count',story.value.length+'/600'));
+story.addEventListener('input',()=>say('story-count',story.value.length+'/400'));
 charForm.addEventListener('submit',async e=>{
  e.preventDefault();const button=charForm.querySelector('button');button.disabled=true;say('character-feedback','Enviando solicitud...');
  try{
@@ -376,7 +376,7 @@ charForm.addEventListener('submit',async e=>{
   const image_path=await uploadImage(file,'characters');
   const {data:{session}}=await db.auth.getSession();const payload={user_id:session?.user?.id||null,real_name:document.getElementById('real-name').value.trim(),tolkien_name:document.getElementById('tolkien-name').value.trim(),role_title:document.getElementById('character-role').value.trim(),story:story.value.trim(),image_path,status:'pending'};
   const {error}=await db.from('characters').insert(payload);if(error)throw error;
-  charForm.reset();say('story-count','0/600');say('character-feedback','Solicitud enviada. Quedará pendiente hasta que un administrador la revise.');characterFormPanel.hidden=true;characterRegisterToggle.setAttribute('aria-expanded','false');characterRegisterToggle.innerHTML='Registrar un personaje <span>→</span>';
+  charForm.reset();say('story-count','0/400');say('character-feedback','Solicitud enviada. Quedará pendiente hasta que un administrador la revise.');characterFormPanel.hidden=true;characterRegisterToggle.setAttribute('aria-expanded','false');characterRegisterToggle.innerHTML='Registrar un personaje <span>→</span>';
  }catch(err){say('character-feedback',err.message||'No se pudo enviar la solicitud.');}finally{button.disabled=false;}
 });
 
@@ -618,7 +618,7 @@ async function loadAdminAchievements(){
    '<label>Nombre real<input type="text" maxlength="120" value="'+escapeHtml(c.real_name||'')+'" data-character-field="real_name"></label>'+
    '<label>Nombre tolkiendil<input type="text" maxlength="120" value="'+escapeHtml(c.tolkien_name||'')+'" data-character-field="tolkien_name"></label>'+
    '<label>Cargo<input type="text" maxlength="120" value="'+escapeHtml(c.role_title||'')+'" data-character-field="role_title"></label>'+
-   '<label>Historia<textarea rows="5" maxlength="600" data-character-field="story">'+escapeHtml(c.story||'')+'</textarea></label>'+
+   '<label>Historia<textarea rows="5" maxlength="400" data-character-field="story">'+escapeHtml(c.story||'')+'</textarea></label>'+
    '<button class="button button-dark" type="button" data-save-character="'+c.id+'">Guardar cambios del personaje</button><p class="form-feedback" data-character-feedback role="status"></p>'+
    '<label class="admin-character-achievement-label">Logros reconocidos por la administración<textarea rows="3" maxlength="2000" data-character-achievements>'+escapeHtml(c.achievements||'')+'</textarea></label>'+
    '<button class="button button-outline-dark" type="button" data-save-achievements="'+c.id+'">Guardar logros</button></article>';
