@@ -666,7 +666,7 @@ body{background:var(--paper);color:var(--text-color)}
 .shadow-art.has-custom-background .shadow-mountain{display:none}
 
 
-/* v2.3.5 — el estandarte funciona como máscara del emblema personalizado */
+/* v2.3.8 — contorno de estandarte sin cubrir ni recortar el logo */
 .about-emblem{max-width:338px}
 .about-emblem.has-custom-logo{
  position:relative;
@@ -675,7 +675,7 @@ body{background:var(--paper);color:var(--text-color)}
  max-width:338px;
  display:grid;
  place-items:center;
- padding:0;
+ padding:10px;
  isolation:isolate;
  color:#B89B68;
 }
@@ -685,31 +685,23 @@ body{background:var(--paper);color:var(--text-color)}
  inset:0;
  z-index:2;
  pointer-events:none;
- background:linear-gradient(145deg,#d7c18f 0%,#9d7c45 38%,#e0ca98 58%,#806334 100%);
+ background:transparent;
+ border:2px solid #b89b68;
  clip-path:polygon(0 0,100% 0,100% 82%,50% 100%,0 82%);
 }
-.about-emblem.has-custom-logo::after{
- content:"";
- position:absolute;
- inset:5px;
- z-index:0;
- pointer-events:none;
- background:linear-gradient(160deg,#20364d,#101f35 72%,#172b40);
- clip-path:polygon(0 0,100% 0,100% 81.5%,50% 99%,0 81.5%);
- box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);
-}
+.about-emblem.has-custom-logo::after{content:none!important}
 .about-emblem.has-custom-logo img{
  display:block;
- position:absolute;
- inset:5px;
+ position:relative;
  z-index:1;
- width:calc(100% - 10px);
- height:calc(100% - 10px);
- max-height:none;
+ width:100%;
+ height:100%;
+ max-width:100%;
+ max-height:100%;
  padding:0;
  box-sizing:border-box;
- object-fit:cover;
- clip-path:polygon(0 0,100% 0,100% 81.5%,50% 99%,0 81.5%);
+ object-fit:contain;
+ clip-path:none;
 }
 @media(max-width:780px){
  .about-emblem{max-width:338px}
