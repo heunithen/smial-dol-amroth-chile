@@ -295,3 +295,15 @@ body{font-family:var(--sans);color:var(--text-color)}
 }
 #admin.admin-section :where(h1,h2,h3,h4,h5,h6){font-family:"Cinzel",Georgia,serif}
 #admin.admin-section :where(p,label,small,input,textarea,select,button){font-family:"Manrope",Arial,sans-serif}
+
+/* v1.9.0 — aislamiento del diseño administrativo */
+body{font-family:var(--sans);color:var(--text-color)}
+#admin.admin-section{
+ --paper:#e9e8e2;--ink:#1a2939;--text-color:#1a2939;--heading-color:#172b40;
+ --muted:#687582;--muted-color:#687582;--silver:#cbd2d0;--border-color:#cbd2d0;
+ --navy:#101f35;--navy2:#172b46;--blue:#24486b;--gold:#b9a477;
+ --serif:"Cinzel",Georgia,serif;--sans:"Manrope",Arial,sans-serif;
+ color:#1a2939;font-family:"Manrope",Arial,sans-serif;
+}
+#admin.admin-section :where(h1,h2,h3,h4,h5,h6){font-family:"Cinzel",Georgia,serif}
+#admin.admin-section :where(p,label,small,input,textarea,select,button){font-family:"Manrope",Arial,sans-serif}
