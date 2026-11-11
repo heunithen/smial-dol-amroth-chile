@@ -1,4 +1,4 @@
-// Versión 2.7.41
+// Versión 2.7.42
 const SUPABASE_URL='https://heuxofiaijgpwzvrbvoa.supabase.co';
 const SUPABASE_KEY='sb_publishable_3f_pQw9FSMD9ipequee7Ew_w4sIP_iL';
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -86,7 +86,14 @@ function buildSettingRichEditors(){
   const color=document.createElement('input');color.type='color';color.value='#26384a';color.title='Color del texto';color.setAttribute('aria-label','Color del texto');toolbar.append(color);
   const clean=document.createElement('button');clean.type='button';clean.textContent='Limpiar';clean.title='Quitar formato';clean.dataset.settingCommand='removeFormat';toolbar.append(clean);
   original.hidden=true;original.dataset.settingStorage=key;
-  wrapper.append(toolbar,editor);original.insertAdjacentElement('afterend',wrapper);
+  if(key.startsWith('shadow_level_')){
+   const saveRow=document.createElement('div');saveRow.className='shadow-field-save-row';
+   const saveButton=document.createElement('button');saveButton.type='button';saveButton.className='button button-outline-dark shadow-field-save';saveButton.textContent='Guardar este texto';
+   const saveStatus=document.createElement('span');saveStatus.className='shadow-field-save-status';saveStatus.setAttribute('role','status');
+   saveButton.addEventListener('click',()=>saveSingleShadowField(original,editor,saveButton,saveStatus));
+   saveRow.append(saveButton,saveStatus);wrapper.append(toolbar,editor,saveRow);
+  }else wrapper.append(toolbar,editor);
+  original.insertAdjacentElement('afterend',wrapper);
   editor.innerHTML=richEditorValue(original.value||'');
   const sync=()=>{original.value=editor.innerHTML;siteSettings[key]=editor.innerHTML;applySiteSettings();};
   editor.addEventListener('input',sync);
@@ -97,6 +104,31 @@ function buildSettingRichEditors(){
  });
 }
 buildSettingRichEditors();
+async function saveSingleShadowField(field,editor,button,status){
+ const key=field.dataset.setting;
+ const value=editor.innerText??editor.textContent??'';
+ const previous=button.textContent;
+ button.disabled=true;button.textContent='Guardando…';status.textContent='';
+ try{
+  const {data:{session},error:sessionError}=await db.auth.getSession();
+  if(sessionError)throw sessionError;
+  if(!session?.user)throw new Error('La sesión administrativa no está activa. Vuelve a iniciar sesión.');
+  const {data:current,error:readError}=await db.from('site_settings').select('settings').eq('id',1).single();
+  if(readError)throw readError;
+  const latest=current?.settings&&typeof current.settings==='object'?current.settings:{};
+  const nextSettings={...latest,[key]:value};
+  const {error:writeError}=await db.from('site_settings').upsert({id:1,settings:nextSettings,updated_at:new Date().toISOString(),updated_by:session.user.id},{onConflict:'id'});
+  if(writeError)throw writeError;
+  const {data:check,error:checkError}=await db.from('site_settings').select('settings').eq('id',1).single();
+  if(checkError)throw checkError;
+  if(check?.settings?.[key]!==value)throw new Error('Supabase no devolvió el mismo texto que se intentó guardar. El cambio no quedó confirmado.');
+  siteSettings={...siteSettings,...check.settings};field.value=value;applySiteSettings();
+  status.textContent='Guardado y verificado.';
+ }catch(error){
+  console.error('Error al guardar '+key+':',error);
+  status.textContent='No se guardó: '+(error.message||'Error desconocido');
+ }finally{button.disabled=false;button.textContent=previous;}
+}
 function settingImageUrl(path){return path?db.storage.from('smial-media').getPublicUrl(path).data.publicUrl:'';}
 
 function applyDesignOverrides(){
