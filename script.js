@@ -803,7 +803,7 @@ const uploadGalleryImage=async(file)=>{
  const mime=['image/jpeg','image/png','image/webp'].includes(file.type)?file.type:mimeByExt[ext];
  if(!mime)throw new Error('Formato no permitido. Selecciona una imagen JPG, PNG o WebP.');
  const converted=await imageToWebP(file);
- const originalBase=(file.name||'imagen').replace(/\\.[^.]+$/,'').replace(/[\\\\/?%*:|"<>]/g,'-').trim()||'imagen';
+ const originalBase=(file.name||'imagen').replace(/\.[^.]+$/,'').replace(/[\\\\/?%*:|"<>]/g,'-').trim()||'imagen';
  const unique=(globalThis.crypto&&crypto.randomUUID)?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
  const path='galeria/'+originalBase+'__'+unique+'.webp';
  if(converted.size>6*1024*1024&&window.tus?.Upload){
