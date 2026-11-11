@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=2.2.3">
+  <link rel="stylesheet" href="styles.css?v=2.2.4">
 </head>
 <body>
   <div class="announcement"><span class="announcement-mark">✦</span> <span id="announcement-copy">Un hogar para quienes mantienen viva la llama de la Tierra Media</span> <span class="announcement-mark">✦</span></div>
@@ -127,23 +127,49 @@
           </div></section>
 </section>
 <section id="admin-tab-events" class="admin-tab-panel" role="tabpanel" hidden>
-<h3>Administrar Eventos</h3><form id="site-events-form" class="admin-form"><div class="customizer-grid"><div class="customizer-group"><h4>Presentación de Eventos</h4><label>Título de Eventos<textarea rows="3" data-setting="events_title"></textarea></label><label>Presentación de Eventos<textarea rows="3" data-setting="events_intro"></textarea></label></div></div><div class="editor-actions"><button class="button button-dark" type="submit">Guardar textos de Eventos</button></div><p id="site-events-feedback" class="form-feedback" role="status"></p></form>
+  <h3>Administrar Eventos</h3>
 
-        <h3>Publicar un evento</h3>
-        <form id="event-form" class="admin-form">
-          <label for="event-title">Título</label><input id="event-title" required>
-          <label for="event-lore-scenario">Acontecimiento de La Sombra</label><select id="event-lore-scenario" required><option value="">Selecciona un acontecimiento</option></select><p class="admin-hint">Solo puede existir un acontecimiento pendiente a la vez. Cada asistente suma 1 punto y cada medalla suma 1 punto. Con 5 puntos gana la Esperanza; con menos de 5 gana la Sombra.</p>
-          <label for="event-description">Descripción</label><textarea id="event-description" rows="3" required></textarea>
-          <label for="event-date">Fecha</label><input id="event-date" type="date" required>
-          <label for="event-time">Hora</label><input id="event-time" type="time">
-          <label for="event-location">Lugar</label><input id="event-location" required>
-          <label for="event-image">Imagen (opcional)</label><input id="event-image" type="file" accept="image/jpeg,image/png,image/webp">
-          <button class="button button-dark" type="submit">Publicar evento</button>
-          <p id="event-feedback" class="form-feedback" role="status"></p>
-        </form>
-        <h3>Eventos publicados</h3><div id="admin-events"></div><h3>Control de asistencia, medallas y desenlace</h3><p>Registra quién asistió y reconoce los aportes destacados con medallas. Al cerrar el evento, la historia ficticia se resolverá automáticamente según la asistencia y los logros reconocidos.</p><div id="attendance-manager" class="attendance-manager">Selecciona un evento para registrar la asistencia.</div>
-        
-        
+  <section class="events-admin-block events-admin-copy">
+    <div class="events-admin-heading"><div><span class="admin-hint">CONFIGURACIÓN DEL PORTAL</span><h4>Presentación de Eventos</h4><p>Define el título y el texto que verá la comunidad en la sección pública.</p></div></div>
+    <form id="site-events-form" class="admin-form">
+      <div class="customizer-grid">
+        <div class="customizer-group">
+          <label>Título de Eventos<textarea rows="2" data-setting="events_title"></textarea></label>
+          <label>Presentación de Eventos<textarea rows="3" data-setting="events_intro"></textarea></label>
+        </div>
+      </div>
+      <div class="editor-actions"><button class="button button-dark" type="submit">Guardar presentación</button></div>
+      <p id="site-events-feedback" class="form-feedback" role="status"></p>
+    </form>
+  </section>
+
+  <section class="events-admin-block events-admin-publish">
+    <div class="events-admin-heading"><div><span class="admin-hint">NUEVA ACTIVIDAD</span><h4>Publicar un evento</h4><p>Completa los datos para anunciar una reunión o actividad del Smial.</p></div></div>
+    <div class="event-rules-note"><strong>Acontecimiento de La Sombra</strong><span>Solo puede existir un acontecimiento pendiente a la vez.</span><span>Cada asistente suma 1 punto y cada medalla suma 1 punto.</span><span>Con 5 puntos gana la Esperanza; con menos de 5 gana la Sombra.</span></div>
+    <form id="event-form" class="admin-form event-publish-form">
+      <div class="event-form-grid">
+        <label class="event-field-title" for="event-title">Título<input id="event-title" required placeholder="Nombre del evento"></label>
+        <label class="event-field-scenario" for="event-lore-scenario">Acontecimiento de La Sombra<select id="event-lore-scenario" required><option value="">Selecciona un acontecimiento</option></select></label>
+        <label class="event-field-description" for="event-description">Descripción<textarea id="event-description" rows="3" required placeholder="Describe brevemente la actividad..."></textarea></label>
+        <label for="event-date">Fecha<input id="event-date" type="date" required></label>
+        <label for="event-time">Hora<input id="event-time" type="time"></label>
+        <label class="event-field-location" for="event-location">Lugar<input id="event-location" required placeholder="Lugar de encuentro"></label>
+        <label class="event-field-image" for="event-image">Imagen (opcional)<input id="event-image" type="file" accept="image/jpeg,image/png,image/webp"></label>
+      </div>
+      <div class="editor-actions"><button class="button button-dark" type="submit">Publicar evento</button></div>
+      <p id="event-feedback" class="form-feedback" role="status"></p>
+    </form>
+  </section>
+
+  <section class="events-admin-block events-admin-published">
+    <div class="events-admin-heading"><div><span class="admin-hint">AGENDA DEL SMIAL</span><h4>Eventos publicados</h4><p>Consulta los eventos activos y selecciona uno para administrar sus participantes.</p></div></div>
+    <div id="admin-events" class="admin-events-list"></div>
+  </section>
+
+  <section class="events-admin-block events-admin-attendance">
+    <div class="events-admin-heading"><div><span class="admin-hint">SEGUIMIENTO Y CIERRE</span><h4>Asistencia, medallas y desenlace</h4><p>Registra quién asistió y reconoce los aportes destacados con medallas. Al cerrar el evento, la historia ficticia se resolverá automáticamente según la asistencia y los logros reconocidos.</p></div></div>
+    <div id="attendance-manager" class="attendance-manager">Selecciona un evento publicado para registrar la asistencia.</div>
+  </section>
 </section>
 <section id="admin-tab-members" class="admin-tab-panel" role="tabpanel" hidden>
 <h3>Administrar Miembros</h3><form id="site-members-form" class="admin-form"><div class="customizer-grid"><div class="customizer-group"><h4>Presentación de Miembros</h4><label>Título de Miembros<textarea rows="3" data-setting="members_title"></textarea></label><label>Presentación de Miembros<textarea rows="3" data-setting="members_intro"></textarea></label></div></div><div class="editor-actions"><button class="button button-dark" type="submit">Guardar textos de Miembros</button></div><p id="site-members-feedback" class="form-feedback" role="status"></p></form>
@@ -217,9 +243,9 @@
     </section>
   </main>
 
-  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p id="footer-text">Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><span>NO OFICIAL · COMUNIDAD DE FANS</span><span id="app-version">VERSIÓN 2.2.3</span></div></footer>
+  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p id="footer-text">Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><span>NO OFICIAL · COMUNIDAD DE FANS</span><span id="app-version">VERSIÓN 2.2.4</span></div></footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
-  <script src="script.js?v=2.2.3"></script>
+  <script src="script.js?v=2.2.4"></script>
 </body>
 </html>
