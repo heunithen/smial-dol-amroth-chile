@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=1.3.0">
+  <link rel="stylesheet" href="styles.css?v=1.4.0">
 </head>
 <body>
   <div class="announcement"><span class="announcement-mark">✦</span> Un hogar para quienes mantienen viva la llama de la Tierra Media <span class="announcement-mark">✦</span></div>
@@ -44,12 +44,7 @@
 
     <section class="section lore-section" id="lore">
       <div class="section-heading"><div><p class="eyebrow dark">01 / NUESTRAS RAÍCES</p><h2>Una historia junto<br>al <em>Gran Mar.</em></h2></div><p class="section-lead">Inspirados por las costas de Gondor y el legado de sus gentes, encontramos en la Tierra Media un lugar para imaginar, aprender y compartir.</p></div>
-      <div class="lore-grid">
-        <article class="lore-card lore-card-main"><div class="lore-number">I</div><p class="card-kicker">EL PRINCIPADO</p><h3>Dol Amroth</h3><p>En la costa de Belfalas se alza Dol Amroth, ciudad portuaria de Gondor, conocida por sus cisnes, sus caballeros y la casa principesca que la gobierna.</p><a href="#nosotros" class="inline-link">Nuestra inspiración <span>→</span></a></article>
-        <article class="lore-card lore-card-quote"><span class="quote-mark">“</span><p>La tradición, la amistad y la imaginación también construyen reinos.</p><span class="quote-attribution">EL ESPÍRITU DEL SMIAL</span></article>
-        <article class="lore-card lore-card-detail"><div class="detail-icon">♜</div><h3>Historias que continúan</h3><p>El lore del Smial reúne los relatos de nuestros personajes y las historias compartidas que nacen en cada encuentro.</p><a href="#miembros" class="inline-link">Conoce a los personajes <span>→</span></a></article>
-      </div>
-      <p class="small-note">Este espacio irá creciendo con los relatos, documentos y aportes de la comunidad.</p>
+      <div id="lore-chronicle" class="lore-chronicle"><p class="small-note">La historia oficial del Smial se publicará aquí.</p></div>
     </section>
 
     <section class="events-section" id="eventos">
@@ -65,7 +60,7 @@
 
     <section class="shadow-section" id="la-sombra">
       <div class="shadow-art"><div class="shadow-orbit orbit-one"></div><div class="shadow-orbit orbit-two"></div><div class="shadow-eye">◉</div><div class="shadow-mountain"></div><div class="shadow-word">MORDOR</div></div>
-      <div class="shadow-content"><p class="eyebrow">04 / CRÓNICAS DE LA RESISTENCIA</p><h2>La Sombra<br>se <em>extiende.</em></h2><p>Desde el Este crece una amenaza. La Sombra de Mordor se cierne sobre nuestras tierras y solo la unión de la comunidad podrá mantenerla a raya.</p><p>Cada reunión y cada evento en que participamos representa un paso más en esta resistencia colectiva. Cada encuentro activa una crónica ficticia cuyo desenlace depende de la asistencia y de los logros reconocidos con medallas. Nuestras acciones fuera de la historia alimentan las hazañas de nuestros personajes dentro de ella.</p><div class="shadow-status"><span class="status-dot"></span><div><strong>LA CRÓNICA DEL SMIAL</strong><small>La participación de cada personaje fortalece la resistencia colectiva.</small></div></div>
+      <div class="shadow-content"><p class="eyebrow">04 / CRÓNICAS DE LA RESISTENCIA</p><h2>La Sombra<br>se <em>extiende.</em></h2><p>Desde el Este crece una amenaza. La Sombra de Mordor se cierne sobre nuestras tierras y solo la unión de la comunidad podrá mantenerla a raya.</p><p>Cada reunión y cada evento en que participamos representa un paso más en esta resistencia colectiva. Cada encuentro activa una crónica ficticia cuyo desenlace depende de la asistencia y de los logros reconocidos con medallas. Nuestras acciones fuera de la historia alimentan las hazañas de nuestros personajes dentro de ella.</p><div class="shadow-status"><span class="status-dot"></span><div><strong>LA CRÓNICA DEL SMIAL</strong><small>La participación de cada personaje fortalece la resistencia colectiva.</small></div></div><div id="shadow-active-event" class="shadow-active-event"><p>No hay acontecimientos activos.</p></div>
         <div class="shadow-rules"><h3>Esperanza y Sombra</h3><p>Cada personaje y el Smial tienen una reserva común de 10 puntos: Esperanza + Sombra = 10. Todos comienzan con 7 de Esperanza y 3 de Sombra. Cada punto que pierde la Esperanza lo gana la Sombra, y viceversa. El mínimo es 1 de Esperanza y el máximo 9 de Sombra.</p><div class="shadow-meter-grid"><article class="shadow-meter"><span>ESPERANZA DEL SMIAL</span><strong id="smial-light">1/10</strong><div class="meter-track"><i id="smial-light-bar" style="width:10%"></i></div></article><article class="shadow-meter"><span>SOMBRA DEL SMIAL</span><strong id="smial-shadow">1/10</strong><div class="meter-track shadow-track"><i id="smial-shadow-bar" style="width:10%"></i></div></article></div><p id="smial-state-label" class="smial-state-label">La resistencia comienza.</p><p id="smial-counts" class="smial-counts"></p></div>
         <div class="shadow-rules"><h3>La historia de cada personaje</h3><p>Asistir a un evento o reunión suma 1 Esperanza y resta 1 Sombra. No asistir resta 1 Esperanza y suma 1 Sombra. El total siempre es 10 puntos.</p><p>Cuando la Esperanza baja de 3 (2 o 1), el personaje queda Consumido y pasa a ser antagonista del lore. Puede regresar participando: al recuperar 3 o más de Esperanza deja de estar Consumido. No necesita misiones ni condiciones especiales. La misma regla se aplica al Smial.</p><p>En el Smial, cada asistencia genera una marca de Esperanza y cada ausencia una marca de Sombra. Cada 3 marcas de asistencia suman 1 Esperanza y restan 1 Sombra colectiva; cada 3 marcas de ausencia restan 1 Esperanza y suman 1 Sombra. Las marcas sobrantes se conservan para el siguiente evento.</p></div><a class="button button-outline" href="#eventos">Participa en los encuentros <span>→</span></a></div>
     </section>
@@ -100,7 +95,7 @@
         <h3>Publicar un evento</h3>
         <form id="event-form" class="admin-form">
           <label for="event-title">Título</label><input id="event-title" required>
-          <label for="event-lore-scenario">Acontecimiento ficticio asociado</label><select id="event-lore-scenario"><option value="">Elegir una historia al azar</option></select><p class="admin-hint">Cada evento real activará una historia del Smial. Su desenlace se calculará al cerrar la asistencia, sumando asistentes y medallas otorgadas durante la actividad.</p>
+          <label for="event-lore-scenario">Acontecimiento de La Sombra</label><select id="event-lore-scenario" required><option value="">Selecciona un acontecimiento</option></select><p class="admin-hint">Solo puede existir un acontecimiento pendiente a la vez. Cada asistente suma 1 punto y cada medalla suma 1 punto. Con 5 puntos gana la Esperanza; con menos de 5 gana la Sombra.</p>
           <label for="event-description">Descripción</label><textarea id="event-description" rows="3" required></textarea>
           <label for="event-date">Fecha</label><input id="event-date" type="date" required>
           <label for="event-time">Hora</label><input id="event-time" type="time">
@@ -112,9 +107,28 @@
         <h3>Eventos publicados</h3><div id="admin-events"></div><h3>Control de asistencia, medallas y desenlace</h3><p>Registra quién asistió y reconoce los aportes destacados con medallas. Al cerrar el evento, la historia ficticia se resolverá automáticamente según la asistencia y los logros reconocidos.</p><div id="attendance-manager" class="attendance-manager">Selecciona un evento para registrar la asistencia.</div>
         
         <section class="admin-library">
-          <h3>Biblioteca del Smial</h3>
-          <p>Administra las historias que se asignan a los eventos y las medallas disponibles para reconocer a los miembros. Los eventos ya publicados conservan una copia de su crónica.</p>
+          <h3>Lore oficial del Smial</h3>
+          <p>Escribe el relato inicial y los capítulos manuales. Los finales de los acontecimientos resueltos se añadirán automáticamente al final de esta historia.</p>
+          <div class="lore-admin-editor">
+            <div id="lore-chronicle-admin-list" class="library-list-panel"></div>
+            <form id="lore-chronicle-form" class="admin-form library-editor-form">
+              <h4 id="lore-chronicle-heading">Añadir al lore oficial</h4>
+              <input id="lore-chronicle-id" type="hidden"><input id="lore-chronicle-cover-existing" type="hidden">
+              <label for="lore-chronicle-title">Título del capítulo</label><input id="lore-chronicle-title" maxlength="180" required>
+              <label for="lore-chronicle-cover">Imagen principal (opcional)</label><input id="lore-chronicle-cover" type="file" accept="image/jpeg,image/png,image/webp">
+              <div id="lore-chronicle-cover-preview" class="lore-cover-preview"></div>
+              <label>Texto del lore</label>
+              <div class="rich-toolbar"><button type="button" data-editor-command="bold" data-editor-target="lore-chronicle-editor"><b>B</b></button><button type="button" data-editor-command="italic" data-editor-target="lore-chronicle-editor"><i>I</i></button><button type="button" data-editor-command="underline" data-editor-target="lore-chronicle-editor"><u>U</u></button><button type="button" data-editor-command="formatBlock" data-editor-value="h3" data-editor-target="lore-chronicle-editor">Título</button><button type="button" data-editor-command="insertUnorderedList" data-editor-target="lore-chronicle-editor">Lista</button><button type="button" data-editor-command="formatBlock" data-editor-value="blockquote" data-editor-target="lore-chronicle-editor">Cita</button><label class="editor-image-button">+ Imagen<input type="file" accept="image/jpeg,image/png,image/webp" data-editor-image="lore-chronicle-editor"></label></div>
+              <div id="lore-chronicle-editor" class="rich-editor" contenteditable="true" data-placeholder="Escribe el lore oficial del Smial..."></div>
+              <div class="editor-actions"><button class="button button-dark" type="submit">Guardar capítulo</button><button class="button button-outline-dark" id="lore-chronicle-reset" type="button">Nuevo capítulo / cancelar</button></div>
+              <p id="lore-chronicle-feedback" class="form-feedback" role="status"></p>
+            </form>
+          </div>
           <div class="library-columns">
+            <div class="library-list-panel">
+              <h4>Acontecimientos preconfigurados</h4>
+              <div id="lore-scenario-list"></div>
+            </div>
             <div class="library-list-panel">
               <h4>Historias preconfiguradas</h4>
               <div id="lore-scenario-list"></div>
@@ -129,16 +143,12 @@
               <label>Introducción / relato inicial</label>
               <div class="rich-toolbar"><button type="button" data-editor-command="bold" data-editor-target="lore-intro-editor"><b>B</b></button><button type="button" data-editor-command="italic" data-editor-target="lore-intro-editor"><i>I</i></button><button type="button" data-editor-command="underline" data-editor-target="lore-intro-editor"><u>U</u></button><button type="button" data-editor-command="formatBlock" data-editor-value="h3" data-editor-target="lore-intro-editor">Título</button><button type="button" data-editor-command="insertUnorderedList" data-editor-target="lore-intro-editor">Lista</button><button type="button" data-editor-command="formatBlock" data-editor-value="blockquote" data-editor-target="lore-intro-editor">Cita</button><label class="editor-image-button">+ Imagen<input type="file" accept="image/jpeg,image/png,image/webp" data-editor-image="lore-intro-editor"></label></div>
               <div id="lore-intro-editor" class="rich-editor" contenteditable="true" data-placeholder="Escribe aquí el comienzo de la historia..."></div>
-              <label>Resolución si la compañía fracasa</label>
+              <label>Final si gana la Sombra</label>
               <div class="rich-toolbar"><button type="button" data-editor-command="bold" data-editor-target="lore-low-editor"><b>B</b></button><button type="button" data-editor-command="italic" data-editor-target="lore-low-editor"><i>I</i></button><button type="button" data-editor-command="formatBlock" data-editor-value="h3" data-editor-target="lore-low-editor">Título</button><button type="button" data-editor-command="insertUnorderedList" data-editor-target="lore-low-editor">Lista</button><label class="editor-image-button">+ Imagen<input type="file" accept="image/jpeg,image/png,image/webp" data-editor-image="lore-low-editor"></label></div>
-              <div id="lore-low-editor" class="rich-editor" contenteditable="true" data-placeholder="Describe las consecuencias de una derrota..."></div>
-              <label>Resolución de éxito parcial</label>
-              <div class="rich-toolbar"><button type="button" data-editor-command="bold" data-editor-target="lore-partial-editor"><b>B</b></button><button type="button" data-editor-command="italic" data-editor-target="lore-partial-editor"><i>I</i></button><button type="button" data-editor-command="formatBlock" data-editor-value="h3" data-editor-target="lore-partial-editor">Título</button><button type="button" data-editor-command="insertUnorderedList" data-editor-target="lore-partial-editor">Lista</button><label class="editor-image-button">+ Imagen<input type="file" accept="image/jpeg,image/png,image/webp" data-editor-image="lore-partial-editor"></label></div>
-              <div id="lore-partial-editor" class="rich-editor" contenteditable="true" data-placeholder="Describe un resultado con consecuencias mixtas..."></div>
-              <label>Resolución de victoria</label>
+              <div id="lore-low-editor" class="rich-editor" contenteditable="true" data-placeholder="Escribe el desenlace si gana la Sombra..."></div>
+              <label>Final si gana la Esperanza</label>
               <div class="rich-toolbar"><button type="button" data-editor-command="bold" data-editor-target="lore-success-editor"><b>B</b></button><button type="button" data-editor-command="italic" data-editor-target="lore-success-editor"><i>I</i></button><button type="button" data-editor-command="formatBlock" data-editor-value="h3" data-editor-target="lore-success-editor">Título</button><button type="button" data-editor-command="insertUnorderedList" data-editor-target="lore-success-editor">Lista</button><label class="editor-image-button">+ Imagen<input type="file" accept="image/jpeg,image/png,image/webp" data-editor-image="lore-success-editor"></label></div>
-              <div id="lore-success-editor" class="rich-editor" contenteditable="true" data-placeholder="Describe las consecuencias de una victoria..."></div>
-              <div class="threshold-fields"><div><label for="lore-partial-threshold">Puntos para éxito parcial</label><input id="lore-partial-threshold" type="number" min="0" max="99" value="2" required></div><div><label for="lore-success-threshold">Puntos para victoria</label><input id="lore-success-threshold" type="number" min="1" max="100" value="5" required></div></div>
+              <div id="lore-success-editor" class="rich-editor" contenteditable="true" data-placeholder="Escribe el desenlace si gana la Esperanza..."></div>
               <div class="editor-actions"><button class="button button-dark" type="submit">Guardar historia</button><button class="button button-outline-dark" id="lore-editor-reset" type="button">Nueva historia / cancelar</button></div>
               <p id="lore-editor-feedback" class="form-feedback" role="status"></p>
             </form>
@@ -164,8 +174,8 @@
     </section>
   </main>
 
-  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p>Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><span>NO OFICIAL · COMUNIDAD DE FANS</span><span id="app-version">VERSIÓN 1.3.0</span></div></footer>
+  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p>Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><span>NO OFICIAL · COMUNIDAD DE FANS</span><span id="app-version">VERSIÓN 1.4.0</span></div></footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>\n  <script src="script.js?v=1.3.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>\n  <script src="script.js?v=1.4.0"></script>
 </body>
 </html>
