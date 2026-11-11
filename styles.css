@@ -753,3 +753,6 @@ body{background:var(--paper);color:var(--text-color)}
 
 /* v2.5.4 — mostrar la imagen propia del evento en su publicación */
 .public-event-image{display:block;width:100%;max-height:420px;object-fit:cover;object-position:center;border-radius:8px;margin:16px 0 20px;border:1px solid rgba(185,164,119,.35)}
+
+
+/* v2.5.5 — estilos sincronizados con la versión del portal */
