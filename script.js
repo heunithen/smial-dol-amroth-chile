@@ -796,7 +796,86 @@ document.getElementById('photo-gallery-prev')?.addEventListener('click',()=>{pho
 document.getElementById('photo-gallery-next')?.addEventListener('click',()=>{photoGalleryPage++;renderPhotoGallery();});
 document.getElementById('photo-lightbox-close')?.addEventListener('click',()=>document.getElementById('photo-lightbox').close());
 document.getElementById('photo-lightbox')?.addEventListener('click',event=>{if(event.target===event.currentTarget)event.currentTarget.close();});
-document.getElementById('photo-upload-form')?.addEventListener('submit',async event=>{event.preventDefault();const input=document.getElementById('photo-upload-files');const files=[...(input.files||[])];const button=document.getElementById('photo-upload-submit');if(!files.length){say('photo-upload-feedback','Selecciona al menos una imagen.');return;}button.disabled=true;input.disabled=true;let uploaded=0;const failures=[];try{for(const file of files){say('photo-upload-feedback','Convirtiendo y subiendo '+(uploaded+failures.length+1)+' de '+files.length+': '+file.name);try{await uploadImage(file,'galeria');uploaded++;}catch(error){failures.push(file.name+': '+(error.message||'Error desconocido'));}}input.value='';await loadPhotoGallery();await loadStorageUsage();say('photo-upload-feedback',uploaded+' de '+files.length+' imágenes subidas correctamente.'+(failures.length?' Errores: '+failures.join(' | '):''));}finally{button.disabled=false;input.disabled=false;}});
+const uploadGalleryImage=async(file)=>{
+ if(!file)throw new Error('No se seleccionó ningún archivo.');
+ const mimeByExt={jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp'};
+ const ext=(file.name||'').split('.').pop().toLowerCase();
+ const mime=['image/jpeg','image/png','image/webp'].includes(file.type)?file.type:mimeByExt[ext];
+ if(!mime)throw new Error('Formato no permitido. Selecciona una imagen JPG, PNG o WebP.');
+ const converted=await imageToWebP(file);
+ const originalBase=(file.name||'imagen').replace(/\\.[^.]+$/,'').replace(/[\\\\/?%*:|"<>]/g,'-').trim()||'imagen';
+ const unique=(globalThis.crypto&&crypto.randomUUID)?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
+ const path='galeria/'+originalBase+'__'+unique+'.webp';
+ if(converted.size>6*1024*1024&&window.tus?.Upload){
+  const {data:{session}}=await db.auth.getSession();
+  if(!session?.access_token)throw new Error('La sesión administrativa ha expirado. Vuelve a iniciar sesión.');
+  await new Promise((resolve,reject)=>{
+   const upload=new window.tus.Upload(converted,{
+    endpoint:'https://heuxofiaijgpwzvrbvoa.storage.supabase.co/storage/v1/upload/resumable',
+    retryDelays:[0,3000,5000,10000,20000],
+    headers:{authorization:'Bearer '+session.access_token,apikey:SUPABASE_KEY},
+    uploadDataDuringCreation:true,removeFingerprintOnSuccess:true,
+    chunkSize:6*1024*1024,
+    metadata:{bucketName:'smial-media',objectName:path,contentType:'image/webp',cacheControl:'3600',metadata:JSON.stringify({original_name:file.name||'imagen'})},
+    onError:reject,onSuccess:resolve
+   });
+   upload.start();
+  });
+ }else{
+  const {data,error}=await db.storage.from('smial-media').upload(path,converted,{contentType:'image/webp',upsert:false,cacheControl:'3600'});
+  if(error)throw error;
+  if(!data?.path)throw new Error('Supabase no confirmó la ruta del archivo.');
+ }
+ return path;
+};
+async function loadGalleryAdmin(){
+ const host=document.getElementById('photo-admin-list');if(!host)return;
+ host.innerHTML='<p class="admin-hint">Cargando imágenes guardadas...</p>';
+ try{
+  const {data,error}=await db.storage.from('smial-media').list('galeria',{limit:1000,offset:0,sortBy:{column:'created_at',order:'desc'}});
+  if(error)throw error;
+  const items=(data||[]).filter(item=>item.id&&item.name&&!item.name.startsWith('.'));
+  if(!items.length){host.innerHTML='<p class="admin-hint">No hay imágenes guardadas en la galería.</p>';return;}
+  host.innerHTML=items.map(item=>{
+   const path='galeria/'+item.name;
+   const url=db.storage.from('smial-media').getPublicUrl(path).data.publicUrl;
+   const format=(item.name.split('.').pop()||item.metadata?.mimetype||'desconocido').toUpperCase();
+   const size=item.metadata?.size?formatStorageBytes(item.metadata.size):'Tamaño no informado';
+   return '<article class="photo-admin-item"><img src="'+escapeHtml(url)+'" alt="" loading="lazy"><div class="photo-admin-meta"><strong>'+escapeHtml(item.name)+'</strong><span>Formato guardado: '+escapeHtml(format)+'</span><span>'+escapeHtml(size)+'</span></div><button type="button" class="button button-outline-dark photo-admin-delete" data-photo-path="'+escapeHtml(path)+'">Eliminar</button></article>';
+  }).join('');
+  host.querySelectorAll('[data-photo-path]').forEach(button=>button.addEventListener('click',async()=>{
+   const path=button.dataset.photoPath;
+   if(!path||!confirm('¿Eliminar definitivamente esta imagen de la galería?'))return;
+   button.disabled=true;
+   try{
+    const {error}=await db.storage.from('smial-media').remove([path]);
+    if(error)throw error;
+    await Promise.all([loadGalleryAdmin(),loadPhotoGallery(),loadStorageUsage()]);
+    say('photo-upload-feedback','Imagen eliminada correctamente.');
+   }catch(error){say('photo-upload-feedback','No se pudo eliminar la imagen: '+(error.message||'Error desconocido'));button.disabled=false;}
+  }));
+ }catch(error){host.innerHTML='<p class="admin-hint">No se pudo cargar la administración de imágenes: '+escapeHtml(error.message||'')+'</p>';}
+}
+document.getElementById('photo-upload-form')?.addEventListener('submit',async event=>{
+ event.preventDefault();
+ const input=document.getElementById('photo-upload-files');
+ const files=[...(input.files||[])];
+ const button=document.getElementById('photo-upload-submit');
+ if(!files.length){say('photo-upload-feedback','Selecciona al menos una imagen.');return;}
+ button.disabled=true;input.disabled=true;
+ let uploaded=0;const failures=[];
+ try{
+  for(let index=0;index<files.length;index++){
+   const file=files[index];
+   say('photo-upload-feedback','Convirtiendo y subiendo '+(index+1)+' de '+files.length+': '+file.name);
+   try{await uploadGalleryImage(file);uploaded++;}
+   catch(error){failures.push(file.name+': '+(error.message||'Error desconocido'));}
+  }
+  input.value='';
+  await Promise.all([loadPhotoGallery(),loadGalleryAdmin(),loadStorageUsage()]);
+  say('photo-upload-feedback',uploaded+' de '+files.length+' imágenes subidas correctamente.'+(failures.length?' Errores: '+failures.join(' | '):''));
+ }finally{button.disabled=false;input.disabled=false;}
+});
 function renderStorageUsage(data){const used=Math.max(0,Number(data?.used_bytes)||0);const count=Math.max(0,Number(data?.file_count)||0);const remaining=Math.max(0,STORAGE_FREE_QUOTA-used);const percent=Math.min(100,used/STORAGE_FREE_QUOTA*100);document.getElementById('storage-used').textContent=formatStorageBytes(used)+' utilizados';document.getElementById('storage-remaining').textContent=formatStorageBytes(remaining)+' disponibles estimados';document.getElementById('storage-usage-bar').style.width=percent+'%';const track=document.querySelector('.storage-usage-track');track?.setAttribute('aria-valuenow',percent.toFixed(2));document.getElementById('storage-usage-detail').textContent=count+' archivos en smial-media · '+percent.toFixed(2)+'% de la referencia de 1 GB. El límite Free se comparte entre los proyectos de la organización; este medidor cuenta solo este proyecto.';}
 async function loadStorageUsage(){const feedback=document.getElementById('storage-usage-feedback');if(!feedback)return;feedback.textContent='Actualizando medición...';try{const {data,error}=await db.rpc('get_smial_storage_usage');if(error)throw error;const row=Array.isArray(data)?data[0]:data;if(!row)throw new Error('No se recibió información de almacenamiento.');renderStorageUsage(row);feedback.textContent='Medición actualizada: '+new Date().toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}catch(error){feedback.textContent='No se pudo consultar el espacio: '+(error.message||'Error desconocido');}}
 document.getElementById('storage-usage-refresh')?.addEventListener('click',loadStorageUsage);
@@ -815,7 +894,7 @@ function initAdminTabs(){
  tabs.forEach(tab=>tab.addEventListener('click',()=>activate(tab)));
  activate(tabs.find(tab=>tab.dataset.adminTab==='admin-tab-home')||tabs[0]);
  const photoTab=tabs.find(tab=>tab.dataset.adminTab==='admin-tab-photos');
- if(photoTab)photoTab.addEventListener('click',()=>{loadStorageUsage();if(storageUsageInterval)clearInterval(storageUsageInterval);storageUsageInterval=setInterval(loadStorageUsage,30000);});
+ if(photoTab)photoTab.addEventListener('click',()=>{loadStorageUsage();loadGalleryAdmin();if(storageUsageInterval)clearInterval(storageUsageInterval);storageUsageInterval=setInterval(loadStorageUsage,30000);});
  tabs.filter(tab=>tab.dataset.adminTab!=='admin-tab-photos').forEach(tab=>tab.addEventListener('click',()=>{if(storageUsageInterval){clearInterval(storageUsageInterval);storageUsageInterval=null;}}));
 }
 initAdminTabs();
