@@ -627,3 +627,7 @@ body{background:var(--paper);color:var(--text-color)}
 @media(max-width:780px){
  .brand-mark{width:87.4px;height:87.4px;flex:0 0 87.4px}
 }
+
+
+/* v2.2.6 — fechas escritas dentro de los relatos del Lore */
+.event-lore-content .lore-inline-date{color:#b89b68;font-weight:700}
