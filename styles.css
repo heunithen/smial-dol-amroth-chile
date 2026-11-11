@@ -718,7 +718,7 @@ body{background:var(--paper);color:var(--text-color)}
 
 /* v2.5.0 — formulario de membresía y solicitudes de ingreso */
 .member-login-box{max-width:560px;margin:42px auto 0;padding-top:30px;border-top:1px solid rgba(218,197,151,.35)}
-.member-login-box h3{margin:0 0 8px;font-family:var(--serif);font-size:24px;color:var(--gold)}
+.member-login-box h3{margin:0 0 8px;font-family:"Cinzel",Georgia,serif;font-size:24px;color:var(--gold)}
 .member-login-box>p{color:rgba(255,255,255,.78);line-height:1.6}
 .member-login-form{margin-top:20px}
 .member-login-form[hidden]{display:none!important}
