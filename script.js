@@ -265,8 +265,7 @@ function editLoreScenario(s){
 document.getElementById('lore-scenario-form').addEventListener('submit',async e=>{
  e.preventDefault();const button=e.currentTarget.querySelector('button[type="submit"]');button.disabled=true;
  try{
-  const partial=Number(document.getElementById('lore-partial-threshold').value),success=Number(document.getElementById('lore-success-threshold').value);
-  if(success<=partial)throw new Error('La puntuación de victoria debe ser mayor que la de éxito parcial.');
+
   const editors=['lore-intro-editor','lore-low-editor','lore-success-editor'];
   const content=editors.map(id=>sanitizeRich(document.getElementById(id).innerHTML));
   if(content.some(value=>!value.trim()))throw new Error('Completa la introducción y los dos finales.');
