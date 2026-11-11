@@ -482,6 +482,19 @@ document.getElementById('logout-button').addEventListener('click',async()=>{awai
 async function loadPending(){
  const host=document.getElementById('pending-characters');const {data,error}=await db.from('characters').select('*').eq('status','pending').order('submitted_at');
  if(error){host.textContent='Error cargando solicitudes: '+error.message;return;}
+ const notice=document.getElementById('character-pending-notice');
+ if(notice){
+  const count=(data||[]).length;
+  notice.hidden=count===0;
+  notice.innerHTML=count?'<strong>Hay '+count+' solicitud'+(count===1?'':'es')+' de personaje pendiente'+(count===1?'':'s')+' de revisión.</strong> <button type="button" class="button button-dark" id="open-pending-characters">Revisar ahora</button>':'';
+  document.getElementById('open-pending-characters')?.addEventListener('click',()=>document.querySelector('[data-admin-tab="admin-tab-members"]')?.click());
+ }
+ const membersTab=document.querySelector('[data-admin-tab="admin-tab-members"]');
+ if(membersTab){
+  const baseLabel=membersTab.dataset.baseLabel||(membersTab.dataset.baseLabel=membersTab.textContent.trim().replace(/\\s+\\d+\\s*$/,''));
+  membersTab.textContent=baseLabel+(data?.length?' · '+data.length:'');
+  membersTab.setAttribute('aria-label',baseLabel+(data?.length?', '+data.length+' solicitudes pendientes':''));
+ }
  host.innerHTML=data.map(c=>{const image=db.storage.from('smial-media').getPublicUrl(c.image_path).data.publicUrl;return '<article class="admin-item"><img src="'+image+'" alt=""><div><h4>'+escapeHtml(c.tolkien_name)+' — '+escapeHtml(c.real_name)+'</h4><p><b>'+escapeHtml(c.role_title)+'</b></p><p>'+escapeHtml(c.story)+'</p><p class="admin-hint">Los logros se asignan desde el panel de personajes aprobados.</p><button data-review="approved" data-id="'+c.id+'" class="button button-dark">Aprobar</button> <button data-review="rejected" data-id="'+c.id+'" class="button button-outline-dark">Rechazar</button></div></article>';}).join('')||'<p>No hay solicitudes pendientes.</p>';
  host.querySelectorAll('[data-review]').forEach(button=>button.addEventListener('click',async()=>{button.disabled=true;const {error}=await db.from('characters').update({status:button.dataset.review,reviewed_at:new Date().toISOString()}).eq('id',button.dataset.id);if(error)alert(error.message);await loadPending();await loadApproved();await loadAdminAchievements();}));
 }
