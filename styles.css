@@ -230,3 +230,42 @@ body{background:var(--paper);color:var(--ink)}
 .site-header{height:118px}
 .brand-mark{width:96px;height:96px;flex:0 0 96px}
 @media(max-width:780px){.site-header{height:100px}.brand-mark{width:76px;height:76px;flex:0 0 76px}}
+
+
+/* Personalización independiente de títulos, textos y bordes (v1.7.0) */
+:root{
+ --heading-color:#101f35;
+ --text-color:#1a2939;
+ --muted-color:#687582;
+ --border-color:#c8d2dc;
+}
+body{color:var(--text-color)}
+.site-header{border-bottom-color:var(--border-color)}
+.site-footer .footer-bottom{border-top-color:var(--border-color)}
+.section h2,.section-heading h2,.events-section h2,.shadow-section h2,
+.register-section h2,.about-copy h2,.lore-chapter h3,
+.members-roster-heading h3,.character-submit h3,.admin-inner>h2,
+.admin-library>h3,.customizer-group h4,.library-list-panel h4,
+.library-editor-form h4,.event-medal-manager h4{
+ color:var(--heading-color)!important;
+}
+.section-lead,.section p:not(.eyebrow),.about-copy>p:not(.eyebrow),
+.members-empty p,.members-roster-heading p,.form-note,
+.lore-card p:not(.card-kicker),.lore-chapter .event-lore-content,
+.character-submit>p,.admin-hint,.customizer-group label,
+.site-customizer>p{
+ color:var(--text-color);
+}
+.section-lead,.members-empty p,.members-roster-heading p,.form-note,
+.small-note,.admin-hint,.customizer-group label{
+ color:var(--muted-color);
+}
+.site-header,.site-footer .footer-bottom,
+.lore-card,.members-empty,.lore-chapter,.character-submit,
+.admin-library,.customizer-group,.library-list-panel,
+.library-editor-form,.admin-box,.admin-item,.approved-card{
+ border-color:var(--border-color);
+}
+@media(max-width:780px){
+ .site-header{border-bottom-color:var(--border-color)}
+}
