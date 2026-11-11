@@ -629,8 +629,10 @@ body{background:var(--paper);color:var(--text-color)}
 }
 
 
-/* v2.2.6 — fechas escritas dentro de los relatos del Lore */
-.event-lore-content .lore-inline-date{color:#b89b68;font-weight:700}
+/* v2.2.9 — fechas dentro de todo el texto del Lore en dorado */
+.lore-chapter .lore-inline-date,
+.event-lore-content .lore-inline-date,
+.public-event .lore-inline-date{color:#B89B68!important;font-weight:700!important;text-decoration:none!important;}
 
 
 /* v2.2.7 — emblema independiente de Quiénes somos */
