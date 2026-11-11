@@ -179,17 +179,26 @@ async function loadApproved(){
 }
 function escapeHtml(value=''){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
 function formatLoreDate(value=''){if(!value)return '';const match=String(value).match(/^(\d{4})-(\d{2})-(\d{2})/);if(!match)return '';const date=new Date(Date.UTC(Number(match[1]),Number(match[2])-1,Number(match[3]),12));return new Intl.DateTimeFormat('es-CL',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(date);}
+function highlightLoreDates(root){
+ if(!root)return;
+ const datePattern=/\\b(?:\\d{1,2}\\s+de\\s+(?:enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|setiembre|octubre|noviembre|diciembre)(?:\\s+de\\s+\\d{4})?|\\d{1,2}[\\/-]\\d{1,2}[\\/-]\\d{2,4})\\b/gi;
+ const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode(node){return node.parentElement?.closest('a, .lore-date, script, style')?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT;}});
+ const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
+ nodes.forEach(node=>{const text=node.nodeValue;if(!datePattern.test(text)){datePattern.lastIndex=0;return;}datePattern.lastIndex=0;const fragment=document.createDocumentFragment();let last=0;for(const match of text.matchAll(datePattern)){fragment.append(document.createTextNode(text.slice(last,match.index)));const mark=document.createElement('span');mark.className='lore-inline-date';mark.textContent=match[0];fragment.append(mark);last=match.index+match[0].length;}fragment.append(document.createTextNode(text.slice(last)));node.replaceWith(fragment);});
+}
 async function loadLoreChronicle(){
  const host=document.getElementById('lore-chronicle');if(!host)return;
  const {data,error}=await db.from('lore_chronicle').select('*').order('sort_order',{ascending:true});
  if(error){host.textContent='No fue posible cargar el lore oficial.';return;}
  host.innerHTML=(data||[]).map(entry=>{const cover=entry.cover_image_path?db.storage.from('smial-media').getPublicUrl(entry.cover_image_path).data.publicUrl:'';const date=formatLoreDate(entry.event_date||entry.created_at||entry.updated_at);return '<article class="lore-chapter"><p class="card-kicker">'+(entry.entry_type==='event'?'CRÓNICA RESUELTA':'LORE DEL SMIAL')+'</p>'+(date?'<p class="lore-date">'+escapeHtml(date)+'</p>':'')+'<h3>'+escapeHtml(entry.title)+'</h3>'+(cover?'<img class="lore-chapter-cover" src="'+escapeHtml(cover)+'" alt="">':'')+'<div class="event-lore-content">'+sanitizeRich(entry.content)+'</div></article>';}).join('')||'<p class="small-note">La historia oficial del Smial aún no ha sido publicada.</p>';
+ highlightLoreDates(host);
 }
 async function loadEvents(){
  const host=document.getElementById('event-placeholder-list');if(!host)return;
  const {data,error}=await db.from('events').select('*').eq('status','published').order('event_date',{ascending:true});
  if(error)return;
  host.innerHTML=data.map(ev=>{const cover=ev.lore_cover_image_path?db.storage.from('smial-media').getPublicUrl(ev.lore_cover_image_path).data.publicUrl:'';return '<article class="public-event"><p class="card-kicker">'+escapeHtml(ev.event_date)+(ev.event_time?' · '+escapeHtml(ev.event_time.slice(0,5)):'')+'</p><h3>'+escapeHtml(ev.title)+'</h3><p>'+escapeHtml(ev.description)+'</p><small>'+escapeHtml(ev.location)+'</small>'+(ev.lore_title?'<div class="event-lore"><span>CRÓNICA DEL SMIAL</span><h4>'+escapeHtml(ev.lore_title)+'</h4>'+(cover?'<img class="event-lore-cover" src="'+escapeHtml(cover)+'" alt="">':'')+'<div class="event-lore-content">'+sanitizeRich(ev.lore_intro||'')+'</div>'+(ev.lore_resolution?'<div class="event-resolution"><b>'+escapeHtml((ev.lore_outcome||'').toUpperCase())+'</b><div class="event-lore-content">'+sanitizeRich(ev.lore_resolution)+'</div></div>':'<small>El desenlace se conocerá al cerrar el evento.</small>')+'</div>':'')+'</article>';}).join('');
+ highlightLoreDates(host);
 }
 async function loadLoreScenarios(){
  const host=document.getElementById('event-placeholder-list');if(!host)return;
