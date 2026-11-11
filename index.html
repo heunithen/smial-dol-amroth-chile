@@ -9,12 +9,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=2.7.23">
+  <link rel="stylesheet" href="styles.css?v=2.7.24">
 </head>
 <body>
   <div class="music-player-bar" id="music-player">
-  <div class="music-player-controls"><button type="button" id="music-player-toggle" aria-pressed="false" aria-label="Reproducir música">▶</button><span class="music-player-label">MÚSICA DEL SMIAL</span><span class="music-player-track">Lista musical de YouTube</span><span class="music-player-source">♪</span></div>
-  <div class="music-player-frame" id="music-player-frame" aria-hidden="true"><iframe id="music-player-iframe" title="Audio de la lista musical del Smial Dol Amroth" width="200" height="200" src="https://www.youtube-nocookie.com/embed/UJNeiBaEMIE?list=PLpf9zAOOy1KxwDUc6ZHgeforxG1tLJ13y&autoplay=0&playsinline=1&controls=0&modestbranding=1" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+  <div class="music-player-controls"><span class="music-player-label">MÚSICA DEL SMIAL</span><button type="button" id="music-prev" aria-label="Canción anterior" title="Canción anterior">|◀</button><button type="button" id="music-player-toggle" aria-pressed="false" aria-label="Reproducir música" title="Reproducir / pausar">▶</button><button type="button" id="music-next" aria-label="Canción siguiente" title="Canción siguiente">▶|</button><label class="music-volume-label" for="music-volume">♪</label><input id="music-volume" type="range" min="0" max="100" value="55" aria-label="Volumen de la música"><span class="music-player-track" id="music-track-status" aria-live="polite">Lista musical</span></div>
+  <div class="music-player-frame" id="music-player-frame" aria-hidden="true"><iframe id="music-player-iframe" title="Audio de la lista musical del Smial Dol Amroth" width="200" height="200" src="https://www.youtube-nocookie.com/embed/UJNeiBaEMIE?enablejsapi=1&amp;listType=playlist&amp;list=PLpf9zAOOy1KxwDUc6ZHgeforxG1tLJ13y&amp;autoplay=0&amp;controls=0&amp;playsinline=1" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
 </div>
 <div class="announcement"><span class="announcement-mark">✦</span> <span id="announcement-copy">Un hogar para quienes mantienen viva la llama de la Tierra Media</span> <span class="announcement-mark">✦</span></div>
   <header class="site-header">
@@ -330,10 +330,10 @@
     </section>
   </main>
 
-  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p id="footer-text">Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><a href="https://www.sociedadtolkien.cl/smials" target="_blank" rel="noopener noreferrer">STC CHILE ↗</a><span id="app-version">VERSIÓN 2.7.23</span></div></footer>
+  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p id="footer-text">Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><a href="https://www.sociedadtolkien.cl/smials" target="_blank" rel="noopener noreferrer">STC CHILE ↗</a><span id="app-version">VERSIÓN 2.7.24</span></div></footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/tus-js-client@4/dist/tus.min.js"></script>
-  <script src="script.js?v=2.7.23"></script>
+  <script src="script.js?v=2.7.24"></script>
 </body>
 </html>
