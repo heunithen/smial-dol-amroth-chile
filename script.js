@@ -1,4 +1,4 @@
-// Versión 2.7.31
+// Versión 2.7.32
 const SUPABASE_URL='https://heuxofiaijgpwzvrbvoa.supabase.co';
 const SUPABASE_KEY='sb_publishable_3f_pQw9FSMD9ipequee7Ew_w4sIP_iL';
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
