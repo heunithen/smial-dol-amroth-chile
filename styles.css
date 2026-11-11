@@ -401,3 +401,9 @@ body{background:var(--paper);color:var(--text-color)}
 .hero-content>.eyebrow>span:first-child{display:none!important}
 #hero-eyebrow{display:inline;color:#b89b68!important}
 @media(max-width:780px){.hero-content>.eyebrow{font-size:8px;letter-spacing:.12em;margin-left:auto;margin-right:0;white-space:normal;text-align:right}}
+
+
+/* v1.9.7: localidades bajo la identificación del Smial en el encabezado */
+.brand-copy .brand-locations{display:block;margin-top:3px;font-size:8px;line-height:1.35;letter-spacing:.16em;font-weight:700;color:#b89b68!important;white-space:nowrap}
+.hero-content>.eyebrow{display:none!important}
+@media(max-width:780px){.brand-copy .brand-locations{font-size:6.5px;letter-spacing:.12em;margin-top:2px}}
