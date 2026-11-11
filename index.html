@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=2.7.11">
+  <link rel="stylesheet" href="styles.css?v=2.7.12">
 </head>
 <body>
   <div class="announcement"><span class="announcement-mark">✦</span> <span id="announcement-copy">Un hogar para quienes mantienen viva la llama de la Tierra Media</span> <span class="announcement-mark">✦</span></div>
@@ -287,7 +287,8 @@
 </section>
 <section id="admin-tab-photos" class="admin-tab-panel" role="tabpanel" hidden>
  <h3>Administrar Galería</h3><p class="admin-hint">Sube varias imágenes a la galería. Los archivos JPG y PNG se convierten automáticamente a WebP antes de guardarse.</p>
- <form id="photo-upload-form" class="admin-form"><div class="customizer-group"><label for="photo-upload-files">Seleccionar fotografías (puedes elegir varias)</label><input id="photo-upload-files" type="file" accept="image/jpeg,image/png,image/webp" multiple><p class="admin-hint">Máximo 5 MB por imagen original. Se guardarán en formato WebP.</p></div><div class="editor-actions"><button class="button button-dark" id="photo-upload-submit" type="submit">Subir fotografías</button></div><p id="photo-upload-feedback" class="form-feedback" role="status"></p></form>
+ <form id="photo-upload-form" class="admin-form"><div class="customizer-group"><label for="photo-upload-files">Seleccionar fotografías (puedes elegir varias)</label><input id="photo-upload-files" type="file" accept="image/jpeg,image/png,image/webp" multiple><p class="admin-hint">No se aplica un límite artificial de peso en este formulario. Las imágenes se convierten a WebP y conservan el nombre original en el nombre del archivo. El tamaño máximo efectivo depende del plan de almacenamiento y de la memoria disponible en el navegador.</p></div><div class="editor-actions"><button class="button button-dark" id="photo-upload-submit" type="submit">Subir fotografías</button></div><p id="photo-upload-feedback" class="form-feedback" role="status"></p></form>
+ <div class="photo-admin-list-wrap"><h4>Imágenes guardadas</h4><p class="admin-hint">Vista previa, formato real guardado y eliminación individual.</p><div id="photo-admin-list" class="photo-admin-list"><p class="admin-hint">Abre esta pestaña para cargar las imágenes.</p></div></div>
  <div class="storage-usage-panel"><div class="events-admin-heading"><div><span class="admin-hint">SUPABASE STORAGE</span><h4>Espacio utilizado</h4><p>Medición de todos los archivos del depósito smial-media en este proyecto.</p></div><button class="button button-outline-dark" type="button" id="storage-usage-refresh">Actualizar</button></div><div class="storage-usage-values"><strong id="storage-used">Consultando...</strong><span id="storage-remaining"></span></div><div class="storage-usage-track" role="progressbar" aria-label="Uso estimado del almacenamiento" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="storage-usage-bar"></span></div><p id="storage-usage-detail" class="admin-hint">La medición se actualiza al abrir esta pestaña y después periódicamente.</p><p id="storage-usage-feedback" class="form-feedback" role="status"></p></div>
 </section>
 <section id="admin-tab-register" class="admin-tab-panel" role="tabpanel" hidden>
@@ -325,9 +326,10 @@
     </section>
   </main>
 
-  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p id="footer-text">Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><a href="https://www.sociedadtolkien.cl/smials" target="_blank" rel="noopener noreferrer">STC CHILE ↗</a><span id="app-version">VERSIÓN 2.7.11</span></div></footer>
+  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p id="footer-text">Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><a href="https://www.sociedadtolkien.cl/smials" target="_blank" rel="noopener noreferrer">STC CHILE ↗</a><span id="app-version">VERSIÓN 2.7.12</span></div></footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
-  <script src="script.js?v=2.7.11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tus-js-client@4/dist/tus.min.js"></script>
+  <script src="script.js?v=2.7.12"></script>
 </body>
 </html>
