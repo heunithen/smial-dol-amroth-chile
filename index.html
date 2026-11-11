@@ -9,16 +9,16 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=1.4.0">
+  <link rel="stylesheet" href="styles.css?v=1.5.0">
 </head>
 <body>
-  <div class="announcement"><span class="announcement-mark">✦</span> Un hogar para quienes mantienen viva la llama de la Tierra Media <span class="announcement-mark">✦</span></div>
+  <div class="announcement"><span class="announcement-mark">✦</span> <span id="announcement-copy">Un hogar para quienes mantienen viva la llama de la Tierra Media</span> <span class="announcement-mark">✦</span></div>
   <header class="site-header">
     <a class="brand" href="#inicio" aria-label="Smial Dol Amroth, inicio">
-      <span class="brand-mark" aria-hidden="true">
+      <span class="brand-mark" aria-hidden="true"><img id="brand-logo-image" alt="" hidden>
         <svg viewBox="0 0 64 64" role="img"><path d="M32 4 54 13v17c0 14-9 24-22 30C19 54 10 44 10 30V13L32 4Z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M18 42c8-2 12-8 14-17 2 5 5 8 12 9-4 5-9 8-16 8-4 0-7 0-10 0Zm13-17c3-8 8-12 15-13-3 5-4 9-3 14-5-1-9-1-12-1Z" fill="currentColor"/><path d="M17 47c10 3 21 3 30-1" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
       </span>
-      <span class="brand-copy"><strong>SMIAL DOL AMROTH</strong><small>CHILE · TIERRA MEDIA</small></span>
+      <span class="brand-copy"><strong id="brand-site-title">SMIAL DOL AMROTH</strong><small id="brand-site-subtitle">CHILE · TIERRA MEDIA</small></span>
     </a>
     <button class="menu-toggle" aria-label="Abrir menú" aria-expanded="false"><span></span><span></span><span></span></button>
     <nav class="main-nav" aria-label="Navegación principal">
@@ -29,12 +29,12 @@
   <main>
     <section class="hero" id="inicio">
       <div class="hero-shade"></div><div class="hero-content">
-        <p class="eyebrow"><span></span> GONDOR · BELFALAS · CHILE</p>
-        <h1>Donde el mar<br>encuentra la <em>leyenda.</em></h1>
-        <p class="hero-intro">Somos el Smial Dol Amroth de Chile: una comunidad que celebra la obra de J. R. R. Tolkien, comparte historias y construye nuevas aventuras en compañía.</p>
+        <p class="eyebrow"><span></span> <span id="hero-eyebrow">GONDOR · BELFALAS · CHILE</span></p>
+        <h1 id="hero-title">Donde el mar<br>encuentra la <em>leyenda.</em></h1>
+        <p class="hero-intro" id="hero-intro">Somos el Smial Dol Amroth de Chile: una comunidad que celebra la obra de J. R. R. Tolkien, comparte historias y construye nuevas aventuras en compañía.</p>
         <div class="hero-actions"><a class="button button-light" href="#nosotros">Conoce el Smial <span>→</span></a><a class="text-link" href="#eventos">Explorar actividades <span>↗</span></a></div>
       </div>
-      <div class="hero-caption"><span>✧</span> EN LAS COSTAS DE BELFALAS <span class="caption-line"></span> UNA COMUNIDAD, MUCHAS HISTORIAS</div>
+      <div class="hero-caption"><span>✧</span> <span id="hero-caption">EN LAS COSTAS DE BELFALAS · UNA COMUNIDAD, MUCHAS HISTORIAS</span> <span class="caption-line"></span></div>
       <div class="hero-seal" aria-hidden="true"><span>✦</span><b>DOL<br>AMROTH</b><small>EST. IN MIDDLE-EARTH</small></div>
     </section>
 
@@ -43,34 +43,34 @@
     </section>
 
     <section class="section lore-section" id="lore">
-      <div class="section-heading"><div><p class="eyebrow dark">01 / NUESTRAS RAÍCES</p><h2>Una historia junto<br>al <em>Gran Mar.</em></h2></div><p class="section-lead">Inspirados por las costas de Gondor y el legado de sus gentes, encontramos en la Tierra Media un lugar para imaginar, aprender y compartir.</p></div>
+      <div class="section-heading"><div><p class="eyebrow dark">01 / NUESTRAS RAÍCES</p><h2 id="lore-title">Una historia junto<br>al <em>Gran Mar.</em></h2></div><p class="section-lead" id="lore-intro">Inspirados por las costas de Gondor y el legado de sus gentes, encontramos en la Tierra Media un lugar para imaginar, aprender y compartir.</p></div>
       <div id="lore-chronicle" class="lore-chronicle"><p class="small-note">La historia oficial del Smial se publicará aquí.</p></div>
     </section>
 
     <section class="events-section" id="eventos">
-      <div class="events-inner"><div class="section-heading light-heading"><div><p class="eyebrow">02 / ENCUENTROS</p><h2>Las historias<br>se viven <em>juntos.</em></h2></div><p class="section-lead">Reuniones, conversaciones, lecturas y actividades para compartir nuestra afición por Tolkien.</p></div>
+      <div class="events-inner"><div class="section-heading light-heading"><div><p class="eyebrow">02 / ENCUENTROS</p><h2 id="events-title">Las historias<br>se viven <em>juntos.</em></h2></div><p class="section-lead" id="events-intro">Reuniones, conversaciones, lecturas y actividades para compartir nuestra afición por Tolkien.</p></div>
       <div id="event-placeholder-list" class="public-events"></div><div class="event-placeholder"><div class="event-date"><span>PRÓXIMAMENTE</span><strong>✧</strong></div><div class="event-info"><p class="card-kicker">AGENDA DEL SMIAL</p><h3>Los próximos encuentros se anunciarán aquí</h3><p>Estamos preparando este espacio para publicar fechas, lugares y detalles de nuestras actividades.</p></div><a href="#registro" class="event-arrow" aria-label="Ir a registro">↗</a></div>
       <div class="events-foot"><span>✦</span> CADA ENCUENTRO ES UNA NUEVA PÁGINA DE NUESTRA HISTORIA</div></div>
     </section>
 
     <section class="section members-section" id="miembros">
-      <div class="section-heading"><div><p class="eyebrow dark">03 / PERSONAJES</p><h2>Rostros e historias<br>de <em>nuestra casa.</em></h2></div><p class="section-lead">Cada integrante puede dar vida a un personaje con identidad, historia y lugar dentro del universo narrativo del Smial. Las Medallas de Dol Amroth reconocen la ayuda, la iniciativa, la organización y los aportes que fortalecen nuestra comunidad.</p></div>
+      <div class="section-heading"><div><p class="eyebrow dark">03 / PERSONAJES</p><h2 id="members-title">Rostros e historias<br>de <em>nuestra casa.</em></h2></div><p class="section-lead" id="members-intro">Cada integrante puede dar vida a un personaje con identidad, historia y lugar dentro del universo narrativo del Smial. Las Medallas de Dol Amroth reconocen la ayuda, la iniciativa, la organización y los aportes que fortalecen nuestra comunidad.</p></div>
       <div class="character-submit"><h3>Presenta tu personaje</h3><p>Completa tu ficha. Un administrador revisará la solicitud antes de publicarla.</p><form id="character-form" class="data-form"><label for="character-image">Retrato del personaje (cuadrado, 512 × 512 px)</label><input id="character-image" name="image" type="file" accept="image/jpeg,image/png,image/webp" required><label for="real-name">Nombre real</label><input id="real-name" name="real_name" maxlength="120" required><label for="tolkien-name">Nombre tolkiendil</label><input id="tolkien-name" name="tolkien_name" maxlength="120" required><label for="character-role">Cargo</label><input id="character-role" name="role_title" maxlength="120" placeholder="Ej. Guardián, bardo, explorador..." required><label for="character-story">Historia <span id="story-count">0/1000</span></label><textarea id="character-story" name="story" maxlength="1000" rows="5" required></textarea><label for="character-achievements">Logros</label><textarea id="character-achievements" name="achievements" rows="3" placeholder="Hazañas y aportes de tu personaje"></textarea><button class="button button-dark" type="submit">Enviar a aprobación <span>→</span></button><p id="character-feedback" class="form-feedback" role="status"></p></form></div><div id="approved-members" class="approved-members"></div>
     </section>
 
     <section class="shadow-section" id="la-sombra">
       <div class="shadow-art"><div class="shadow-orbit orbit-one"></div><div class="shadow-orbit orbit-two"></div><div class="shadow-eye">◉</div><div class="shadow-mountain"></div><div class="shadow-word">MORDOR</div></div>
-      <div class="shadow-content"><p class="eyebrow">04 / CRÓNICAS DE LA RESISTENCIA</p><h2>La Sombra<br>se <em>extiende.</em></h2><p>Desde el Este crece una amenaza. La Sombra de Mordor se cierne sobre nuestras tierras y solo la unión de la comunidad podrá mantenerla a raya.</p><p>Cada reunión y cada evento en que participamos representa un paso más en esta resistencia colectiva. Cada encuentro activa una crónica ficticia cuyo desenlace depende de la asistencia y de los logros reconocidos con medallas. Nuestras acciones fuera de la historia alimentan las hazañas de nuestros personajes dentro de ella.</p><div class="shadow-status"><span class="status-dot"></span><div><strong>LA CRÓNICA DEL SMIAL</strong><small>La participación de cada personaje fortalece la resistencia colectiva.</small></div></div><div id="shadow-active-event" class="shadow-active-event"><p>No hay acontecimientos activos.</p></div>
+      <div class="shadow-content"><p class="eyebrow">04 / CRÓNICAS DE LA RESISTENCIA</p><h2 id="shadow-title">La Sombra<br>se <em>extiende.</em></h2><p id="shadow-intro">Desde el Este crece una amenaza. La Sombra de Mordor se cierne sobre nuestras tierras y solo la unión de la comunidad podrá mantenerla a raya.</p><p>Cada reunión y cada evento en que participamos representa un paso más en esta resistencia colectiva. Cada encuentro activa una crónica ficticia cuyo desenlace depende de la asistencia y de los logros reconocidos con medallas. Nuestras acciones fuera de la historia alimentan las hazañas de nuestros personajes dentro de ella.</p><div class="shadow-status"><span class="status-dot"></span><div><strong>LA CRÓNICA DEL SMIAL</strong><small>La participación de cada personaje fortalece la resistencia colectiva.</small></div></div><div id="shadow-active-event" class="shadow-active-event"><p>No hay acontecimientos activos.</p></div>
         <div class="shadow-rules"><h3>Esperanza y Sombra</h3><p>Cada personaje y el Smial tienen una reserva común de 10 puntos: Esperanza + Sombra = 10. Todos comienzan con 7 de Esperanza y 3 de Sombra. Cada punto que pierde la Esperanza lo gana la Sombra, y viceversa. El mínimo es 1 de Esperanza y el máximo 9 de Sombra.</p><div class="shadow-meter-grid"><article class="shadow-meter"><span>ESPERANZA DEL SMIAL</span><strong id="smial-light">1/10</strong><div class="meter-track"><i id="smial-light-bar" style="width:10%"></i></div></article><article class="shadow-meter"><span>SOMBRA DEL SMIAL</span><strong id="smial-shadow">1/10</strong><div class="meter-track shadow-track"><i id="smial-shadow-bar" style="width:10%"></i></div></article></div><p id="smial-state-label" class="smial-state-label">La resistencia comienza.</p><p id="smial-counts" class="smial-counts"></p></div>
         <div class="shadow-rules"><h3>La historia de cada personaje</h3><p>Asistir a un evento o reunión suma 1 Esperanza y resta 1 Sombra. No asistir resta 1 Esperanza y suma 1 Sombra. El total siempre es 10 puntos.</p><p>Cuando la Esperanza baja de 3 (2 o 1), el personaje queda Consumido y pasa a ser antagonista del lore. Puede regresar participando: al recuperar 3 o más de Esperanza deja de estar Consumido. No necesita misiones ni condiciones especiales. La misma regla se aplica al Smial.</p><p>En el Smial, cada asistencia genera una marca de Esperanza y cada ausencia una marca de Sombra. Cada 3 marcas de asistencia suman 1 Esperanza y restan 1 Sombra colectiva; cada 3 marcas de ausencia restan 1 Esperanza y suman 1 Sombra. Las marcas sobrantes se conservan para el siguiente evento.</p></div><a class="button button-outline" href="#eventos">Participa en los encuentros <span>→</span></a></div>
     </section>
 
     <section class="section about-section" id="nosotros">
       <div class="about-emblem"><svg viewBox="0 0 240 280" aria-label="Emblema inspirado en un cisne"><path d="M120 8 218 44v78c0 69-40 116-98 150-58-34-98-81-98-150V44L120 8Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M50 184c38-2 58-27 69-75 9 27 29 42 68 43-22 27-48 41-83 41-21 0-38-3-54-9Zm68-75c12-41 35-62 76-66-15 25-19 48-13 72-25-7-45-7-63-6Z" fill="currentColor"/><path d="M48 203c44 15 100 14 144-4M77 226c29 8 60 8 87 0" fill="none" stroke="currentColor" stroke-width="2"/><text x="120" y="260" text-anchor="middle" fill="currentColor" font-size="10" letter-spacing="3">DOL AMROTH</text></svg></div>
-      <div class="about-copy"><p class="eyebrow dark">05 / QUIÉNES SOMOS</p><h2>Una casa para<br>la <em>imaginación.</em></h2><p>El Smial Dol Amroth de Chile es un espacio de encuentro para personas que comparten su interés por el legendarium de J. R. R. Tolkien. Nos reúne la lectura, la conversación, la creatividad y el gusto por construir comunidad.</p><p>Queremos que este sitio sea la puerta de entrada a nuestras actividades y también el archivo vivo de las historias que vamos creando como grupo.</p><a class="inline-link" href="#registro">Conoce cómo participar <span>→</span></a></div>
+      <div class="about-copy"><p class="eyebrow dark">05 / QUIÉNES SOMOS</p><h2 id="about-title">Una casa para<br>la <em>imaginación.</em></h2><p id="about-intro">El Smial Dol Amroth de Chile es un espacio de encuentro para personas que comparten su interés por el legendarium de J. R. R. Tolkien. Nos reúne la lectura, la conversación, la creatividad y el gusto por construir comunidad.</p><p id="about-text">Queremos que este sitio sea la puerta de entrada a nuestras actividades y también el archivo vivo de las historias que vamos creando como grupo.</p><a class="inline-link" href="#registro">Conoce cómo participar <span>→</span></a></div>
     </section>
 
-    <section class="register-section" id="registro"><div class="register-decoration">✧</div><p class="eyebrow">06 / EL CAMINO TE ESPERA</p><h2>Hay sitio en la mesa<br>para <em>una historia más.</em></h2><p>¿Te interesa Tolkien, quieres conocer nuestras actividades o formar parte del Smial? Déjanos tus datos y nos pondremos en contacto cuando el registro esté habilitado.</p>
+    <section class="register-section" id="registro"><div class="register-decoration">✧</div><p class="eyebrow">06 / EL CAMINO TE ESPERA</p><h2 id="register-title">Hay sitio en la mesa<br>para <em>una historia más.</em></h2><p id="register-intro">¿Te interesa Tolkien, quieres conocer nuestras actividades o formar parte del Smial? Déjanos tus datos y nos pondremos en contacto cuando el registro esté habilitado.</p>
       <form class="register-form" id="register-form"><label for="name">Tu nombre</label><input id="name" name="name" type="text" placeholder="¿Cómo te llamas?" required><label for="email">Correo electrónico</label><input id="email" name="email" type="email" placeholder="nombre@correo.com" required><label for="message">Cuéntanos qué te interesa (opcional)</label><textarea id="message" name="message" rows="3" placeholder="Lecturas, eventos, personajes..."></textarea><button class="button button-light" type="submit">Preparar solicitud <span>→</span></button><p class="form-feedback" id="form-feedback" role="status">El formulario es una maqueta inicial. El envío se conectará en una próxima etapa.</p></form>
     </section>
     <section class="section admin-section" id="admin">
@@ -126,11 +126,7 @@
           </div>
           <div class="library-columns">
             <div class="library-list-panel">
-              <h4>Acontecimientos preconfigurados</h4>
-              <div id="lore-scenario-list"></div>
-            </div>
-            <div class="library-list-panel">
-              <h4>Historias preconfiguradas</h4>
+              <h4>Historias y acontecimientos preconfigurados</h4>
               <div id="lore-scenario-list"></div>
             </div>
             <form id="lore-scenario-form" class="admin-form library-editor-form">
@@ -169,13 +165,41 @@
             </form>
           </div>
         </section>
+
+        <section class="admin-library site-customizer" id="site-customizer">
+          <h3>Personalización del portal</h3>
+          <p>Modifica la portada, las imágenes, los textos institucionales y la apariencia general. Los cambios se guardan en el portal público sin alterar el lore ni los datos de los miembros.</p>
+          <form id="site-settings-form" class="admin-form">
+            <div class="customizer-grid">
+              <div class="customizer-group">
+                <h4>Portada e identidad</h4>
+                <label>Frase superior<input  data-setting="announcement" type="text"></input></label><label>Nombre del Smial<input  data-setting="site_title" type="text"></input></label><label>Subtítulo del emblema<input  data-setting="brand_subtitle" type="text"></input></label><label>Texto pequeño de portada<input  data-setting="hero_eyebrow" type="text"></input></label><label>Título principal<textarea rows="3" data-setting="hero_title" ></textarea></label><label>Presentación de portada<textarea rows="3" data-setting="hero_intro" ></textarea></label><label>Texto inferior de portada<input  data-setting="hero_caption" type="text"></input></label>
+                <label>Imagen de fondo de portada<input type="file" id="site-hero-image" data-site-image="hero_image_path" accept="image/jpeg,image/png,image/webp"></label><div id="site-hero-preview" class="site-image-preview"></div>
+                <label>Emblema del encabezado<input type="file" id="site-logo-image" data-site-image="logo_image_path" accept="image/jpeg,image/png,image/webp"></label><div id="site-logo-preview" class="site-image-preview"></div>
+              </div>
+              <div class="customizer-group">
+                <h4>Textos de secciones</h4>
+                <label>Título de Lore<textarea rows="3" data-setting="lore_title" ></textarea></label><label>Presentación de Lore<textarea rows="3" data-setting="lore_intro" ></textarea></label><label>Título de Eventos<textarea rows="3" data-setting="events_title" ></textarea></label><label>Presentación de Eventos<textarea rows="3" data-setting="events_intro" ></textarea></label><label>Título de Miembros<textarea rows="3" data-setting="members_title" ></textarea></label><label>Presentación de Miembros<textarea rows="3" data-setting="members_intro" ></textarea></label><label>Título de La Sombra<textarea rows="3" data-setting="shadow_title" ></textarea></label><label>Presentación de La Sombra<textarea rows="3" data-setting="shadow_intro" ></textarea></label><label>Título de Quiénes somos<textarea rows="3" data-setting="about_title" ></textarea></label><label>Presentación institucional<textarea rows="3" data-setting="about_intro" ></textarea></label><label>Segundo párrafo institucional<textarea rows="3" data-setting="about_text" ></textarea></label><label>Título de Registro<textarea rows="3" data-setting="register_title" ></textarea></label><label>Texto de Registro<textarea rows="3" data-setting="register_intro" ></textarea></label><label>Texto del pie de página<input  data-setting="footer_text" type="text"></input></label>
+              </div>
+              <div class="customizer-group">
+                <h4>Apariencia</h4>
+                <label>Fondo general<input  data-setting="paper" type="color"></input></label><label>Texto principal<input  data-setting="ink" type="color"></input></label><label>Azul oscuro<input  data-setting="navy" type="color"></input></label><label>Azul secundario<input  data-setting="blue" type="color"></input></label><label>Dorado<input  data-setting="gold" type="color"></input></label>
+                <label>Tipografía de títulos<select data-setting="serif"><option>Cinzel</option><option>Georgia</option><option>Times New Roman</option></select></label>
+                <label>Tipografía de texto<select data-setting="sans"><option>Manrope</option><option>Arial</option><option>Trebuchet MS</option></select></label>
+              </div>
+            </div>
+            <div class="editor-actions"><button class="button button-dark" type="submit">Guardar y publicar cambios</button><button class="button button-outline-dark" id="site-settings-reset" type="button">Restaurar diseño original</button></div>
+            <p id="site-settings-feedback" class="form-feedback" role="status"></p>
+          </form>
+        </section>
+
         <button class="button button-outline-dark" id="logout-button" type="button">Cerrar sesión</button>
       </div>
     </section>
   </main>
 
-  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p>Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><span>NO OFICIAL · COMUNIDAD DE FANS</span><span id="app-version">VERSIÓN 1.4.0</span></div></footer>
+  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p id="footer-text">Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><span>NO OFICIAL · COMUNIDAD DE FANS</span><span id="app-version">VERSIÓN 1.5.0</span></div></footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>\n  <script src="script.js?v=1.4.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>\n  <script src="script.js?v=1.5.0"></script>
 </body>
 </html>
