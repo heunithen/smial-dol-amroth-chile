@@ -37,6 +37,7 @@ function applySiteSettings(){
  const s={...SITE_DEFAULTS,...siteSettings};
  const root=document.documentElement;
  ['paper','ink','navy','blue','gold'].forEach(k=>root.style.setProperty('--'+k,s[k]||SITE_DEFAULTS[k]));
+ const themeMeta=document.querySelector('meta[name="theme-color"]');if(themeMeta)themeMeta.content=s.navy||SITE_DEFAULTS.navy;
  root.style.setProperty('--serif','"'+String(s.serif||'Cinzel').replace(/[^a-zA-Z ]/g,'')+'",Georgia,serif');
  root.style.setProperty('--sans','"'+String(s.sans||'Manrope').replace(/[^a-zA-Z ]/g,'')+'",Arial,sans-serif');
  const text=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value||'';};
@@ -50,8 +51,8 @@ function applySiteSettings(){
  document.title=(s.site_title||'SMIAL DOL AMROTH')+' | Chile';
  const hero=s.hero_image_path?settingImageUrl(s.hero_image_path):'';
  if(hero)root.style.setProperty('--hero-image','url("'+hero.replace(/"/g,'%22')+'")');else root.style.removeProperty('--hero-image');
- const logo=document.getElementById('brand-logo-image'),svg=document.querySelector('.brand-mark svg');
- if(s.logo_image_path){logo.src=settingImageUrl(s.logo_image_path);logo.hidden=false;if(svg)svg.hidden=true;}else{logo.removeAttribute('src');logo.hidden=true;if(svg)svg.hidden=false;}
+ const logo=document.getElementById('brand-logo-image'),svg=document.querySelector('.brand-mark svg'),aboutLogo=document.getElementById('about-logo-image'),aboutSvg=document.querySelector('.about-emblem svg');
+ if(s.logo_image_path){const logoUrl=settingImageUrl(s.logo_image_path);logo.src=logoUrl;logo.hidden=false;if(svg)svg.hidden=true;aboutLogo.src=logoUrl;aboutLogo.hidden=false;if(aboutSvg)aboutSvg.hidden=true;}else{logo.removeAttribute('src');logo.hidden=true;if(svg)svg.hidden=false;aboutLogo.removeAttribute('src');aboutLogo.hidden=true;if(aboutSvg)aboutSvg.hidden=false;}
 }
 function fillSiteSettingsForm(){
  settingFields.forEach(el=>{const key=el.dataset.setting;el.value=siteSettings[key]??SITE_DEFAULTS[key]??'';});
