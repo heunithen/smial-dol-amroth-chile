@@ -441,3 +441,71 @@ body{background:var(--paper);color:var(--text-color)}
  .lore-chapter .event-lore-content p{margin-bottom:1.1em}
  .lore-chapter .event-lore-content blockquote{padding:12px 15px}
 }
+
+
+/* v1.9.9 — tema administrativo completamente independiente del portal público */
+#admin.admin-section{
+  --paper:#e9e8e2;--ink:#1a2939;--text-color:#26384a;--heading-color:#172b40;
+  --muted:#687582;--muted-color:#687582;--silver:#cbd2d0;--border-color:#cbd1ce;
+  --navy:#101f35;--navy2:#172b46;--blue:#24486b;--gold:#9b8355;
+  --serif:"Cinzel",Georgia,serif;--sans:"Manrope",Arial,sans-serif;
+  display:block;background:#e9e8e2!important;color:#26384a!important;
+  font-family:"Manrope",Arial,sans-serif!important;
+}
+#admin.admin-section :where(h1,h2,h3,h4,h5,h6){color:#20364d!important;font-family:"Cinzel",Georgia,serif!important}
+#admin.admin-section :where(p,label,small,span,div){font-family:"Manrope",Arial,sans-serif}
+#admin.admin-section :where(p){color:#526171!important}
+#admin.admin-section>h2{color:#172b40!important}
+#admin.admin-section .eyebrow{color:#8b7954!important}
+#admin.admin-section .admin-hint,
+#admin.admin-section .form-feedback,
+#admin.admin-section .admin-top p,
+#admin.admin-section .admin-library>p{color:#687681!important}
+#admin.admin-section .admin-library,
+#admin.admin-section .admin-box,
+#admin.admin-section .attendance-manager,
+#admin.admin-section .library-list-panel,
+#admin.admin-section .library-editor-form,
+#admin.admin-section .customizer-group,
+#admin.admin-section .admin-achievement-row,
+#admin.admin-section .admin-item,
+#admin.admin-section .approved-card{
+  background:#f5f3ed!important;border-color:#cbd2d0!important;color:#26384a!important;
+}
+#admin.admin-section .customizer-group{background:#eeede8!important}
+#admin.admin-section .admin-library h3,
+#admin.admin-section .library-list-panel h4,
+#admin.admin-section .library-editor-form h4,
+#admin.admin-section .customizer-group h4,
+#admin.admin-section .admin-achievement-heading strong{color:#20364d!important}
+#admin.admin-section :where(input:not([type=checkbox]):not([type=radio]):not([type=file]),textarea,select,.rich-editor){
+  background:#fff!important;border:1px solid #c4cdce!important;color:#1a2939!important;
+  font-family:"Manrope",Arial,sans-serif!important;
+}
+#admin.admin-section :where(input,textarea,select)::placeholder{color:#87919a!important;opacity:1}
+#admin.admin-section :where(input,textarea,select):focus,
+#admin.admin-section .rich-editor:focus{outline:1px solid #9b8355!important;border-color:#9b8355!important}
+#admin.admin-section .rich-toolbar{background:#e8e7e1!important;border-color:#cbd2d0!important}
+#admin.admin-section .rich-toolbar button,
+#admin.admin-section .editor-image-button{background:#f8f7f2!important;color:#26384a!important;border:1px solid #cbd2d0!important}
+#admin.admin-section .rich-editor{min-height:190px;color:#1a2939!important;line-height:1.75}
+#admin.admin-section .button-dark{background:#1b3048!important;color:#f5f6f7!important;border-color:#1b3048!important}
+#admin.admin-section .button-outline-dark{background:transparent!important;color:#263c52!important;border-color:#83909a!important}
+#admin.admin-section .button-dark:hover{background:#294967!important}
+#admin.admin-section .button-outline-dark:hover{background:#e5e8e5!important}
+#admin.admin-section .admin-item h4,
+#admin.admin-section .admin-item p,
+#admin.admin-section .admin-event,
+#admin.admin-section .admin-event small,
+#admin.admin-section .attendance-manager>p{color:#526171!important}
+#admin.admin-section .admin-event{border-color:#cbd1ce!important}
+#admin.admin-section .admin-top{border-color:#c7cecc!important}
+#admin.admin-section .library-row{border-color:#d2d7d4!important;color:#26384a!important}
+#admin.admin-section .library-row b{color:#20364d!important}
+#admin.admin-section .admin-panel[hidden]{display:none!important}
+@media(max-width:780px){
+ #admin.admin-section{padding:65px 7%!important}
+ #admin.admin-section .admin-library{padding:16px!important}
+ #admin.admin-section .admin-panel{min-width:0}
+ #admin.admin-section .admin-form :where(input,textarea,select){max-width:100%}
+}
