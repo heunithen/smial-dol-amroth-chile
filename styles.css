@@ -557,3 +557,8 @@ body{background:var(--paper);color:var(--text-color)}
 #admin .admin-tab-panel>h3:first-child{margin-top:12px}
 #admin .admin-tab-panel>.admin-library{margin-top:0}
 @media(max-width:640px){#admin .admin-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}#admin .admin-tab{padding:11px 8px}}
+
+
+/* El área administrativa solo se muestra al entrar explícitamente en #admin */
+#admin.admin-section{display:none}
+#admin.admin-section:target{display:block}
