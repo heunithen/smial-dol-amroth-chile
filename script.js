@@ -77,14 +77,14 @@ function buildSettingRichEditors(){
   const key=field.dataset.setting, original=field;
   const wrapper=document.createElement('div');wrapper.className='setting-rich-field';
   const toolbar=document.createElement('div');toolbar.className='rich-toolbar setting-rich-toolbar';toolbar.setAttribute('role','toolbar');toolbar.setAttribute('aria-label','Formato de texto');
-  const editor=document.createElement('div');editor.className='rich-editor setting-rich-editor';editor.contentEditable='true';editor.dataset.setting=key;editor.dataset.richReady='true';editor.dataset.placeholder='Escribe aquí...';editor.setAttribute('role','textbox');editor.setAttribute('aria-multiline','true');
+  const editor=document.createElement('div');editor.className='rich-editor setting-rich-editor';editor.contentEditable='true';editor.dataset.settingKey=key;editor.dataset.richReady='true';editor.dataset.placeholder='Escribe aquí...';editor.setAttribute('role','textbox');editor.setAttribute('aria-multiline','true');
   const makeButton=(label,title,command,value)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.title=title;b.setAttribute('aria-label',title);b.dataset.settingCommand=command;if(value)b.dataset.settingValue=value;toolbar.append(b);};
   makeButton('B','Negrita','bold');makeButton('I','Cursiva','italic');makeButton('U','Subrayado','underline');makeButton('S','Tachado','strikeThrough');
   const sep=document.createElement('span');sep.className='rich-toolbar-separator';toolbar.append(sep);
   const size=document.createElement('select');size.className='setting-font-size';size.title='Tamaño de letra';size.setAttribute('aria-label','Tamaño de letra');[['','Tamaño'],['1','Muy pequeño'],['2','Pequeño'],['3','Normal'],['4','Mediano'],['5','Grande'],['6','Muy grande'],['7','Enorme']].forEach(([v,t])=>{const o=document.createElement('option');o.value=v;o.textContent=t;size.append(o);});toolbar.append(size);
   const color=document.createElement('input');color.type='color';color.value='#26384a';color.title='Color del texto';color.setAttribute('aria-label','Color del texto');toolbar.append(color);
   const clean=document.createElement('button');clean.type='button';clean.textContent='Limpiar';clean.title='Quitar formato';clean.dataset.settingCommand='removeFormat';toolbar.append(clean);
-  original.hidden=true;original.removeAttribute('data-setting');original.dataset.settingStorage=key;
+  original.hidden=true;original.dataset.settingStorage=key;
   wrapper.append(toolbar,editor);original.insertAdjacentElement('afterend',wrapper);
   editor.innerHTML=richEditorValue(original.value||'');
   const sync=()=>{original.value=editor.innerHTML;siteSettings[key]=editor.innerHTML;applySiteSettings();};
@@ -166,7 +166,7 @@ function applySiteSettings(){
  applyDesignOverrides();
 }
 function fillSiteSettingsForm(){
- settingFields.forEach(el=>{const key=el.dataset.setting;const value=siteSettings[key]??SITE_DEFAULTS[key]??'';el.innerHTML=richEditorValue(value);const storage=document.querySelector('[data-setting-storage="'+key+'"]');if(storage)storage.value=value;});
+ settingFields.forEach(el=>{const key=el.dataset.setting;const value=siteSettings[key]??SITE_DEFAULTS[key]??'';el.value=value;const editor=el.parentElement.querySelector('.setting-rich-editor');if(editor)editor.innerHTML=richEditorValue(value);});
  [['hero','hero_image_path'],['logo','logo_image_path'],['about-logo','about_logo_image_path'],['shadow-background','shadow_background_image_path']].forEach(([kind,key])=>{const host=document.getElementById('site-'+kind+'-preview'),url=settingImageUrl(siteSettings[key]);if(host)host.innerHTML=url?'<img src="'+escapeHtml(url)+'" alt="Imagen actual">':'Sin imagen personalizada';});
 }
 async function waitForInitialDesignAssets(){
@@ -214,7 +214,7 @@ async function loadSiteSettingsAdmin(){
  if(error){say('site-settings-feedback','No se pudo cargar la configuración: '+error.message);return;}
  siteSettings={...SITE_DEFAULTS,...(data?.settings||{})};fillSiteSettingsForm();applySiteSettings();await loadSavedSiteDesigns();
 }
-settingFields.forEach(el=>el.addEventListener('input',()=>{siteSettings[el.dataset.setting]=el.innerHTML;applySiteSettings();}));
+
 document.querySelectorAll('[data-site-image]').forEach(input=>input.addEventListener('change',async()=>{
  const file=input.files?.[0];if(!file)return;
  const imageLabels={hero_image_path:'imagen de portada',logo_image_path:'emblema del encabezado',about_logo_image_path:'emblema de Quiénes somos',shadow_background_image_path:'fondo de La Sombra'};const label=imageLabels[input.dataset.siteImage]||'imagen';
@@ -613,7 +613,7 @@ async function loadEventMedalManager(eventId,members){
 }
 
 function sanitizeRich(value=''){
- const config={ALLOWED_TAGS:['p','br','strong','b','em','i','u','h2','h3','h4','ul','ol','li','blockquote','img','a'],ALLOWED_ATTR:['href','src','alt','title','target','rel'],ALLOW_DATA_ATTR:false};
+ const config={ALLOWED_TAGS:['p','br','strong','b','em','i','u','h2','h3','h4','ul','ol','li','blockquote','img','a','font'],ALLOWED_ATTR:['href','src','alt','title','target','rel','color','size'],ALLOW_DATA_ATTR:false};
  if(window.DOMPurify)return window.DOMPurify.sanitize(String(value),config);
  return escapeHtml(value).replace(/\n/g,'<br>');
 }
@@ -622,6 +622,16 @@ function richEditorValue(value=''){
  return /<\/?[a-z][\s\S]*>/i.test(text)?sanitizeRich(text):text?'<p>'+escapeHtml(text).replace(/\n/g,'<br>')+'</p>':'';
 }
 function initRichEditors(){
+ document.querySelectorAll('.rich-toolbar').forEach(toolbar=>{
+  if(toolbar.dataset.extended==='true')return;toolbar.dataset.extended='true';
+  const target=toolbar.querySelector('[data-editor-target]')?.dataset.editorTarget;if(!target)return;
+  const sep=document.createElement('span');sep.className='rich-toolbar-separator';toolbar.append(sep);
+  const size=document.createElement('select');size.className='setting-font-size';size.title='Tamaño de letra';size.setAttribute('aria-label','Tamaño de letra');
+  [['','Tamaño'],['1','Muy pequeño'],['2','Pequeño'],['3','Normal'],['4','Mediano'],['5','Grande'],['6','Muy grande'],['7','Enorme']].forEach(([v,t])=>{const o=document.createElement('option');o.value=v;o.textContent=t;size.append(o);});toolbar.append(size);
+  const color=document.createElement('input');color.type='color';color.value='#26384a';color.title='Color del texto';color.setAttribute('aria-label','Color del texto');toolbar.append(color);
+  size.addEventListener('change',()=>{if(!size.value)return;const editor=document.getElementById(target);editor?.focus();document.execCommand('fontSize',false,size.value);editor?.dispatchEvent(new Event('input',{bubbles:true}));size.value='';});
+  color.addEventListener('input',()=>{const editor=document.getElementById(target);editor?.focus();document.execCommand('foreColor',false,color.value);editor?.dispatchEvent(new Event('input',{bubbles:true}));});
+ });
  document.querySelectorAll('[data-editor-command]').forEach(button=>{
   button.addEventListener('mousedown',e=>e.preventDefault());
   button.addEventListener('click',()=>{
