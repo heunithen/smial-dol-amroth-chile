@@ -184,8 +184,8 @@ function escapeHtml(value=''){return String(value).replace(/[&<>"']/g,ch=>({'&':
 function formatLoreDate(value=''){if(!value)return '';const match=String(value).match(/^(\d{4})-(\d{2})-(\d{2})/);if(!match)return '';const date=new Date(Date.UTC(Number(match[1]),Number(match[2])-1,Number(match[3]),12));return new Intl.DateTimeFormat('es-CL',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(date);}
 function highlightLoreDates(root){
  if(!root)return;
- // Fechas habituales escritas en español: 12 de mayo de 2024, 12/05/2024 o 12-05-24.
- const datePattern=/\b(?:\d{1,2}\s+de\s+(?:enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|setiembre|octubre|noviembre|diciembre)(?:\s+de\s+\d{4})?|\d{1,2}[\/-]\d{1,2}[\/-]\d{2,4})\b/gi;
+ // Fechas del Lore: fechas civiles y años de la Tierra Media (p. ej. 3019 T. E.).
+ const datePattern=/\b(?:\d{3,4}\s*T\.?\s*E\.?|\d{1,2}\s+de\s+(?:enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|setiembre|octubre|noviembre|diciembre)(?:\s+de\s+\d{4})?|\d{1,2}[\/-]\d{1,2}[\/-]\d{2,4})\b/gi;
  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode(node){
   return node.parentElement?.closest('a, .lore-date, script, style, .lore-inline-date')?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT;
  }});
