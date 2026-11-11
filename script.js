@@ -37,6 +37,7 @@ function applySiteSettings(){
  const s={...SITE_DEFAULTS,...siteSettings};
  const root=document.documentElement;
  ['paper','ink','navy','blue','gold'].forEach(k=>root.style.setProperty('--'+k,s[k]||SITE_DEFAULTS[k]));
+ root.style.setProperty('--navy2',s.navy||SITE_DEFAULTS.navy);
  const themeMeta=document.querySelector('meta[name="theme-color"]');if(themeMeta)themeMeta.content=s.navy||SITE_DEFAULTS.navy;
  root.style.setProperty('--serif','"'+String(s.serif||'Cinzel').replace(/[^a-zA-Z ]/g,'')+'",Georgia,serif');
  root.style.setProperty('--sans','"'+String(s.sans||'Manrope').replace(/[^a-zA-Z ]/g,'')+'",Arial,sans-serif');
