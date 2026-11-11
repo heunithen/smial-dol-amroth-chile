@@ -190,7 +190,7 @@ charForm.addEventListener('submit',async e=>{
   const bitmap=await createImageBitmap(file);
   if(bitmap.width!==512||bitmap.height!==512)throw new Error('La imagen debe medir exactamente 512 × 512 píxeles.');
   const image_path=await uploadImage(file,'characters');
-  const payload={real_name:document.getElementById('real-name').value.trim(),tolkien_name:document.getElementById('tolkien-name').value.trim(),role_title:document.getElementById('character-role').value.trim(),story:story.value.trim(),image_path,status:'pending'};
+  const {data:{session}}=await db.auth.getSession();const payload={user_id:session?.user?.id||null,real_name:document.getElementById('real-name').value.trim(),tolkien_name:document.getElementById('tolkien-name').value.trim(),role_title:document.getElementById('character-role').value.trim(),story:story.value.trim(),image_path,status:'pending'};
   const {error}=await db.from('characters').insert(payload);if(error)throw error;
   charForm.reset();say('story-count','0/1000');say('character-feedback','Solicitud enviada. Quedará pendiente hasta que un administrador la revise.');
  }catch(err){say('character-feedback',err.message||'No se pudo enviar la solicitud.');}finally{button.disabled=false;}
@@ -462,56 +462,42 @@ async function loadAdminEvents(){
  host.querySelectorAll('[data-delete-event]').forEach(button=>button.addEventListener('click',async()=>{if(!confirm('¿Eliminar este evento?'))return;const {error}=await db.from('events').delete().eq('id',button.dataset.deleteEvent);if(error)alert(error.message);await loadAdminEvents();await loadEvents();}));
 }
 async function openAttendance(eventId){
- const host=document.getElementById('attendance-manager');host.textContent='Cargando personajes y medallas...';
- const [{data:characters,error:charError},{data:existing,error:attendanceError},{data:eventRow}] = await Promise.all([
-  db.from('characters').select('id,tolkien_name,role_title,hope_level,shadow_level').eq('status','approved').order('tolkien_name'),
-  db.from('event_attendance').select('character_id,attended').eq('event_id',eventId),
+ const host=document.getElementById('attendance-manager');host.textContent='Cargando los 16 miembros...';
+ const [{data:members,error:me},{data:existing,error:ae},{data:eventRow}]=await Promise.all([
+  db.from('smial_members').select('id,member_name,hope_level,shadow_level,user_id').order('member_name'),
+  db.from('smial_member_attendance').select('member_id,attended').eq('event_id',eventId),
   db.from('events').select('title,attendance_closed,lore_title').eq('id',eventId).single()
  ]);
- if(charError||attendanceError||!eventRow){host.textContent=(charError||attendanceError)?.message||'No se pudo cargar el evento.';return;}
- if(eventRow.attendance_closed){host.textContent='La asistencia de este evento ya fue cerrada.';return;}
- const present=new Set((existing||[]).filter(row=>row.attended).map(row=>row.character_id));
- host.innerHTML='<h4>'+escapeHtml(eventRow.title)+'</h4><p>Marca quién asistió. Los demás personajes aprobados se registrarán como ausentes al cerrar. Después puedes reconocer aportes con medallas.</p><form id="attendance-form"><div class="attendance-list">'+characters.map(c=>'<label><input type="checkbox" name="attended" value="'+c.id+'" '+(present.has(c.id)?'checked':'')+'><span><strong>'+escapeHtml(c.tolkien_name)+'</strong><small>'+escapeHtml(c.role_title)+(c.hope_level<3?' · CONSUMIDO':'')+'</small></span></label>').join('')+'</div><button class="button button-dark" type="submit">Guardar asistencia</button> <button class="button button-outline-dark" id="close-attendance" type="button">Cerrar evento y resolver crónica</button><p id="attendance-feedback" class="form-feedback" role="status"></p></form><div id="event-medal-manager" class="event-medal-manager"><h4>Medallas de Dol Amroth</h4><p>Reconoce a quienes ayudaron, organizaron, aportaron recursos o enriquecieron la actividad. Cada medalla otorgada suma un punto al resultado de la crónica.</p><div id="event-medal-awards"></div><form id="event-medal-form" class="medal-award-form"><label for="medal-character">Miembro</label><select id="medal-character" required>'+characters.map(c=>'<option value="'+c.id+'">'+escapeHtml(c.tolkien_name)+'</option>').join('')+'</select><label for="medal-type">Medalla</label><select id="medal-type" required></select><label for="medal-reason">Motivo del reconocimiento</label><input id="medal-reason" maxlength="300" placeholder="Ej. Ayudó a preparar el lugar y recibir a los asistentes" required><button class="button button-dark" type="submit">Otorgar medalla</button><p id="medal-feedback" class="form-feedback" role="status"></p></form></div>';
+ if(me||ae||!eventRow){host.textContent=(me||ae)?.message||'No se pudo cargar el evento.';return;}
+ if(eventRow.attendance_closed){host.textContent='La asistencia ya fue cerrada.';return;}
+ if(members.length!==16){host.textContent='Error: se esperaban 16 miembros y se encontraron '+members.length+'.';return;}
+ const present=new Set((existing||[]).filter(x=>x.attended).map(x=>x.member_id));
+ host.innerHTML='<h4>'+escapeHtml(eventRow.title)+'</h4><p>Registra a los 16 miembros, tengan o no personaje. Los ausentes pierden 1 Esperanza; cada medalla suma 1 adicional.</p><form id="attendance-form"><div class="attendance-list">'+members.map(m=>'<label><input type="checkbox" name="attended" value="'+m.id+'" '+(present.has(m.id)?'checked':'')+'><span><strong>'+escapeHtml(m.member_name)+'</strong><small>Esperanza '+m.hope_level+'/9 · Sombra '+m.shadow_level+'/9'+(m.hope_level<3?' · CONSUMIDO':'')+(m.user_id?' · CUENTA VINCULADA':' · CUENTA PROVISIONAL')+'</small></span></label>').join('')+'</div><button class="button button-dark" type="submit">Guardar asistencia</button> <button class="button button-outline-dark" id="close-attendance" type="button">Cerrar evento y resolver crónica</button><p id="attendance-feedback" class="form-feedback"></p></form><div id="event-medal-manager" class="event-medal-manager"><h4>Medallas de Dol Amroth</h4><p>Cada medalla suma 1 punto de Esperanza y 1 punto a la resolución narrativa.</p><div id="event-medal-awards"></div><form id="event-medal-form" class="medal-award-form"><label for="medal-member">Miembro</label><select id="medal-member" required>'+members.map(m=>'<option value="'+m.id+'">'+escapeHtml(m.member_name)+'</option>').join('')+'</select><label for="medal-type">Medalla</label><select id="medal-type" required></select><label for="medal-reason">Motivo</label><input id="medal-reason" maxlength="300" required><button class="button button-dark" type="submit">Otorgar medalla</button><p id="medal-feedback" class="form-feedback"></p></form></div>';
  const form=document.getElementById('attendance-form');
- form.addEventListener('submit',async e=>{e.preventDefault();const ids=[...form.querySelectorAll('input[name="attended"]:checked')].map(input=>input.value);const rows=characters.map(c=>({event_id:eventId,character_id:c.id,attended:ids.includes(c.id)}));const {error}=await db.from('event_attendance').upsert(rows,{onConflict:'event_id,character_id'});say('attendance-feedback',error?'Error: '+error.message:'Asistencia guardada. Todavía puedes modificarla antes de cerrar el evento.');});
+ const save=()=>{const ids=[...form.querySelectorAll('input[name="attended"]:checked')].map(x=>x.value);return db.from('smial_member_attendance').upsert(members.map(m=>({event_id:eventId,member_id:m.id,attended:ids.includes(m.id)})),{onConflict:'event_id,member_id'});};
+ form.addEventListener('submit',async e=>{e.preventDefault();const {error}=await save();say('attendance-feedback',error?'Error: '+error.message:'Asistencia de los 16 miembros guardada.');});
  document.getElementById('close-attendance').addEventListener('click',async()=>{
-  if(!confirm('Al cerrar el evento se aplicarán los cambios de Esperanza y Sombra y se resolverá la crónica según asistentes y medallas. Esta operación no se puede deshacer. ¿Continuar?'))return;
-  const ids=[...form.querySelectorAll('input[name="attended"]:checked')].map(input=>input.value);
-  const rows=characters.map(c=>({event_id:eventId,character_id:c.id,attended:ids.includes(c.id)}));
-  const {error:saveError}=await db.from('event_attendance').upsert(rows,{onConflict:'event_id,character_id'});
-  if(saveError){say('attendance-feedback','Error guardando asistencia: '+saveError.message);return;}
-  const {error:closeError}=await db.from('events').update({attendance_closed:true}).eq('id',eventId);
-  if(closeError){say('attendance-feedback','Error cerrando evento: '+closeError.message);return;}
-  const {data:closedEvent}=await db.from('events').select('lore_outcome,lore_resolution,lore_score').eq('id',eventId).single();
-  host.innerHTML='<h4>Acontecimiento resuelto</h4><p>Se actualizaron los valores de Esperanza y Sombra. El desenlace quedó incorporado automáticamente al lore oficial.</p>'+(closedEvent?.lore_resolution?'<div class="event-resolution admin-resolution"><b>'+(closedEvent.lore_outcome==='esperanza'?'VICTORIA DE LA ESPERANZA':'VICTORIA DE LA SOMBRA')+' · '+closedEvent.lore_score+' PUNTOS</b><div class="event-lore-content">'+sanitizeRich(closedEvent.lore_resolution)+'</div></div>':'<p>No había un desenlace narrativo asociado.</p>');
+  if(!confirm('Se aplicarán los cambios de Esperanza a los 16 miembros y se recalculará el promedio global. El cierre no se puede deshacer. ¿Continuar?'))return;
+  const {error:se}=await save();if(se){say('attendance-feedback',se.message);return;}
+  const {error:ce}=await db.from('events').update({attendance_closed:true}).eq('id',eventId);if(ce){say('attendance-feedback',ce.message);return;}
+  const {data:ev}=await db.from('events').select('lore_outcome,lore_resolution,lore_score').eq('id',eventId).single();
+  host.innerHTML='<h4>Acontecimiento resuelto</h4><p>Se actualizaron los 16 registros y el promedio global.</p>'+(ev?.lore_resolution?'<div class="event-resolution admin-resolution"><b>'+(ev.lore_outcome==='esperanza'?'VICTORIA DE LA ESPERANZA':'VICTORIA DE LA SOMBRA')+' · '+ev.lore_score+' PUNTOS</b><div class="event-lore-content">'+sanitizeRich(ev.lore_resolution)+'</div></div>':'<p>No había desenlace narrativo asociado.</p>');
   await Promise.all([loadAdminEvents(),loadApproved(),loadShadowState(),loadEvents(),loadLoreChronicle()]);
  });
- await loadEventMedalManager(eventId,characters);
+ await loadEventMedalManager(eventId,members);
 }
-async function loadEventMedalManager(eventId,characters){
- const [{data:catalog,error:catalogError},{data:awards,error:awardsError}]=await Promise.all([
+async function loadEventMedalManager(eventId,members){
+ const [{data:catalog,error:ce},{data:awards,error:ae}]=await Promise.all([
   db.from('medal_catalog').select('id,name,description,icon,active').order('sort_order'),
-  db.from('character_medals').select('id,character_id,medal_id,reason,awarded_at').eq('event_id',eventId).order('awarded_at')
+  db.from('smial_member_medals').select('id,member_id,medal_id,reason,awarded_at').eq('event_id',eventId).order('awarded_at')
  ]);
- const type=document.getElementById('medal-type'),list=document.getElementById('event-medal-awards');
- if(catalogError||awardsError){list.textContent=(catalogError||awardsError).message;return;}
+ const type=document.getElementById('medal-type'),list=document.getElementById('event-medal-awards');if(ce||ae){list.textContent=(ce||ae).message;return;}
  type.innerHTML=(catalog||[]).filter(m=>m.active).map(m=>'<option value="'+m.id+'">'+escapeHtml(m.icon)+' '+escapeHtml(m.name)+' — '+escapeHtml(m.description)+'</option>').join('');
- const members=new Map(characters.map(c=>[c.id,c.tolkien_name]));const medals=new Map(catalog.map(m=>[m.id,m]));
- const renderAwards=()=>{
-  const rows=awards||[];
-  list.innerHTML=rows.length?'<p class="medal-award-count">Reconocimientos otorgados en este evento: '+rows.length+'</p>'+rows.map(a=>{const m=medals.get(a.medal_id);return '<div class="medal-award-row"><span>'+escapeHtml(m?.icon||'✦')+' <b>'+escapeHtml(m?.name||'Medalla')+'</b> · '+escapeHtml(members.get(a.character_id)||'Miembro')+'<small>'+escapeHtml(a.reason)+'</small></span><button type="button" class="button button-outline-dark" data-remove-medal="'+a.id+'">Retirar</button></div>';}).join(''):'<p class="medal-award-count">Todavía no se han otorgado medallas para este evento.</p>';
-  list.querySelectorAll('[data-remove-medal]').forEach(button=>button.addEventListener('click',async()=>{if(!confirm('¿Retirar esta medalla?'))return;const {error}=await db.from('character_medals').delete().eq('id',button.dataset.removeMedal);if(error){say('medal-feedback',error.message);return;}const refreshed=await db.from('character_medals').select('id,character_id,medal_id,reason,awarded_at').eq('event_id',eventId).order('awarded_at');awards.splice(0,awards.length,...(refreshed.data||[]));renderAwards();}));
- };
- renderAwards();
- document.getElementById('event-medal-form').addEventListener('submit',async e=>{
-  e.preventDefault();const button=e.currentTarget.querySelector('button');button.disabled=true;
-  const {data:{session}}=await db.auth.getSession();
-  const payload={character_id:document.getElementById('medal-character').value,medal_id:type.value,event_id:eventId,reason:document.getElementById('medal-reason').value.trim(),awarded_by:session?.user?.id||null};
-  const {error}=await db.from('character_medals').insert(payload);
-  if(error)say('medal-feedback',error.code==='23505'?'Este miembro ya recibió esa medalla en este evento.':error.message);
-  else{say('medal-feedback','Medalla otorgada.');document.getElementById('medal-reason').value='';const refreshed=await db.from('character_medals').select('id,character_id,medal_id,reason,awarded_at').eq('event_id',eventId).order('awarded_at');awards.splice(0,awards.length,...(refreshed.data||[]));renderAwards();await loadApproved();}
-  button.disabled=false;
- });
+ const names=new Map(members.map(m=>[m.id,m.member_name])),medals=new Map((catalog||[]).map(m=>[m.id,m]));
+ const render=()=>{list.innerHTML=awards.length?'<p class="medal-award-count">Medallas otorgadas: '+awards.length+'</p>'+awards.map(x=>'<div class="medal-award-row"><span><b>'+escapeHtml(medals.get(x.medal_id)?.icon||'✦')+' '+escapeHtml(medals.get(x.medal_id)?.name||'Medalla')+'</b> · '+escapeHtml(names.get(x.member_id)||'Miembro')+'<small>'+escapeHtml(x.reason)+'</small></span><button type="button" class="button button-outline-dark" data-remove-member-medal="'+x.id+'">Retirar</button></div>').join(''):'<p>Todavía no se han otorgado medallas.</p>';
+ list.querySelectorAll('[data-remove-member-medal]').forEach(btn=>btn.addEventListener('click',async()=>{if(!confirm('¿Retirar esta medalla?'))return;const {error}=await db.from('smial_member_medals').delete().eq('id',btn.dataset.removeMemberMedal);if(error){say('medal-feedback',error.message);return;}const q=await db.from('smial_member_medals').select('id,member_id,medal_id,reason,awarded_at').eq('event_id',eventId).order('awarded_at');awards.splice(0,awards.length,...(q.data||[]));render();}));};
+ render();
+ document.getElementById('event-medal-form').addEventListener('submit',async e=>{e.preventDefault();const btn=e.currentTarget.querySelector('button');btn.disabled=true;const {data:{session}}=await db.auth.getSession();const {error}=await db.from('smial_member_medals').insert({member_id:document.getElementById('medal-member').value,medal_id:type.value,event_id:eventId,reason:document.getElementById('medal-reason').value.trim(),awarded_by:session?.user?.id||null});if(error)say('medal-feedback',error.message);else{say('medal-feedback','Medalla otorgada.');document.getElementById('medal-reason').value='';const q=await db.from('smial_member_medals').select('id,member_id,medal_id,reason,awarded_at').eq('event_id',eventId).order('awarded_at');awards.splice(0,awards.length,...(q.data||[]));render();}btn.disabled=false;});
 }
 
 function sanitizeRich(value=''){
@@ -670,18 +656,13 @@ document.getElementById('lore-chronicle-form').addEventListener('submit',async e
 document.getElementById('lore-chronicle-reset').addEventListener('click',resetChronicleEditor);
 async function loadActiveShadowEvent(){const host=document.getElementById('shadow-active-event');if(!host)return;const {data,error}=await db.from('events').select('id,title,description,event_date,event_time,location,lore_title,lore_intro,lore_cover_image_path').eq('status','published').eq('attendance_closed',false).not('lore_scenario_id','is',null).order('event_date',{ascending:true});if(error){host.textContent='No fue posible cargar el acontecimiento activo.';return;}const dataToShow=(data||[]).find(event=>!['el faro apagado'].includes(String(event.lore_title||'').trim().toLocaleLowerCase('es'))&&!['el faro apagado'].includes(String(event.title||'').trim().toLocaleLowerCase('es')));if(!dataToShow){host.innerHTML='<p>No hay acontecimientos activos. El próximo capítulo de la historia está por comenzar.</p>';return;}const cover=dataToShow.lore_cover_image_path?db.storage.from('smial-media').getPublicUrl(dataToShow.lore_cover_image_path).data.publicUrl:'';host.innerHTML='<article class="shadow-active-card"><p class="card-kicker">ACONTECIMIENTO ACTIVO</p><h3>'+escapeHtml(dataToShow.lore_title||dataToShow.title)+'</h3><p>'+escapeHtml(dataToShow.description)+'</p>'+(cover?'<img class="event-lore-cover" src="'+escapeHtml(cover)+'" alt="">':'')+'<div class="event-lore-content">'+sanitizeRich(dataToShow.lore_intro||'')+'</div><small>'+escapeHtml(dataToShow.event_date)+(dataToShow.event_time?' · '+escapeHtml(dataToShow.event_time.slice(0,5)):'')+' · '+escapeHtml(dataToShow.location)+'</small><p class="shadow-pending">PENDIENTE DE RESOLUCIÓN</p></article>';}
 async function loadShadowState(){
- const [{data:state,error},{count:total},{count:consumed}] = await Promise.all([
-  db.from('smial_state').select('*').eq('id',1).single(),
-  db.from('characters').select('id',{count:'exact',head:true}).eq('status','approved'),
-  db.from('characters').select('id',{count:'exact',head:true}).eq('status','approved').lt('hope_level',3)
- ]);
- if(error)return;
+ const {data:state,error}=await db.from('smial_state').select('*').eq('id',1).single();if(error)return;
  document.getElementById('smial-light').textContent=state.light_level+'/10';
  document.getElementById('smial-shadow').textContent=state.shadow_level+'/10';
  document.getElementById('smial-light-bar').style.width=(state.light_level*10)+'%';
  document.getElementById('smial-shadow-bar').style.width=(state.shadow_level*10)+'%';
  document.getElementById('smial-state-label').textContent=state.light_level<3?'EL SMIAL ESTÁ CONSUMIDO':state.shadow_level>state.light_level?'LA SOMBRA DOMINA':state.light_level>state.shadow_level?'LA ESPERANZA RESISTE':'ESPERANZA Y SOMBRA ESTÁN EN EQUILIBRIO';
- document.getElementById('smial-counts').textContent=(total||0)+' personajes aprobados · '+(consumed||0)+' consumidos · Marcas pendientes: '+state.light_marks+' de Esperanza y '+state.shadow_marks+' de Sombra.';
+ document.getElementById('smial-counts').textContent='Promedio calculado sobre los 16 miembros del Smial, tengan o no personaje. Se redondea al entero más cercano.';
  await loadActiveShadowEvent();
 }
 loadApproved();loadEvents();loadLoreChronicle();loadLoreScenarios();loadShadowState();loadSiteSettings();refreshAdmin();refreshMemberLogin();
