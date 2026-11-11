@@ -225,3 +225,8 @@ body{background:var(--paper);color:var(--ink)}
  .brand-mark{width:64px;height:64px;flex:0 0 64px}
  .brand-copy strong{font-size:10px}
 }
+
+/* Emblema ampliado nuevamente */
+.site-header{height:118px}
+.brand-mark{width:96px;height:96px;flex:0 0 96px}
+@media(max-width:780px){.site-header{height:100px}.brand-mark{width:76px;height:76px;flex:0 0 76px}}
