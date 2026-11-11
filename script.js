@@ -329,31 +329,76 @@ async function loadAdminAchievements(){
  }));
 }
 
+let editingEventId=null;
 const eventForm=document.getElementById('event-form');
+const eventSubmitButton=eventForm.querySelector('button[type="submit"]');
+const eventCancelButton=document.getElementById('event-edit-cancel');
+function resetEventEditor(){
+ editingEventId=null;eventForm.reset();document.getElementById('event-description-editor').innerHTML='';
+ eventSubmitButton.textContent='Publicar evento';eventCancelButton.hidden=true;
+ say('event-feedback','');
+}
+eventCancelButton.addEventListener('click',resetEventEditor);
+async function startEditEvent(eventId){
+ const {data:ev,error}=await db.from('events').select('*').eq('id',eventId).single();
+ if(error||!ev){say('event-feedback',error?.message||'No se pudo cargar el evento.');return;}
+ if(!ev.lore_scenario_id){say('event-feedback','Este evento no tiene un acontecimiento asociado y no se puede editar desde este formulario.');return;}
+ const {data:scenario,error:scenarioError}=await db.from('lore_scenarios').select('*').eq('id',ev.lore_scenario_id).maybeSingle();
+ if(scenarioError||!scenario){say('event-feedback','No se encontró el acontecimiento asociado a este evento.');return;}
+ const select=document.getElementById('event-lore-scenario');
+ if(!Array.from(select.options).some(option=>option.value===scenario.id)){
+  select.add(new Option(scenario.name,scenario.id));
+ }
+ editingEventId=ev.id;
+ document.getElementById('event-title').value=ev.title||'';
+ select.value=scenario.id;
+ document.getElementById('event-description-editor').innerHTML=ev.description||'';
+ document.getElementById('event-date').value=ev.event_date||'';
+ document.getElementById('event-time').value=(ev.event_time||'').slice(0,5);
+ document.getElementById('event-location').value=ev.location||'';
+ document.getElementById('event-image').value='';
+ eventSubmitButton.textContent='Guardar cambios';
+ eventCancelButton.hidden=false;
+ say('event-feedback','Editando: '+ev.title+'. Si no seleccionas una imagen nueva, se conservará la actual.');
+ eventForm.scrollIntoView({behavior:'smooth',block:'center'});
+}
 eventForm.addEventListener('submit',async e=>{
- e.preventDefault();const button=eventForm.querySelector('button[type="submit"]');button.disabled=true;say('event-feedback','Preparando evento y crónica...');
+ e.preventDefault();const button=eventSubmitButton;button.disabled=true;
+ say('event-feedback',editingEventId?'Guardando cambios del evento...':'Preparando evento y crónica...');
  try{
-  const {data:pending}=await db.from('events').select('id').eq('status','published').eq('attendance_closed',false).not('lore_scenario_id','is',null).limit(1);
-  if(pending?.length)throw new Error('Ya existe un acontecimiento activo en La Sombra. Resuélvelo antes de publicar otro.');
+  if(!editingEventId){
+   const {data:pending}=await db.from('events').select('id').eq('status','published').eq('attendance_closed',false).not('lore_scenario_id','is',null).limit(1);
+   if(pending?.length)throw new Error('Ya existe un acontecimiento activo en La Sombra. Resuélvelo antes de publicar otro.');
+  }
   const selectedId=document.getElementById('event-lore-scenario').value;
   if(!selectedId)throw new Error('Selecciona el acontecimiento que vas a activar.');
   const eventDescription=document.getElementById('event-description-editor');
   if(!eventDescription.textContent.trim())throw new Error('Escribe la descripción del evento.');
-  const file=document.getElementById('event-image').files[0];const image_path=file?await uploadImage(file,'events'):null;
-  const {data:scenarios,error:scenarioError}=await db.from('lore_scenarios').select('*').eq('active',true);
+  const {data:scenario,error:scenarioError}=await db.from('lore_scenarios').select('*').eq('id',selectedId).maybeSingle();
   if(scenarioError)throw scenarioError;
-  if(!scenarios?.length)throw new Error('No hay acontecimientos preconfigurados activos.');
-  const scenario=scenarios.find(s=>s.id===selectedId);
-  if(!scenario)throw new Error('No se pudo seleccionar una historia.');
-  const payload={title:document.getElementById('event-title').value.trim(),description:sanitizeRich(document.getElementById('event-description-editor').innerHTML),event_date:document.getElementById('event-date').value,event_time:document.getElementById('event-time').value||null,location:document.getElementById('event-location').value.trim(),image_path,status:'published',lore_scenario_id:scenario.id,lore_title:scenario.name,lore_cover_image_path:scenario.cover_image_path||null,lore_intro:scenario.intro,lore_low_resolution:scenario.low_resolution,lore_partial_resolution:scenario.partial_resolution,lore_success_resolution:scenario.success_resolution,lore_partial_threshold:scenario.partial_threshold,lore_success_threshold:scenario.success_threshold};
-  const {error}=await db.from('events').insert(payload);if(error)throw error;
-  eventForm.reset();document.getElementById('event-description-editor').innerHTML='';say('event-feedback','Evento publicado con la crónica: '+scenario.name+'.');await Promise.all([loadAdminEvents(),loadEvents()]);
- }catch(err){say('event-feedback',err.message||'No se pudo publicar.');}finally{button.disabled=false;}
+  if(!scenario||(!editingEventId&&!scenario.active))throw new Error('No se pudo seleccionar una historia activa.');
+  const file=document.getElementById('event-image').files[0];
+  let image_path=null;
+  if(file)image_path=await uploadImage(file,'events');
+  const payload={title:document.getElementById('event-title').value.trim(),description:sanitizeRich(eventDescription.innerHTML),event_date:document.getElementById('event-date').value,event_time:document.getElementById('event-time').value||null,location:document.getElementById('event-location').value.trim(),lore_scenario_id:scenario.id,lore_title:scenario.name,lore_cover_image_path:scenario.cover_image_path||null,lore_intro:scenario.intro,lore_low_resolution:scenario.low_resolution,lore_partial_resolution:scenario.partial_resolution,lore_success_resolution:scenario.success_resolution,lore_partial_threshold:scenario.partial_threshold,lore_success_threshold:scenario.success_threshold};
+  if(file)payload.image_path=image_path;
+  if(editingEventId){
+   const {error}=await db.from('events').update(payload).eq('id',editingEventId);
+   if(error)throw error;
+   const updatedTitle=payload.title;resetEventEditor();say('event-feedback','Evento actualizado: '+updatedTitle+'.');
+  }else{
+   payload.image_path=image_path;payload.status='published';
+   const {error}=await db.from('events').insert(payload);if(error)throw error;
+   resetEventEditor();say('event-feedback','Evento publicado con la crónica: '+scenario.name+'.');
+  }
+  await Promise.all([loadAdminEvents(),loadEvents()]);
+ }catch(err){say('event-feedback',err.message||'No se pudo guardar el evento.');}finally{button.disabled=false;}
 });
 async function loadAdminEvents(){
  const host=document.getElementById('admin-events');const {data,error}=await db.from('events').select('*').order('event_date',{ascending:false});
  if(error){host.textContent=error.message;return;}
- host.innerHTML=data.map(ev=>'<article class="admin-event"><div><strong>'+escapeHtml(ev.title)+'</strong><small>'+escapeHtml(ev.event_date)+' · '+escapeHtml(ev.location)+' · '+escapeHtml(ev.status)+(ev.attendance_closed?' · asistencia cerrada':'')+(ev.lore_outcome?' · crónica: '+escapeHtml(ev.lore_outcome):'')+'</small>'+(ev.lore_title?'<small>Historia: '+escapeHtml(ev.lore_title)+(ev.lore_score!==null?' · puntuación '+ev.lore_score:'')+'</small>':'')+'</div><div class="admin-event-actions">'+(ev.status==='published'&&!ev.attendance_closed?'<button class="button button-outline-dark" data-attendance-event="'+ev.id+'">Asistencia y medallas</button>':'')+'<button class="button button-outline-dark" data-delete-event="'+ev.id+'">Eliminar</button></div></article>').join('')||'<p>No hay eventos.</p>';
+ host.innerHTML=data.map(ev=>'<article class="admin-event"><div><strong>'+escapeHtml(ev.title)+'</strong><small>'+escapeHtml(ev.event_date)+' · '+escapeHtml(ev.location)+' · '+escapeHtml(ev.status)+(ev.attendance_closed?' · asistencia cerrada':'')+(ev.lore_outcome?' · crónica: '+escapeHtml(ev.lore_outcome):'')+'</small>'+(ev.lore_title?'<small>Historia: '+escapeHtml(ev.lore_title)+(ev.lore_score!==null?' · puntuación '+ev.lore_score:'')+'</small>':'')+'</div><div class="admin-event-actions"><button class="button button-outline-dark" data-edit-event="'+ev.id+'">Editar evento</button>'+(ev.status==='published'&&!ev.attendance_closed?'<button class="button button-outline-dark" data-attendance-event="'+ev.id+'">Asistencia y medallas</button>':'')+'<button class="button button-outline-dark" data-delete-event="'+ev.id+'">Eliminar</button></div></article>').join('')||'<p>No hay eventos.</p>';
+ host.querySelectorAll('[data-edit-event]').forEach(button=>button.addEventListener('click',()=>startEditEvent(button.dataset.editEvent)));
  host.querySelectorAll('[data-attendance-event]').forEach(button=>button.addEventListener('click',()=>openAttendance(button.dataset.attendanceEvent)));
  host.querySelectorAll('[data-delete-event]').forEach(button=>button.addEventListener('click',async()=>{if(!confirm('¿Eliminar este evento?'))return;const {error}=await db.from('events').delete().eq('id',button.dataset.deleteEvent);if(error)alert(error.message);await loadAdminEvents();await loadEvents();}));
 }
