@@ -1,4 +1,4 @@
-// Versión 2.7.29
+// Versión 2.7.30
 const SUPABASE_URL='https://heuxofiaijgpwzvrbvoa.supabase.co';
 const SUPABASE_KEY='sb_publishable_3f_pQw9FSMD9ipequee7Ew_w4sIP_iL';
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -1014,7 +1014,7 @@ function initAdminTabs(){
 }
 initAdminTabs();
 
-// Versión 2.7.29
+// Versión 2.7.30
 // Controles de playlist mediante YouTube IFrame Player API.
 (function initSmialMusicPlayer(){
  const toggle=document.getElementById('music-player-toggle'),prev=document.getElementById('music-prev'),next=document.getElementById('music-next'),volume=document.getElementById('music-volume'),iframe=document.getElementById('music-player-iframe'),status=document.getElementById('music-track-status');
