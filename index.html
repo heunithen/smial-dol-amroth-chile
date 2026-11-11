@@ -121,7 +121,7 @@
             </div>
             <form id="lore-scenario-form" class="admin-form library-editor-form">
               <h4 id="lore-editor-heading">Crear una historia</h4>
-              <input id="lore-scenario-id" type="hidden">
+              <input id="lore-scenario-id" type="hidden"><input id="lore-cover-existing" type="hidden">
               <label for="lore-scenario-name">Título de la historia</label><input id="lore-scenario-name" maxlength="160" required>
               <label class="inline-check"><input id="lore-scenario-active" type="checkbox" checked> Historia activa (puede asignarse a eventos)</label>
               <label for="lore-cover-image">Imagen principal (opcional)</label><input id="lore-cover-image" type="file" accept="image/jpeg,image/png,image/webp">
@@ -165,6 +165,7 @@
   </main>
 
   <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p>Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><span>NO OFICIAL · COMUNIDAD DE FANS</span><span id="app-version">VERSIÓN 1.3.0</span></div></footer>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>\n  <script src="script.js?v=1.3.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>\n  <script src="script.js?v=1.3.0"></script>
 </body>
 </html>
