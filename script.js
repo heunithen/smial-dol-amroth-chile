@@ -292,6 +292,15 @@ document.getElementById('saved-design-load').addEventListener('click',async()=>{
 
 
 const charForm=document.getElementById('character-form');
+const characterFormPanel=document.getElementById('character-form-panel');
+const characterRegisterToggle=document.getElementById('character-register-toggle');
+characterRegisterToggle?.addEventListener('click',()=>{
+ const opening=characterFormPanel.hidden;
+ characterFormPanel.hidden=!opening;
+ characterRegisterToggle.setAttribute('aria-expanded',String(opening));
+ characterRegisterToggle.innerHTML=opening?'Cerrar formulario <span>×</span>':'Registrar un personaje <span>→</span>';
+ if(opening){characterFormPanel.scrollIntoView({behavior:'smooth',block:'start'});setTimeout(()=>document.getElementById('character-image')?.focus({preventScroll:true}),350);}
+});
 const story=document.getElementById('character-story');
 story.addEventListener('input',()=>say('story-count',story.value.length+'/1000'));
 charForm.addEventListener('submit',async e=>{
@@ -304,7 +313,7 @@ charForm.addEventListener('submit',async e=>{
   const image_path=await uploadImage(file,'characters');
   const {data:{session}}=await db.auth.getSession();const payload={user_id:session?.user?.id||null,real_name:document.getElementById('real-name').value.trim(),tolkien_name:document.getElementById('tolkien-name').value.trim(),role_title:document.getElementById('character-role').value.trim(),story:story.value.trim(),image_path,status:'pending'};
   const {error}=await db.from('characters').insert(payload);if(error)throw error;
-  charForm.reset();say('story-count','0/1000');say('character-feedback','Solicitud enviada. Quedará pendiente hasta que un administrador la revise.');
+  charForm.reset();say('story-count','0/1000');say('character-feedback','Solicitud enviada. Quedará pendiente hasta que un administrador la revise.');characterFormPanel.hidden=true;characterRegisterToggle.setAttribute('aria-expanded','false');characterRegisterToggle.innerHTML='Registrar un personaje <span>→</span>';
  }catch(err){say('character-feedback',err.message||'No se pudo enviar la solicitud.');}finally{button.disabled=false;}
 });
 async function loadApproved(){
