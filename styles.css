@@ -31,7 +31,7 @@ main>section#la-sombra.active{display:grid}
 .data-form label span{float:right;color:#9b895e}
 .approved-members{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
 .approved-card,.admin-item{display:flex;gap:18px;padding:18px;background:#eeede8;border:1px solid #d9ddda}
-.approved-card img{width:224px;height:224px;flex:0 0 224px;object-fit:cover}
+.approved-card img{width:224px;height:224px;flex:0 0 224px;object-fit:contain;background:#101b29}
 .approved-card h3{font:500 18px var(--serif);margin:0;color:#1d344d}
 .approved-card p{font-size:11px;color:#66727d;line-height:1.7}
 .admin-section{background:#e9e8e2;padding:90px 12%;min-height:70vh}
@@ -946,8 +946,8 @@ html.theme-loading body{visibility:hidden}
 #character-form-panel[hidden]{display:none!important}
 
 
-/* v2.7.37 — imágenes de personajes al doble de tamaño */
-.approved-card img{width:224px;height:224px;flex:0 0 224px;object-fit:cover}
+/* v2.7.40 — mostrar el retrato completo de cada personaje */
+.approved-card img{width:224px;height:224px;flex:0 0 224px;object-fit:contain;background:#101b29}
 
 /* v2.7.21 — medidores de Esperanza y Sombra en las fichas de personajes */
 .approved-card .character-levels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0}
@@ -976,7 +976,7 @@ html.theme-loading body{visibility:hidden}
 /* v2.7.30 — personajes en tarjetas de tres columnas y campos en orden */
 #miembros .approved-members{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;gap:22px}
 #miembros .approved-card{display:flex;flex-direction:column;align-items:stretch;gap:0;min-width:0;padding:0;overflow:hidden;border:1px solid rgba(184,155,104,.5);border-radius:8px;background:#eeede8;box-shadow:0 8px 22px rgba(12,28,44,.08)}
-#miembros .approved-card>img{display:block;width:100%;height:auto;aspect-ratio:1/1;object-fit:cover}
+#miembros .approved-card>img{display:block;width:100%;height:auto;aspect-ratio:1/1;object-fit:contain;background:#101b29}
 #miembros .approved-card-content{display:flex;flex:1;flex-direction:column;min-width:0;padding:18px}
 #miembros .approved-card .approved-card-field{margin:0 0 9px;color:#35485b;font-size:13px;line-height:1.55;overflow-wrap:anywhere}
 #miembros .approved-card .approved-card-field strong,
@@ -1051,7 +1051,7 @@ html.theme-loading body{visibility:hidden}
 #admin .admin-character-editor input[type=text],#admin .admin-character-editor input[type=file],#admin .admin-character-editor textarea{box-sizing:border-box;width:100%;min-width:0;padding:9px 10px;border:1px solid #cbd1ce;border-radius:5px;background:#fff;color:#1a2939;font:12px/1.5 "Manrope",Arial,sans-serif}
 #admin .admin-character-editor textarea{resize:vertical}
 #admin .admin-character-current-image{display:flex;justify-content:center;padding:8px;background:#e1e5e5;border:1px solid #d2d7d4;border-radius:6px}
-#admin .admin-character-current-image img{display:block;width:min(100%,220px);aspect-ratio:1/1;object-fit:cover;border-radius:4px}
+#admin .admin-character-current-image img{display:block;width:min(100%,220px);aspect-ratio:1/1;object-fit:contain;background:#101b29;border-radius:4px}
 #admin .admin-character-editor [data-character-feedback]{min-height:18px;margin:0;font-size:11px;color:#365c42}
 #admin .admin-character-achievement-label{display:grid;gap:6px;padding-top:12px;border-top:1px solid #cbd1ce;color:#526171;font-size:10px;font-weight:700}
 @media(max-width:600px){#admin .admin-character-editor{padding:12px}}
