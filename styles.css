@@ -307,3 +307,9 @@ body{font-family:var(--sans);color:var(--text-color)}
 }
 #admin.admin-section :where(h1,h2,h3,h4,h5,h6){font-family:"Cinzel",Georgia,serif}
 #admin.admin-section :where(p,label,small,input,textarea,select,button){font-family:"Manrope",Arial,sans-serif}
+
+
+/* v1.9.1 — color independiente para el texto de la franja superior */
+.announcement{color:var(--announcement-text-color,#c4ccd5)}
+.announcement .announcement-mark{color:var(--gold)}
+.brand-copy strong{color:var(--heading-color,#101f35)}
