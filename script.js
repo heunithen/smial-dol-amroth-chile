@@ -476,3 +476,17 @@ async function loadShadowState(){
  await loadActiveShadowEvent();
 }
 loadApproved();loadEvents();loadLoreChronicle();loadLoreScenarios();loadShadowState();loadSiteSettings();refreshAdmin();
+
+
+/* Navegación interna del panel de administración */
+function initAdminTabs(){
+ const tabs=[...document.querySelectorAll('[data-admin-tab]')];
+ const panels=[...document.querySelectorAll('#admin-dashboard .admin-tab-panel')];
+ if(!tabs.length||!panels.length)return;
+ tabs.forEach(tab=>tab.addEventListener('click',()=>{
+  const target=tab.dataset.adminTab;
+  tabs.forEach(item=>{const active=item===tab;item.classList.toggle('active',active);item.setAttribute('aria-selected',String(active));});
+  panels.forEach(panel=>{const active=panel.id===target;panel.classList.toggle('active',active);panel.hidden=!active;});
+ }));
+}
+initAdminTabs();
