@@ -43,14 +43,19 @@ const settingFields=[...document.querySelectorAll('#site-settings-form [data-set
 function settingImageUrl(path){return path?db.storage.from('smial-media').getPublicUrl(path).data.publicUrl:'';}
 function applySiteSettings(){
  const s={...SITE_DEFAULTS,...siteSettings};
- const root=document.documentElement;
+ const root=document.body;
+ const cssFonts={Cinzel:'"Cinzel",Georgia,serif',Georgia:'Georgia,serif',Manrope:'"Manrope",Arial,sans-serif',Arial:'Arial,sans-serif'};
  ['paper','navy','blue','gold'].forEach(k=>root.style.setProperty('--'+k,s[k]||SITE_DEFAULTS[k]));
- root.style.setProperty('--ink','#1a2939');
- root.style.setProperty('--heading-color','#101f35');
- root.style.setProperty('--text-color','#1a2939');
- root.style.setProperty('--muted-color','#687582');
- root.style.setProperty('--border-color',s.border_color||'#c8d2dc');
+ root.style.setProperty('--ink',s.text_color||SITE_DEFAULTS.text_color);
+ root.style.setProperty('--text-color',s.text_color||SITE_DEFAULTS.text_color);
+ root.style.setProperty('--heading-color',s.heading_color||SITE_DEFAULTS.heading_color);
+ root.style.setProperty('--muted-color',s.muted_color||SITE_DEFAULTS.muted_color);
+ root.style.setProperty('--muted',s.muted_color||SITE_DEFAULTS.muted_color);
+ root.style.setProperty('--border-color',s.border_color||SITE_DEFAULTS.border_color);
+ root.style.setProperty('--silver',s.border_color||SITE_DEFAULTS.border_color);
  root.style.setProperty('--navy2',s.navy||SITE_DEFAULTS.navy);
+ root.style.setProperty('--serif',cssFonts[s.serif]||cssFonts.Cinzel);
+ root.style.setProperty('--sans',cssFonts[s.sans]||cssFonts.Manrope);
  const themeMeta=document.querySelector('meta[name="theme-color"]');if(themeMeta)themeMeta.content=s.navy||SITE_DEFAULTS.navy;
  
  const text=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value||'';};
