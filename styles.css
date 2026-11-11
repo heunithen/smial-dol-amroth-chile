@@ -662,7 +662,7 @@ body{background:var(--paper);color:var(--text-color)}
 
 /* Imagen de fondo reemplazable para la sección La Sombra */
 .shadow-art.has-custom-background{background-size:cover;background-position:center;background-repeat:no-repeat}
-.shadow-art.has-custom-background:before{background:linear-gradient(90deg,rgba(7,15,26,.12),rgba(7,15,26,.42)),linear-gradient(0deg,rgba(7,15,26,.42),transparent 55%)}
+.shadow-art.has-custom-background:before{background:none!important}
 .shadow-art.has-custom-background .shadow-mountain{display:none}
 
 
