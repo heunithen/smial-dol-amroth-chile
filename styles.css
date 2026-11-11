@@ -509,3 +509,39 @@ body{background:var(--paper);color:var(--text-color)}
  #admin.admin-section .admin-panel{min-width:0}
  #admin.admin-section .admin-form :where(input,textarea,select){max-width:100%}
 }
+
+
+/* v2.0.0 — Lore: lectura compacta y fechas destacadas en dorado */
+.lore-chapter .lore-date{
+  margin:0 0 12px!important;
+  color:#b89b68!important;
+  font-size:10px!important;
+  line-height:1.4!important;
+  font-weight:700;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.lore-chapter .event-lore-content{
+  max-width:820px;
+  margin:18px auto 0;
+  font-size:15px;
+  line-height:1.65!important;
+  letter-spacing:0;
+  white-space:normal;
+  overflow-wrap:break-word;
+  text-wrap:pretty;
+}
+.lore-chapter .event-lore-content p{
+  margin:0 0 .65em!important;
+  line-height:1.65!important;
+}
+.lore-chapter .event-lore-content p:last-child{margin-bottom:0!important}
+.lore-chapter .event-lore-content :where(div){line-height:1.65!important}
+.lore-chapter .event-lore-content :where(h2,h3,h4){line-height:1.35!important;margin:1.35em 0 .5em!important}
+.lore-chapter .event-lore-content :where(ul,ol){margin:.45em 0 .8em!important;line-height:1.65!important}
+.lore-chapter .event-lore-content li{margin:.15em 0!important}
+.lore-chapter .event-lore-content blockquote{margin:1em 0!important;line-height:1.65!important}
+@media(max-width:780px){
+ .lore-chapter .event-lore-content{font-size:14px;line-height:1.6!important}
+ .lore-chapter .event-lore-content p{line-height:1.6!important;margin-bottom:.55em!important}
+}
