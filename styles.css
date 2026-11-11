@@ -749,3 +749,7 @@ body{background:var(--paper);color:var(--text-color)}
 #register-form .password-validation-feedback.is-valid{color:#b8d6ad}
 #register-form .password-validation-feedback.is-invalid{color:#f0b6a8}
 #register-form input[aria-invalid="true"]{border-color:#d98b7c}
+
+
+/* v2.5.4 — mostrar la imagen propia del evento en su publicación */
+.public-event-image{display:block;width:100%;max-height:420px;object-fit:cover;object-position:center;border-radius:8px;margin:16px 0 20px;border:1px solid rgba(185,164,119,.35)}
