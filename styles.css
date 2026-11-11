@@ -313,3 +313,10 @@ body{font-family:var(--sans);color:var(--text-color)}
 .announcement{color:var(--announcement-text-color,#c4ccd5)}
 .announcement .announcement-mark{color:var(--gold)}
 .brand-copy strong{color:var(--heading-color,#101f35)}
+
+
+/* v1.9.2 — colores independientes de navegación y botón Registro */
+.main-nav>a{color:var(--nav-text-color,#455363)}
+.main-nav>a:hover,.main-nav>a.active{color:var(--nav-active-color,#9b8355)}
+.main-nav .nav-register{color:var(--nav-register-text-color,#203a55);border-color:var(--nav-register-border-color,#9caaaf)}
+.main-nav .nav-register:hover,.main-nav .nav-register.active{color:var(--nav-active-color,#9b8355);border-color:var(--nav-active-color,#9b8355)}
