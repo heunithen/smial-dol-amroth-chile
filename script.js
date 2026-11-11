@@ -1,4 +1,4 @@
-// Versión 2.7.26
+// Versión 2.7.27
 const SUPABASE_URL='https://heuxofiaijgpwzvrbvoa.supabase.co';
 const SUPABASE_KEY='sb_publishable_3f_pQw9FSMD9ipequee7Ew_w4sIP_iL';
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -310,7 +310,9 @@ charForm.addEventListener('submit',async e=>{
   const file=document.getElementById('character-image').files[0];
   if(!file)throw new Error('Selecciona una imagen.');
   const bitmap=await createImageBitmap(file);
-  if(bitmap.width!==512||bitmap.height!==512)throw new Error('La imagen debe medir exactamente 512 × 512 píxeles.');
+  const validDimensions=bitmap.width===1024&&bitmap.height===1024;
+  bitmap.close();
+  if(!validDimensions)throw new Error('La imagen debe medir exactamente 1024 × 1024 píxeles.');
   const image_path=await uploadImage(file,'characters');
   const {data:{session}}=await db.auth.getSession();const payload={user_id:session?.user?.id||null,real_name:document.getElementById('real-name').value.trim(),tolkien_name:document.getElementById('tolkien-name').value.trim(),role_title:document.getElementById('character-role').value.trim(),story:story.value.trim(),image_path,status:'pending'};
   const {error}=await db.from('characters').insert(payload);if(error)throw error;
@@ -1012,7 +1014,7 @@ function initAdminTabs(){
 }
 initAdminTabs();
 
-// Versión 2.7.26
+// Versión 2.7.27
 // Controles de playlist mediante YouTube IFrame Player API.
 (function initSmialMusicPlayer(){
  const toggle=document.getElementById('music-player-toggle'),prev=document.getElementById('music-prev'),next=document.getElementById('music-next'),volume=document.getElementById('music-volume'),iframe=document.getElementById('music-player-iframe'),status=document.getElementById('music-track-status');
