@@ -545,3 +545,15 @@ body{background:var(--paper);color:var(--text-color)}
  .lore-chapter .event-lore-content{font-size:14px;line-height:1.6!important}
  .lore-chapter .event-lore-content p{line-height:1.6!important;margin-bottom:.55em!important}
 }
+
+
+/* Administración organizada por pestañas */
+#admin .admin-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:28px 0 24px;padding:8px;border:1px solid #d8dee5;background:#eef1f4;border-radius:12px}
+#admin .admin-tab{appearance:none;border:1px solid transparent;border-radius:8px;background:transparent;color:#35465a;padding:12px 18px;font:700 11px var(--sans);letter-spacing:.04em;cursor:pointer;transition:background .18s,border-color .18s,color .18s}
+#admin .admin-tab:hover{background:#fff;border-color:#cbd4de}
+#admin .admin-tab.active{background:#172b40;color:#fff;border-color:#172b40;box-shadow:0 2px 7px rgba(16,31,53,.14)}
+#admin .admin-tab-panel{display:block;min-width:0}
+#admin .admin-tab-panel[hidden]{display:none!important}
+#admin .admin-tab-panel>h3:first-child{margin-top:12px}
+#admin .admin-tab-panel>.admin-library{margin-top:0}
+@media(max-width:640px){#admin .admin-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}#admin .admin-tab{padding:11px 8px}}
