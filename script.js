@@ -916,11 +916,19 @@ async function loadGalleryAdmin(){
    const path=button.dataset.photoSave,titleInput=host.querySelector('[data-photo-title="'+CSS.escape(path)+'"]'),positionInput=host.querySelector('[data-photo-position="'+CSS.escape(path)+'"]');
    const title=titleInput?.value.trim(),position=Number(positionInput?.value);
    if(!title){say('photo-upload-feedback','El nombre visible no puede quedar vacío.');titleInput?.focus();return;}
-   if(!Number.isInteger(position)||position<1){say('photo-upload-feedback','La posición debe ser un número entero mayor que cero.');positionInput?.focus();return;}
+   if(!Number.isInteger(position)||position<1||position>items.length){say('photo-upload-feedback','La posición debe ser un número entre 1 y '+items.length+'.');positionInput?.focus();return;}
    button.disabled=true;
    try{
     const current=await loadGalleryMetadata();
-    current[path]={...(current[path]||{}),title,sort_order:position};
+    const orderedPaths=items.map(entry=>entry.path);
+    const previousIndex=orderedPaths.indexOf(path);
+    if(previousIndex<0)throw new Error('La imagen ya no está disponible en la galería.');
+    orderedPaths.splice(previousIndex,1);
+    orderedPaths.splice(position-1,0,path);
+    orderedPaths.forEach((orderedPath,index)=>{
+     const entry=items.find(value=>value.path===orderedPath);
+     current[orderedPath]={...(current[orderedPath]||{}),title:orderedPath===path?title:(current[orderedPath]?.title||galleryVisibleTitle(entry?.item.name).replace(/[-_]+/g,' ')),sort_order:index+1};
+    });
     await saveGalleryMetadata(current);
     await Promise.all([loadGalleryAdmin(),loadPhotoGallery()]);
     say('photo-upload-feedback','Nombre y posición guardados correctamente.');
