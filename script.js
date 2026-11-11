@@ -1,4 +1,4 @@
-// Versión 2.7.45
+// Versión 2.7.46
 const SUPABASE_URL='https://heuxofiaijgpwzvrbvoa.supabase.co';
 const SUPABASE_KEY='sb_publishable_3f_pQw9FSMD9ipequee7Ew_w4sIP_iL';
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -106,27 +106,25 @@ function buildSettingRichEditors(){
 buildSettingRichEditors();
 async function saveSingleShadowField(field,editor,button,status){
  const key=field.dataset.setting;
- const value=editor.innerText??editor.textContent??'';
+ const value=(editor.innerText??editor.textContent??'').replace(/\\u00a0/g,' ').trim();
  const previous=button.textContent;
  button.disabled=true;button.textContent='Guardando…';status.textContent='';
  try{
   const {data:{session},error:sessionError}=await db.auth.getSession();
   if(sessionError)throw sessionError;
   if(!session?.user)throw new Error('La sesión administrativa no está activa. Vuelve a iniciar sesión.');
-  const {data:current,error:readError}=await db.from('site_settings').select('settings').eq('id',1).single();
-  if(readError)throw readError;
-  const latest=current?.settings&&typeof current.settings==='object'?current.settings:{};
-  const nextSettings={...latest,[key]:value};
-  const {error:writeError}=await db.from('site_settings').upsert({id:1,settings:nextSettings,updated_at:new Date().toISOString(),updated_by:session.user.id},{onConflict:'id'});
+  if(!/^shadow_level_[1-9]_(title|text)$/.test(key||''))throw new Error('El campo narrativo no es válido.');
+  const {data:saved,error:writeError}=await db.rpc('save_smial_narrative',{p_key:key,p_value:value});
   if(writeError)throw writeError;
+  if(saved!==value)throw new Error('La base de datos no confirmó el mismo texto enviado.');
   const {data:check,error:checkError}=await db.from('site_settings').select('settings').eq('id',1).single();
   if(checkError)throw checkError;
-  if(check?.settings?.[key]!==value)throw new Error('Supabase no devolvió el mismo texto que se intentó guardar. El cambio no quedó confirmado.');
+  if(check?.settings?.[key]!==value)throw new Error('La lectura de comprobación no coincide con el texto guardado.');
   siteSettings={...siteSettings,...check.settings};field.value=value;applySiteSettings();renderSmialLevelNarrative();
-  status.textContent='Guardado y verificado.';
+  status.textContent='Guardado en la base de datos y verificado.';
  }catch(error){
   console.error('Error al guardar '+key+':',error);
-  status.textContent='No se guardó: '+(error.message||'Error desconocido');
+  status.textContent='ERROR: '+(error.message||'No se pudo guardar el texto.');
  }finally{button.disabled=false;button.textContent=previous;}
 }
 function settingImageUrl(path){return path?db.storage.from('smial-media').getPublicUrl(path).data.publicUrl:'';}
@@ -281,23 +279,30 @@ document.querySelectorAll('[data-site-image]').forEach(input=>input.addEventList
  const form=document.getElementById('site-'+section+'-form');if(!form)return;
  form.addEventListener('submit',async e=>{
   e.preventDefault();
+  const updates={};
   form.querySelectorAll('[data-setting]').forEach(field=>{
-   const key=field.dataset.setting;
+   const key=field.dataset.setting;if(!key)return;
    const editor=field.parentElement.querySelector('.setting-rich-editor');
-   if(key&&key.startsWith('shadow_level_')&&editor){
-    siteSettings[key]=editor.innerText??editor.textContent??'';
-    field.value=siteSettings[key];
-   }else if(key&&field.dataset.settingStorage){
-    siteSettings[key]=editor?editor.innerHTML:field.value;
-   }
+   if(key.startsWith('shadow_level_')&&editor)updates[key]=(editor.innerText??editor.textContent??'').replace(/\\u00a0/g,' ').trim();
+   else if(field.dataset.settingStorage)updates[key]=editor?editor.innerHTML:field.value;
+   else updates[key]=field.value;
   });
   const button=form.querySelector('button[type="submit"]');button.disabled=true;
   try{
-   const {data:{session}}=await db.auth.getSession();
-   const {error}=await db.from('site_settings').upsert({id:1,settings:siteSettings,updated_at:new Date().toISOString(),updated_by:session?.user?.id||null},{onConflict:'id'});
+   const {data:{session},error:sessionError}=await db.auth.getSession();
+   if(sessionError)throw sessionError;
+   if(!session?.user)throw new Error('La sesión administrativa no está activa. Vuelve a iniciar sesión.');
+   const {data:current,error:readError}=await db.from('site_settings').select('settings').eq('id',1).single();
+   if(readError)throw readError;
+   const merged={...(current?.settings||{}),...updates};
+   const {error}=await db.from('site_settings').update({settings:merged,updated_at:new Date().toISOString(),updated_by:session.user.id}).eq('id',1);
    if(error)throw error;
-   say('site-'+section+'-feedback','Textos guardados correctamente.');applySiteSettings();
-  }catch(err){say('site-'+section+'-feedback','No se pudieron guardar los textos: '+(err.message||'Error desconocido'));}
+   const {data:check,error:checkError}=await db.from('site_settings').select('settings').eq('id',1).single();
+   if(checkError)throw checkError;
+   for(const [key,value] of Object.entries(updates)){if(check?.settings?.[key]!==value)throw new Error('No se confirmó el campo '+key+'.');}
+   siteSettings={...siteSettings,...check.settings};
+   say('site-'+section+'-feedback','Cambios guardados y verificados en la base de datos.');applySiteSettings();renderSmialLevelNarrative();
+  }catch(err){say('site-'+section+'-feedback','ERROR AL GUARDAR: '+(err.message||'Error desconocido'));}
   finally{button.disabled=false;}
  });
 });
