@@ -335,3 +335,34 @@ body{font-family:var(--sans);color:var(--text-color)}
 .lore-chapter .event-lore-content blockquote{border-left-color:var(--lore-card-label-color,#9a8558)}
 .lore-chapter .event-lore-content a{color:var(--lore-card-title-color,#20364d)}
 .lore-chapter .event-lore-content strong{color:var(--lore-card-title-color,#20364d)}
+
+
+/* v1.9.4 — identidad visual azul noche, carbón, blanco y oro antiguo.
+   Estos selectores pertenecen al portal público; #admin conserva su tema propio. */
+body{background:var(--paper);color:var(--text-color)}
+.site-header{background:var(--paper)!important;border-bottom:1px solid var(--border-color)!important}
+.brand-mark{color:var(--gold)!important}
+.brand-copy strong{color:var(--heading-color)!important}
+.brand-copy small{color:var(--muted-color)!important}
+.main-nav>a{color:var(--nav-text-color)!important}
+.main-nav>a:hover,.main-nav>a.active{color:var(--nav-active-color)!important}
+.main-nav .nav-register{color:var(--nav-register-text-color)!important;border-color:var(--nav-register-border-color)!important}
+.main-nav .nav-register:hover,.main-nav .nav-register.active{color:var(--nav-active-color)!important;border-color:var(--nav-active-color)!important}
+.section{background:#111b2b;color:#edf1f5}
+.section h2,.events-section h2,.shadow-section h2{color:#f4f6f8}
+.section h2 em,.events-section h2 em,.shadow-section h2 em{color:var(--gold)}
+.section-lead,.section p{color:var(--muted-color)}
+.lore-card{background:#1a293c;color:#e7edf3;border:1px solid #34475d}
+.lore-card-main{background:#20364f;color:#f2f4f6}
+.lore-card :where(h3,h4){color:#ffffff}
+.lore-card :where(p,small){color:#c3ccd6}
+.lore-card a,.section .event-lore-content a,.section a:not(.button){color:var(--gold)}
+.lore-chapter{background:var(--lore-card-background,#1a293c)!important;border-color:var(--lore-card-border-color,#405168)!important}
+.lore-chapter h3,.lore-chapter .event-lore-content :where(h2,h3,h4){color:var(--lore-card-title-color,#fff)!important}
+.lore-chapter .event-lore-content{color:var(--lore-card-text-color,#d8dfe7)!important}
+.lore-chapter .card-kicker{color:var(--lore-card-label-color,#c2a36d)!important}
+.character-submit{background:#18283b;border-color:#3a4c61;color:#edf1f5}
+.character-submit :where(h2,h3,label,p){color:#edf1f5}
+.button-dark{background:#203a55;color:#f5f6f7}
+.button-dark:hover{background:#31516e}
+.button-outline-dark{border-color:#b89b68;color:#d4bd8c}
