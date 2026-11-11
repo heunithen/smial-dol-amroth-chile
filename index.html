@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=2.7.7">
+  <link rel="stylesheet" href="styles.css?v=2.7.8">
 </head>
 <body>
   <div class="announcement"><span class="announcement-mark">✦</span> <span id="announcement-copy">Un hogar para quienes mantienen viva la llama de la Tierra Media</span> <span class="announcement-mark">✦</span></div>
@@ -70,7 +70,16 @@
     <section class="shadow-section" id="la-sombra">
       <div class="shadow-art"><div class="shadow-orbit orbit-one"></div><div class="shadow-orbit orbit-two"></div><div class="shadow-eye">◉</div><div class="shadow-mountain"></div><div class="shadow-word">MORDOR</div></div>
       <div class="shadow-content"><p class="eyebrow">04 / CRÓNICAS DE LA RESISTENCIA</p><h2 id="shadow-title">La Sombra<br>se <em>extiende.</em></h2><p id="shadow-intro">Desde el Este crece una amenaza. La Sombra de Mordor se cierne sobre nuestras tierras y solo la unión de la comunidad podrá mantenerla a raya.</p><p>Cada reunión y cada evento en que participamos representa un paso más en esta resistencia colectiva. Cada encuentro activa una crónica ficticia cuyo desenlace depende de la asistencia y de los logros reconocidos con medallas. Nuestras acciones fuera de la historia alimentan las hazañas de nuestros personajes dentro de ella.</p><div id="shadow-active-event" class="shadow-active-event"><p>No hay acontecimientos activos.</p></div>
-        <div class="shadow-rules"><h3>Esperanza y Sombra</h3><p>Cada personaje y el Smial tienen una reserva común de 10 puntos: Esperanza + Sombra = 10. Todos comienzan con 7 de Esperanza y 3 de Sombra. Cada punto que pierde la Esperanza lo gana la Sombra, y viceversa. El mínimo es 1 de Esperanza y el máximo 9 de Sombra.</p><div class="shadow-meter-grid"><article class="shadow-meter"><span>ESPERANZA DEL SMIAL</span><strong id="smial-light">1/10</strong><div class="meter-track"><i id="smial-light-bar" style="width:10%"></i></div></article><article class="shadow-meter"><span>SOMBRA DEL SMIAL</span><strong id="smial-shadow">1/10</strong><div class="meter-track shadow-track"><i id="smial-shadow-bar" style="width:10%"></i></div></article></div><p id="smial-state-label" class="smial-state-label">La resistencia comienza.</p><article class="smial-level-narrative" aria-live="polite"><h4 id="smial-level-title">ESPERANZA 7 — LA FORTALEZA DE LOS CORAZONES</h4><p id="smial-level-text">La voluntad de los habitantes comienza a imponerse sobre la influencia de la Sombra.</p></article><p id="smial-counts" class="smial-counts"></p></div>
+        <div class="shadow-rules"><h3>Esperanza y Sombra</h3><p>Cada personaje y el Smial tienen una reserva común de 10 puntos: Esperanza + Sombra = 10. Todos comienzan con 7 de Esperanza y 3 de Sombra. Cada punto que pierde la Esperanza lo gana la Sombra, y viceversa. El mínimo es 1 de Esperanza y el máximo 9 de Sombra.</p><div class="shadow-meter-grid">
+<article class="shadow-meter hope-meter">
+ <div class="meter-emblem leaf-emblem" aria-hidden="true"><svg viewBox="0 0 100 100"><path class="leaf-shape" d="M50 7C35 25 15 44 19 63c3 17 17 27 31 30 14-3 28-13 31-30C85 44 65 25 50 7Z"/><path class="leaf-vein" d="M50 91C48 67 49 39 50 12M49 70 29 52M50 57 70 39M49 82 34 68M51 76 68 59"/></svg></div>
+ <span>ESPERANZA DEL SMIAL</span><strong id="smial-light">1/10</strong><div class="meter-track"><i id="smial-light-bar" style="width:10%"></i></div>
+</article>
+<article class="shadow-meter shadow-meter-dark">
+ <div class="meter-emblem ring-emblem" aria-hidden="true"><svg viewBox="0 0 100 100"><ellipse class="ring-shadow" cx="50" cy="55" rx="31" ry="17"/><ellipse class="ring-band" cx="50" cy="49" rx="31" ry="17"/><path class="ring-highlight" d="M19 49c4-12 58-24 68 0M23 57c10 10 44 13 57 0"/><path class="ring-script" d="m27 42 3-5 2 5 3-7 3 6 4-8 3 6 4-8 3 7 4-6 3 7 4-4 3 7 3-3"/></svg></div>
+ <span>SOMBRA DEL SMIAL</span><strong id="smial-shadow">1/10</strong><div class="meter-track shadow-track"><i id="smial-shadow-bar" style="width:10%"></i></div>
+</article>
+</div><p id="smial-state-label" class="smial-state-label">La resistencia comienza.</p><article class="smial-level-narrative" aria-live="polite"><h4 id="smial-level-title">ESPERANZA 7 — LA FORTALEZA DE LOS CORAZONES</h4><p id="smial-level-text">La voluntad de los habitantes comienza a imponerse sobre la influencia de la Sombra.</p></article><p id="smial-counts" class="smial-counts"></p></div>
         <a class="button button-outline" href="#eventos">Participa en los encuentros <span>→</span></a></div>
     </section>
 
@@ -316,9 +325,9 @@
     </section>
   </main>
 
-  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p id="footer-text">Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><a href="https://www.sociedadtolkien.cl/smials" target="_blank" rel="noopener noreferrer">STC CHILE ↗</a><span id="app-version">VERSIÓN 2.7.7</span></div></footer>
+  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p id="footer-text">Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><a href="https://www.sociedadtolkien.cl/smials" target="_blank" rel="noopener noreferrer">STC CHILE ↗</a><span id="app-version">VERSIÓN 2.7.8</span></div></footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
-  <script src="script.js?v=2.7.7"></script>
+  <script src="script.js?v=2.7.8"></script>
 </body>
 </html>
