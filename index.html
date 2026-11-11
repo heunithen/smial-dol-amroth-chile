@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=2.5.7">
+  <link rel="stylesheet" href="styles.css?v=2.5.8">
 </head>
 <body>
   <div class="announcement"><span class="announcement-mark">✦</span> <span id="announcement-copy">Un hogar para quienes mantienen viva la llama de la Tierra Media</span> <span class="announcement-mark">✦</span></div>
@@ -270,22 +270,40 @@
 <h3>Administrar Registro</h3><form id="site-register-form" class="admin-form"><div class="customizer-grid"><div class="customizer-group"><h4>Textos de Registro</h4><label>Título de Registro<textarea rows="3" data-setting="register_title"></textarea></label><label>Texto de Registro<textarea rows="3" data-setting="register_intro"></textarea></label><label>Texto del pie de página<input type="text" data-setting="footer_text"></label></div></div><div class="editor-actions"><button class="button button-dark" type="submit">Guardar textos de Registro</button></div><p id="site-register-feedback" class="form-feedback" role="status"></p></form><h3>Solicitudes de ingreso al Smial</h3><p class="admin-hint">Aprueba una solicitud para habilitar la cuenta. Si la rechazas, la persona no podrá iniciar sesión.</p><div id="membership-requests-list" class="membership-requests-list">Cargando solicitudes...</div>
 </section>
 <section id="admin-tab-design" class="admin-tab-panel" role="tabpanel" hidden>
-<h3>Color y diseño</h3><p class="admin-hint">Estos controles modifican únicamente la apariencia del portal público. El diseño de administración permanece independiente.</p>
-<form id="site-settings-form" class="admin-form"><div class="customizer-grid">
-<div class="customizer-group"><h4>Colores generales</h4><label>Fondo general<input data-setting="paper" type="color"></label><label>Texto de la franja superior<input data-setting="announcement_text_color" type="color"></label><label>Enlaces del menú<input data-setting="nav_text_color" type="color"></label><label>Enlace seleccionado y hover<input data-setting="nav_active_color" type="color"></label><label>Texto del botón Registro<input data-setting="nav_register_text_color" type="color"></label><label>Borde del botón Registro<input data-setting="nav_register_border_color" type="color"></label><label>Títulos<input data-setting="heading_color" type="color"></label><label>Texto principal<input data-setting="text_color" type="color"></label><label>Texto secundario<input data-setting="muted_color" type="color"></label><label>Bordes y separadores<input data-setting="border_color" type="color"></label></div>
-<div class="customizer-group"><h4>Colores institucionales</h4><label>Azul oscuro institucional<input data-setting="navy" type="color"></label><label>Azul secundario<input data-setting="blue" type="color"></label><label>Dorado institucional<input data-setting="gold" type="color"></label></div>
-<div class="customizer-group"><h4>Tipografías</h4><label>Tipografía de títulos<select data-setting="serif"><option value="Cinzel">Cinzel</option><option value="Georgia">Georgia</option></select></label><label>Tipografía general<select data-setting="sans"><option value="Manrope">Manrope</option><option value="Arial">Arial</option><option value="Georgia">Georgia</option></select></label></div>
-<div class="customizer-group"><h4>Bloques de Lore</h4><label>Fondo de las entradas de Lore<input data-setting="lore_card_background" type="color"></label><label>Títulos de Lore<input data-setting="lore_card_title_color" type="color"></label><label>Texto de Lore<input data-setting="lore_card_text_color" type="color"></label><label>Etiquetas de Lore<input data-setting="lore_card_label_color" type="color"></label><label>Borde de las entradas<input data-setting="lore_card_border_color" type="color"></label></div>
-</div><div class="editor-actions"><button class="button button-dark" type="submit">Guardar y publicar diseño</button><button class="button button-outline-dark" id="site-settings-reset" type="button">Restaurar diseño original</button></div><p id="site-settings-feedback" class="form-feedback" role="status"></p></form>
+<h3>Diseño del portal</h3><p class="admin-hint">Configura la apariencia de cada sección por separado. La pestaña General contiene los parámetros que afectan a todo el sitio. Los cambios se aplican como vista previa y se guardan al publicar.</p>
+<nav class="design-tabs" role="tablist" aria-label="Apartados de diseño">
+<button type="button" class="design-tab active" role="tab" aria-selected="true" data-design-tab="general">General</button>
+<button type="button" class="design-tab" role="tab" aria-selected="false" data-design-tab="home">Inicio</button>
+<button type="button" class="design-tab" role="tab" aria-selected="false" data-design-tab="lore">Lore</button>
+<button type="button" class="design-tab" role="tab" aria-selected="false" data-design-tab="events">Eventos</button>
+<button type="button" class="design-tab" role="tab" aria-selected="false" data-design-tab="members">Miembros</button>
+<button type="button" class="design-tab" role="tab" aria-selected="false" data-design-tab="shadow">La Sombra</button>
+<button type="button" class="design-tab" role="tab" aria-selected="false" data-design-tab="about">Quiénes somos</button>
+<button type="button" class="design-tab" role="tab" aria-selected="false" data-design-tab="register">Registro</button>
+<button type="button" class="design-tab" role="tab" aria-selected="false" data-design-tab="navigation">Navegación</button>
+<button type="button" class="design-tab" role="tab" aria-selected="false" data-design-tab="components">Elementos comunes</button>
+</nav>
+<form id="site-settings-form" class="admin-form">
+<div id="design-fields-general" class="design-panel active" data-design-panel="general"><p class="admin-hint">Paleta institucional, tipografías, ancho del contenido y espaciado que se comparten en todo el portal.</p></div>
+<div id="design-fields-home" class="design-panel" data-design-panel="home" hidden></div>
+<div id="design-fields-lore" class="design-panel" data-design-panel="lore" hidden></div>
+<div id="design-fields-events" class="design-panel" data-design-panel="events" hidden></div>
+<div id="design-fields-members" class="design-panel" data-design-panel="members" hidden></div>
+<div id="design-fields-shadow" class="design-panel" data-design-panel="shadow" hidden></div>
+<div id="design-fields-about" class="design-panel" data-design-panel="about" hidden></div>
+<div id="design-fields-register" class="design-panel" data-design-panel="register" hidden></div>
+<div id="design-fields-navigation" class="design-panel" data-design-panel="navigation" hidden></div>
+<div id="design-fields-components" class="design-panel" data-design-panel="components" hidden></div>
+<div class="editor-actions"><button class="button button-dark" type="submit">Guardar y publicar diseño</button><button class="button button-outline-dark" id="site-settings-reset" type="button">Restaurar diseño original</button></div><p id="site-settings-feedback" class="form-feedback" role="status"></p></form>
 </section>
 <button class="button button-outline-dark" id="logout-button" type="button">Cerrar sesión</button>
 </div>
     </section>
   </main>
 
-  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p id="footer-text">Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><a href="https://www.sociedadtolkien.cl/smials" target="_blank" rel="noopener noreferrer">STC CHILE ↗</a><span id="app-version">VERSIÓN 2.5.7</span></div></footer>
+  <footer class="site-footer"><a class="footer-brand" href="#inicio"><span>✧</span> SMIAL DOL AMROTH <small>CHILE</small></a><p id="footer-text">Una comunidad inspirada en la obra de J. R. R. Tolkien.</p><div class="footer-bottom"><span>© <span id="year"></span> Smial Dol Amroth de Chile</span><a href="#admin">ADMINISTRACIÓN ↗</a><a href="#inicio">VOLVER ARRIBA ↑</a><a href="https://www.sociedadtolkien.cl/smials" target="_blank" rel="noopener noreferrer">STC CHILE ↗</a><span id="app-version">VERSIÓN 2.5.8</span></div></footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
-  <script src="script.js?v=2.5.7"></script>
+  <script src="script.js?v=2.5.8"></script>
 </body>
 </html>
