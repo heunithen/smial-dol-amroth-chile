@@ -814,10 +814,34 @@ let photoGalleryPage=1;
 const PHOTO_PAGE_SIZE=10;
 const STORAGE_FREE_QUOTA=1000000000;
 const formatStorageBytes=bytes=>{const value=Math.max(0,Number(bytes)||0);if(value>=1000000000)return(value/1000000000).toFixed(2)+' GB';if(value>=1000000)return(value/1000000).toFixed(2)+' MB';if(value>=1000)return(value/1000).toFixed(1)+' KB';return Math.round(value)+' bytes';};
+async function loadGalleryMetadata(){
+ const {data,error}=await db.from('site_settings').select('settings').eq('id',1).maybeSingle();
+ if(error)throw error;
+ const value=data?.settings?.gallery_metadata;
+ return value&&typeof value==='object'&&!Array.isArray(value)?value:{};
+}
+async function saveGalleryMetadata(metadata){
+ const {data,error:readError}=await db.from('site_settings').select('settings').eq('id',1).single();
+ if(readError)throw readError;
+ const settings={...(data?.settings||{}),gallery_metadata:metadata};
+ const {data:{session}}=await db.auth.getSession();
+ const {error}=await db.from('site_settings').upsert({id:1,settings,updated_at:new Date().toISOString(),updated_by:session?.user?.id||null},{onConflict:'id'});
+ if(error)throw error;
+ siteSettings={...siteSettings,...settings};
+}
 async function loadPhotoGallery(){
  const host=document.getElementById('photo-gallery-grid');if(!host)return;host.innerHTML='<p class="photo-gallery-message">Cargando fotografías...</p>';
- try{const {data,error}=await db.storage.from('smial-media').list('galeria',{limit:1000,offset:0,sortBy:{column:'created_at',order:'desc'}});if(error)throw error;
- photoGalleryItems=(data||[]).filter(item=>item.id&&item.name&&!item.name.startsWith('.')).map(item=>{const path='galeria/'+item.name;return{name:item.name,path,url:db.storage.from('smial-media').getPublicUrl(path).data.publicUrl};});photoGalleryPage=1;renderPhotoGallery();
+ try{
+  const [{data,error},metadata]=await Promise.all([
+   db.storage.from('smial-media').list('galeria',{limit:1000,offset:0,sortBy:{column:'created_at',order:'desc'}}),
+   loadGalleryMetadata()
+  ]);
+  if(error)throw error;
+  photoGalleryItems=(data||[]).filter(item=>item.id&&item.name&&!item.name.startsWith('.')).map((item,index)=>{
+   const path='galeria/'+item.name,custom=metadata[path]||{};
+   return{name:item.name,path,url:db.storage.from('smial-media').getPublicUrl(path).data.publicUrl,title:custom.title||galleryVisibleTitle(item.name).replace(/[-_]+/g,' '),sort_order:Number.isFinite(Number(custom.sort_order))?Number(custom.sort_order):index+1};
+  }).sort((a,b)=>a.sort_order-b.sort_order||a.name.localeCompare(b.name));
+  photoGalleryPage=1;renderPhotoGallery();
  }catch(error){host.innerHTML='<p class="photo-gallery-message">No fue posible cargar la galería. '+escapeHtml(error.message||'')+'</p>';}
 }
 function renderPhotoGallery(){
@@ -825,9 +849,11 @@ function renderPhotoGallery(){
  if(!photoGalleryItems.length){host.innerHTML='';empty.hidden=false;pager.hidden=true;return;}empty.hidden=true;
  const pages=Math.max(1,Math.ceil(photoGalleryItems.length/PHOTO_PAGE_SIZE));photoGalleryPage=Math.min(Math.max(1,photoGalleryPage),pages);
  const visible=photoGalleryItems.slice((photoGalleryPage-1)*PHOTO_PAGE_SIZE,photoGalleryPage*PHOTO_PAGE_SIZE);
- host.innerHTML=visible.map((item,index)=>{const label=galleryVisibleTitle(item.name).replace(/[-_]+/g,' ');return'<button type="button" class="photo-gallery-card" data-photo-index="'+((photoGalleryPage-1)*PHOTO_PAGE_SIZE+index)+'" aria-label="Ampliar fotografía: '+escapeHtml(label)+'"><img src="'+escapeHtml(item.url)+'" alt="'+escapeHtml(label)+'" loading="lazy"><span>'+escapeHtml(label)+'</span></button>';}).join('');
- host.querySelectorAll('[data-photo-index]').forEach(button=>button.addEventListener('click',()=>{const item=photoGalleryItems[Number(button.dataset.photoIndex)];if(!item)return;const dialog=document.getElementById('photo-lightbox');document.getElementById('photo-lightbox-image').src=item.url;document.getElementById('photo-lightbox-image').alt=item.name;document.getElementById('photo-lightbox-caption').textContent=galleryVisibleTitle(item.name);if(dialog.showModal)dialog.showModal();else window.open(item.url,'_blank','noopener');}));
+ host.innerHTML=visible.map((item,index)=>{const label=item.title;return'<button type="button" class="photo-gallery-card" data-photo-index="'+((photoGalleryPage-1)*PHOTO_PAGE_SIZE+index)+'" aria-label="Ampliar fotografía: '+escapeHtml(label)+'"><img src="'+escapeHtml(item.url)+'" alt="'+escapeHtml(label)+'" loading="lazy"><span>'+escapeHtml(label)+'</span></button>';}).join('');
+ host.querySelectorAll('[data-photo-index]').forEach(button=>button.addEventListener('click',()=>{const item=photoGalleryItems[Number(button.dataset.photoIndex)];if(!item)return;const dialog=document.getElementById('photo-lightbox');document.getElementById('photo-lightbox-image').src=item.url;document.getElementById('photo-lightbox-image').alt=item.title;document.getElementById('photo-lightbox-caption').textContent=item.title;if(dialog.showModal)dialog.showModal();else window.open(item.url,'_blank','noopener');}));
  pager.hidden=pages<=1;document.getElementById('photo-gallery-page-label').textContent='Página '+photoGalleryPage+' de '+pages+' · '+photoGalleryItems.length+' fotografías';document.getElementById('photo-gallery-prev').disabled=photoGalleryPage<=1;document.getElementById('photo-gallery-next').disabled=photoGalleryPage>=pages;
+}
+document.getElementById('photo-gallery-prev').disabled=photoGalleryPage<=1;document.getElementById('photo-gallery-next').disabled=photoGalleryPage>=pages;
 }
 document.getElementById('photo-gallery-prev')?.addEventListener('click',()=>{photoGalleryPage--;renderPhotoGallery();});
 document.getElementById('photo-gallery-next')?.addEventListener('click',()=>{photoGalleryPage++;renderPhotoGallery();});
@@ -869,17 +895,37 @@ async function loadGalleryAdmin(){
  const host=document.getElementById('photo-admin-list');if(!host)return;
  host.innerHTML='<p class="admin-hint">Cargando imágenes guardadas...</p>';
  try{
-  const {data,error}=await db.storage.from('smial-media').list('galeria',{limit:1000,offset:0,sortBy:{column:'created_at',order:'desc'}});
+  const [{data,error},metadata]=await Promise.all([
+   db.storage.from('smial-media').list('galeria',{limit:1000,offset:0,sortBy:{column:'created_at',order:'desc'}}),
+   loadGalleryMetadata()
+  ]);
   if(error)throw error;
-  const items=(data||[]).filter(item=>item.id&&item.name&&!item.name.startsWith('.'));
+  const items=(data||[]).filter(item=>item.id&&item.name&&!item.name.startsWith('.')).map((item,index)=>{
+   const path='galeria/'+item.name,custom=metadata[path]||{};
+   return{item,path,custom,position:Number.isFinite(Number(custom.sort_order))?Number(custom.sort_order):index+1};
+  }).sort((a,b)=>a.position-b.position||a.item.name.localeCompare(b.item.name));
   if(!items.length){host.innerHTML='<p class="admin-hint">No hay imágenes guardadas en la galería.</p>';return;}
-  host.innerHTML=items.map(item=>{
-   const path='galeria/'+item.name;
+  host.innerHTML=items.map(({item,path,custom,position})=>{
    const url=db.storage.from('smial-media').getPublicUrl(path).data.publicUrl;
    const format=(item.name.split('.').pop()||item.metadata?.mimetype||'desconocido').toUpperCase();
    const size=item.metadata?.size?formatStorageBytes(item.metadata.size):'Tamaño no informado';
-   return '<article class="photo-admin-item"><img src="'+escapeHtml(url)+'" alt="" loading="lazy"><div class="photo-admin-meta"><strong>'+escapeHtml(galleryVisibleTitle(item.name))+'</strong><span>Formato guardado: '+escapeHtml(format)+'</span><span>'+escapeHtml(size)+'</span></div><button type="button" class="button button-outline-dark photo-admin-delete" data-photo-path="'+escapeHtml(path)+'">Eliminar</button></article>';
+   const title=custom.title||galleryVisibleTitle(item.name).replace(/[-_]+/g,' ');
+   return '<article class="photo-admin-item"><img src="'+escapeHtml(url)+'" alt="" loading="lazy"><div class="photo-admin-meta"><label>Nombre visible<input class="photo-admin-title" type="text" maxlength="120" value="'+escapeHtml(title)+'" data-photo-title="'+escapeHtml(path)+'"></label><label>Posición en la galería<input class="photo-admin-position" type="number" min="1" step="1" value="'+position+'" data-photo-position="'+escapeHtml(path)+'"></label><span>Formato guardado: '+escapeHtml(format)+'</span><span>'+escapeHtml(size)+'</span><button type="button" class="button button-dark photo-admin-save" data-photo-save="'+escapeHtml(path)+'">Guardar cambios</button></div><button type="button" class="button button-outline-dark photo-admin-delete" data-photo-path="'+escapeHtml(path)+'">Eliminar</button></article>';
   }).join('');
+  host.querySelectorAll('[data-photo-save]').forEach(button=>button.addEventListener('click',async()=>{
+   const path=button.dataset.photoSave,titleInput=host.querySelector('[data-photo-title="'+CSS.escape(path)+'"]'),positionInput=host.querySelector('[data-photo-position="'+CSS.escape(path)+'"]');
+   const title=titleInput?.value.trim(),position=Number(positionInput?.value);
+   if(!title){say('photo-upload-feedback','El nombre visible no puede quedar vacío.');titleInput?.focus();return;}
+   if(!Number.isInteger(position)||position<1){say('photo-upload-feedback','La posición debe ser un número entero mayor que cero.');positionInput?.focus();return;}
+   button.disabled=true;
+   try{
+    const current=await loadGalleryMetadata();
+    current[path]={...(current[path]||{}),title,sort_order:position};
+    await saveGalleryMetadata(current);
+    await Promise.all([loadGalleryAdmin(),loadPhotoGallery()]);
+    say('photo-upload-feedback','Nombre y posición guardados correctamente.');
+   }catch(error){say('photo-upload-feedback','No se pudieron guardar los cambios: '+(error.message||'Error desconocido'));button.disabled=false;}
+  }));
   host.querySelectorAll('[data-photo-path]').forEach(button=>button.addEventListener('click',async()=>{
    const path=button.dataset.photoPath;
    if(!path||!confirm('¿Eliminar definitivamente esta imagen de la galería?'))return;
@@ -887,6 +933,7 @@ async function loadGalleryAdmin(){
    try{
     const {error}=await db.storage.from('smial-media').remove([path]);
     if(error)throw error;
+    const metadata=await loadGalleryMetadata();delete metadata[path];await saveGalleryMetadata(metadata);
     await Promise.all([loadGalleryAdmin(),loadPhotoGallery(),loadStorageUsage()]);
     say('photo-upload-feedback','Imagen eliminada correctamente.');
    }catch(error){say('photo-upload-feedback','No se pudo eliminar la imagen: '+(error.message||'Error desconocido'));button.disabled=false;}
