@@ -61,6 +61,12 @@ async function loadApproved(){
  }).join('')||'<div class="members-empty"><div class="empty-crest">✧</div><h3>Las primeras historias están por llegar</h3><p>Los personajes aparecerán aquí una vez aprobados.</p></div>';
 }
 function escapeHtml(value=''){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+async function loadLoreChronicle(){
+ const host=document.getElementById('lore-chronicle');if(!host)return;
+ const {data,error}=await db.from('lore_chronicle').select('*').order('sort_order',{ascending:true});
+ if(error){host.textContent='No fue posible cargar el lore oficial.';return;}
+ host.innerHTML=(data||[]).map(entry=>{const cover=entry.cover_image_path?db.storage.from('smial-media').getPublicUrl(entry.cover_image_path).data.publicUrl:'';return '<article class="lore-chapter"><p class="card-kicker">'+(entry.entry_type==='event'?'CRÓNICA RESUELTA':'LORE DEL SMIAL')+'</p><h3>'+escapeHtml(entry.title)+'</h3>'+(cover?'<img class="lore-chapter-cover" src="'+escapeHtml(cover)+'" alt="">':'')+'<div class="event-lore-content">'+sanitizeRich(entry.content)+'</div></article>';}).join('')||'<p class="small-note">La historia oficial del Smial aún no ha sido publicada.</p>';
+}
 async function loadEvents(){
  const host=document.getElementById('event-placeholder-list');if(!host)return;
  const {data,error}=await db.from('events').select('*').eq('status','published').order('event_date',{ascending:true});
@@ -77,7 +83,7 @@ async function loadLoreScenarios(){
  const select=document.getElementById('event-lore-scenario');if(!select)return;
  const {data,error}=await db.from('lore_scenarios').select('id,name').eq('active',true).order('sort_order').order('name');
  if(error){select.innerHTML='<option value="">No se pudieron cargar las historias</option>';return;}
- select.innerHTML='<option value="">Elegir una historia al azar</option>'+(data||[]).map(s=>'<option value="'+s.id+'">'+escapeHtml(s.name)+'</option>').join('');
+ select.innerHTML='<option value="">Selecciona un acontecimiento</option>'+(data||[]).map(s=>'<option value="'+s.id+'">'+escapeHtml(s.name)+'</option>').join('');
 }
 const loginForm=document.getElementById('login-form');
 async function refreshAdmin(){
@@ -87,7 +93,7 @@ async function refreshAdmin(){
  const role=session.user.app_metadata?.role;
  if(role!=='admin'){authBox.hidden=false;dashboard.hidden=true;say('auth-feedback','La sesión está iniciada, pero este correo aún no tiene permisos de administrador. Contacta al responsable del proyecto.');return;}
  authBox.hidden=true;dashboard.hidden=false;say('admin-identity','Sesión: '+session.user.email);
- await Promise.all([loadPending(),loadAdminEvents(),loadLoreAdmin(),loadMedalAdmin()]);
+ await Promise.all([loadPending(),loadAdminEvents(),loadLoreAdmin(),loadMedalAdmin(),loadLoreChronicleAdmin()]);
 }
 loginForm.addEventListener('submit',async e=>{e.preventDefault();const {error}=await db.auth.signInWithPassword({email:document.getElementById('admin-email').value.trim(),password:document.getElementById('admin-password').value});say('auth-feedback',error?error.message:'Sesión iniciada.');if(!error)await refreshAdmin();});
 document.getElementById('signup-button').addEventListener('click',async()=>{
@@ -109,12 +115,15 @@ const eventForm=document.getElementById('event-form');
 eventForm.addEventListener('submit',async e=>{
  e.preventDefault();const button=eventForm.querySelector('button[type="submit"]');button.disabled=true;say('event-feedback','Preparando evento y crónica...');
  try{
+  const {data:pending}=await db.from('events').select('id').eq('status','published').eq('attendance_closed',false).not('lore_scenario_id','is',null).limit(1);
+  if(pending?.length)throw new Error('Ya existe un acontecimiento activo en La Sombra. Resuélvelo antes de publicar otro.');
+  const selectedId=document.getElementById('event-lore-scenario').value;
+  if(!selectedId)throw new Error('Selecciona el acontecimiento que vas a activar.');
   const file=document.getElementById('event-image').files[0];const image_path=file?await uploadImage(file,'events'):null;
   const {data:scenarios,error:scenarioError}=await db.from('lore_scenarios').select('*').eq('active',true);
   if(scenarioError)throw scenarioError;
-  if(!scenarios?.length)throw new Error('No hay historias preconfiguradas activas.');
-  const selectedId=document.getElementById('event-lore-scenario').value;
-  const scenario=selectedId?scenarios.find(s=>s.id===selectedId):scenarios[Math.floor(Math.random()*scenarios.length)];
+  if(!scenarios?.length)throw new Error('No hay acontecimientos preconfigurados activos.');
+  const scenario=scenarios.find(s=>s.id===selectedId);
   if(!scenario)throw new Error('No se pudo seleccionar una historia.');
   const payload={title:document.getElementById('event-title').value.trim(),description:document.getElementById('event-description').value.trim(),event_date:document.getElementById('event-date').value,event_time:document.getElementById('event-time').value||null,location:document.getElementById('event-location').value.trim(),image_path,status:'published',lore_scenario_id:scenario.id,lore_title:scenario.name,lore_cover_image_path:scenario.cover_image_path||null,lore_intro:scenario.intro,lore_low_resolution:scenario.low_resolution,lore_partial_resolution:scenario.partial_resolution,lore_success_resolution:scenario.success_resolution,lore_partial_threshold:scenario.partial_threshold,lore_success_threshold:scenario.success_threshold};
   const {error}=await db.from('events').insert(payload);if(error)throw error;
@@ -150,8 +159,8 @@ async function openAttendance(eventId){
   const {error:closeError}=await db.from('events').update({attendance_closed:true}).eq('id',eventId);
   if(closeError){say('attendance-feedback','Error cerrando evento: '+closeError.message);return;}
   const {data:closedEvent}=await db.from('events').select('lore_outcome,lore_resolution,lore_score').eq('id',eventId).single();
-  host.innerHTML='<h4>Evento cerrado</h4><p>Se actualizaron los valores de Esperanza y Sombra del Smial y de sus personajes.</p>'+(closedEvent?.lore_resolution?'<div class="event-resolution admin-resolution"><b>'+escapeHtml((closedEvent.lore_outcome||'').toUpperCase())+' · PUNTUACIÓN '+closedEvent.lore_score+'</b><p>'+escapeHtml(closedEvent.lore_resolution)+'</p></div>':'<p>El evento no tenía una crónica asociada.</p>');
-  await Promise.all([loadAdminEvents(),loadApproved(),loadShadowState(),loadEvents()]);
+  host.innerHTML='<h4>Acontecimiento resuelto</h4><p>Se actualizaron los valores de Esperanza y Sombra. El desenlace quedó incorporado automáticamente al lore oficial.</p>'+(closedEvent?.lore_resolution?'<div class="event-resolution admin-resolution"><b>'+(closedEvent.lore_outcome==='esperanza'?'VICTORIA DE LA ESPERANZA':'VICTORIA DE LA SOMBRA')+' · '+closedEvent.lore_score+' PUNTOS</b><div class="event-lore-content">'+sanitizeRich(closedEvent.lore_resolution)+'</div></div>':'<p>No había un desenlace narrativo asociado.</p>');
+  await Promise.all([loadAdminEvents(),loadApproved(),loadShadowState(),loadEvents(),loadLoreChronicle()]);
  });
  await loadEventMedalManager(eventId,characters);
 }
@@ -220,10 +229,9 @@ function resetLoreEditor(){
  document.getElementById('lore-editor-heading').textContent='Crear una historia';
  document.getElementById('lore-cover-existing').value='';
  document.getElementById('lore-cover-preview').innerHTML='';
- ['lore-intro-editor','lore-low-editor','lore-partial-editor','lore-success-editor'].forEach(id=>document.getElementById(id).innerHTML='');
+ ['lore-intro-editor','lore-low-editor','lore-success-editor'].forEach(id=>document.getElementById(id).innerHTML='');
  document.getElementById('lore-scenario-active').checked=true;
- document.getElementById('lore-partial-threshold').value=2;
- document.getElementById('lore-success-threshold').value=5;
+
  say('lore-editor-feedback','');
 }
 async function loadLoreAdmin(){
@@ -247,10 +255,10 @@ function editLoreScenario(s){
  document.getElementById('lore-cover-preview').innerHTML=cover?'<img src="'+escapeHtml(cover)+'" alt="Imagen principal actual">':'';
  document.getElementById('lore-intro-editor').innerHTML=richEditorValue(s.intro);
  document.getElementById('lore-low-editor').innerHTML=richEditorValue(s.low_resolution);
- document.getElementById('lore-partial-editor').innerHTML=richEditorValue(s.partial_resolution);
+
  document.getElementById('lore-success-editor').innerHTML=richEditorValue(s.success_resolution);
  document.getElementById('lore-partial-threshold').value=s.partial_threshold;
- document.getElementById('lore-success-threshold').value=s.success_threshold;
+
  document.getElementById('lore-editor-heading').textContent='Editar historia';
  say('lore-editor-feedback','Editando: '+s.name);
  document.getElementById('lore-scenario-form').scrollIntoView({behavior:'smooth',block:'start'});
@@ -260,13 +268,13 @@ document.getElementById('lore-scenario-form').addEventListener('submit',async e=
  try{
   const partial=Number(document.getElementById('lore-partial-threshold').value),success=Number(document.getElementById('lore-success-threshold').value);
   if(success<=partial)throw new Error('La puntuación de victoria debe ser mayor que la de éxito parcial.');
-  const editors=['lore-intro-editor','lore-low-editor','lore-partial-editor','lore-success-editor'];
+  const editors=['lore-intro-editor','lore-low-editor','lore-success-editor'];
   const content=editors.map(id=>sanitizeRich(document.getElementById(id).innerHTML));
   if(content.some(value=>!value.trim()))throw new Error('Completa la introducción y las tres resoluciones.');
   let cover=document.getElementById('lore-cover-existing').value||null;
   const file=document.getElementById('lore-cover-image').files[0];if(file)cover=await uploadImage(file,'lore-covers');
   const id=document.getElementById('lore-scenario-id').value;
-  const payload={name:document.getElementById('lore-scenario-name').value.trim(),active:document.getElementById('lore-scenario-active').checked,intro:content[0],low_resolution:content[1],partial_resolution:content[2],success_resolution:content[3],partial_threshold:partial,success_threshold:success,cover_image_path:cover,updated_at:new Date().toISOString()};
+  const payload={name:document.getElementById('lore-scenario-name').value.trim(),active:document.getElementById('lore-scenario-active').checked,intro:content[0],low_resolution:content[1],partial_resolution:content[2],success_resolution:content[2],partial_threshold:0,success_threshold:5,cover_image_path:cover,updated_at:new Date().toISOString()};
   const result=id?await db.from('lore_scenarios').update(payload).eq('id',id):await db.from('lore_scenarios').insert(payload);
   if(result.error)throw result.error;
   say('lore-editor-feedback',id?'Historia actualizada.':'Historia creada.');
@@ -323,6 +331,19 @@ document.getElementById('medal-catalog-form').addEventListener('submit',async e=
 document.getElementById('medal-editor-reset').addEventListener('click',resetMedalEditor);
 initRichEditors();
 
+async function loadLoreChronicleAdmin(){
+ const host=document.getElementById('lore-chronicle-admin-list');if(!host)return;
+ const {data,error}=await db.from('lore_chronicle').select('*').eq('entry_type','manual').order('sort_order',{ascending:true});
+ if(error){host.textContent=error.message;return;}
+ host.innerHTML='<h4>Capítulos manuales</h4>'+((data||[]).map(entry=>'<div class="library-row"><span><b>'+escapeHtml(entry.title)+'</b></span><span class="library-row-actions"><button type="button" class="button button-outline-dark" data-edit-chronicle="'+entry.id+'">Editar</button><button type="button" class="button button-outline-dark" data-delete-chronicle="'+entry.id+'">Eliminar</button></span></div>').join('')||'<p>Aún no hay capítulos manuales.</p>');
+ host.querySelectorAll('[data-edit-chronicle]').forEach(button=>button.addEventListener('click',()=>editChronicleEntry(data.find(x=>x.id===button.dataset.editChronicle))));
+ host.querySelectorAll('[data-delete-chronicle]').forEach(button=>button.addEventListener('click',async()=>{if(!confirm('¿Eliminar este capítulo manual del lore?'))return;const {error}=await db.from('lore_chronicle').delete().eq('id',button.dataset.deleteChronicle).eq('entry_type','manual');if(error){say('lore-chronicle-feedback',error.message);return;}await Promise.all([loadLoreChronicleAdmin(),loadLoreChronicle()]);}));
+}
+function resetChronicleEditor(){const form=document.getElementById('lore-chronicle-form');form.reset();document.getElementById('lore-chronicle-id').value='';document.getElementById('lore-chronicle-cover-existing').value='';document.getElementById('lore-chronicle-cover-preview').innerHTML='';document.getElementById('lore-chronicle-editor').innerHTML='';document.getElementById('lore-chronicle-heading').textContent='Añadir al lore oficial';say('lore-chronicle-feedback','');}
+function editChronicleEntry(entry){if(!entry)return;document.getElementById('lore-chronicle-id').value=entry.id;document.getElementById('lore-chronicle-title').value=entry.title;document.getElementById('lore-chronicle-cover-existing').value=entry.cover_image_path||'';const cover=entry.cover_image_path?db.storage.from('smial-media').getPublicUrl(entry.cover_image_path).data.publicUrl:'';document.getElementById('lore-chronicle-cover-preview').innerHTML=cover?'<img src="'+escapeHtml(cover)+'" alt="Imagen actual">':'';document.getElementById('lore-chronicle-editor').innerHTML=richEditorValue(entry.content);document.getElementById('lore-chronicle-heading').textContent='Editar capítulo del lore';say('lore-chronicle-feedback','Editando capítulo: '+entry.title);document.getElementById('lore-chronicle-form').scrollIntoView({behavior:'smooth',block:'start'});}
+document.getElementById('lore-chronicle-form').addEventListener('submit',async e=>{e.preventDefault();const button=e.currentTarget.querySelector('button[type="submit"]');button.disabled=true;try{const title=document.getElementById('lore-chronicle-title').value.trim();const content=sanitizeRich(document.getElementById('lore-chronicle-editor').innerHTML);if(!content.trim())throw new Error('Escribe el contenido del capítulo.');let cover=document.getElementById('lore-chronicle-cover-existing').value||null;const file=document.getElementById('lore-chronicle-cover').files[0];if(file)cover=await uploadImage(file,'lore-covers');const id=document.getElementById('lore-chronicle-id').value;const payload={title,content,cover_image_path:cover,entry_type:'manual'};const result=id?await db.from('lore_chronicle').update(payload).eq('id',id).eq('entry_type','manual'):await db.from('lore_chronicle').insert(payload);if(result.error)throw result.error;say('lore-chronicle-feedback',id?'Capítulo actualizado.':'Capítulo añadido al lore oficial.');resetChronicleEditor();await Promise.all([loadLoreChronicleAdmin(),loadLoreChronicle()]);}catch(err){say('lore-chronicle-feedback',err.message||'No se pudo guardar el capítulo.');}finally{button.disabled=false;}});
+document.getElementById('lore-chronicle-reset').addEventListener('click',resetChronicleEditor);
+async function loadActiveShadowEvent(){const host=document.getElementById('shadow-active-event');if(!host)return;const {data,error}=await db.from('events').select('id,title,description,event_date,event_time,location,lore_title,lore_intro,lore_cover_image_path').eq('status','published').eq('attendance_closed',false).not('lore_scenario_id','is',null).order('event_date',{ascending:true}).limit(1).maybeSingle();if(error){host.textContent='No fue posible cargar el acontecimiento activo.';return;}if(!data){host.innerHTML='<p>No hay acontecimientos activos. El próximo capítulo de la historia está por comenzar.</p>';return;}const cover=data.lore_cover_image_path?db.storage.from('smial-media').getPublicUrl(data.lore_cover_image_path).data.publicUrl:'';host.innerHTML='<article class="shadow-active-card"><p class="card-kicker">ACONTECIMIENTO ACTIVO</p><h3>'+escapeHtml(data.lore_title||data.title)+'</h3><p>'+escapeHtml(data.description)+'</p>'+(cover?'<img class="event-lore-cover" src="'+escapeHtml(cover)+'" alt="">':'')+'<div class="event-lore-content">'+sanitizeRich(data.lore_intro||'')+'</div><small>'+escapeHtml(data.event_date)+(data.event_time?' · '+escapeHtml(data.event_time.slice(0,5)):'')+' · '+escapeHtml(data.location)+'</small><p class="shadow-pending">PENDIENTE DE RESOLUCIÓN</p></article>';}
 async function loadShadowState(){
  const [{data:state,error},{count:total},{count:consumed}] = await Promise.all([
   db.from('smial_state').select('*').eq('id',1).single(),
@@ -336,5 +357,6 @@ async function loadShadowState(){
  document.getElementById('smial-shadow-bar').style.width=(state.shadow_level*10)+'%';
  document.getElementById('smial-state-label').textContent=state.light_level<3?'EL SMIAL ESTÁ CONSUMIDO':state.shadow_level>state.light_level?'LA SOMBRA DOMINA':state.light_level>state.shadow_level?'LA ESPERANZA RESISTE':'ESPERANZA Y SOMBRA ESTÁN EN EQUILIBRIO';
  document.getElementById('smial-counts').textContent=(total||0)+' personajes aprobados · '+(consumed||0)+' consumidos · Marcas pendientes: '+state.light_marks+' de Esperanza y '+state.shadow_marks+' de Sombra.';
+ await loadActiveShadowEvent();
 }
-loadApproved();loadEvents();loadLoreScenarios();loadShadowState();refreshAdmin();
+loadApproved();loadEvents();loadLoreChronicle();loadLoreScenarios();loadShadowState();refreshAdmin();
