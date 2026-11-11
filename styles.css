@@ -783,3 +783,44 @@ body{background:var(--paper);color:var(--text-color)}
 #admin .design-control-group input[type=color]{width:100%;height:42px;padding:3px;cursor:pointer}
 #admin .design-control-group input[type=number],#admin .design-control-group select{width:100%;min-height:38px}
 @media(max-width:640px){#admin .design-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}#admin .design-tab{padding:10px 5px}#admin .design-panel>.customizer-grid{grid-template-columns:1fr}}
+
+
+/* Paleta móvil: menú desplegable coherente con la identidad azul noche y dorado */
+@media(max-width:780px){
+  .site-header{
+    background:#101f35!important;
+    border-bottom:1px solid #344457!important;
+  }
+  .brand-mark{color:#c2a36d!important}
+  .brand-copy strong{color:#f0f3f6!important}
+  .brand-copy small{color:#b6c0cb!important}
+  .menu-toggle span{background:#d8bd87!important}
+  .main-nav,
+  .main-nav.open{
+    background:#101f35!important;
+    border-bottom:1px solid #405168!important;
+    box-shadow:0 14px 24px rgba(0,0,0,.32)!important;
+  }
+  .main-nav>a,
+  .main-nav>a:visited{
+    color:#d6dde5!important;
+    border-bottom:1px solid #344457!important;
+  }
+  .main-nav>a:hover,
+  .main-nav>a:focus,
+  .main-nav>a.active{
+    color:#e0c58e!important;
+    background:#1a293c!important;
+  }
+  .main-nav>a.active:after{
+    background:#c2a36d!important;
+  }
+  .main-nav .nav-register{
+    color:#d8bd87!important;
+    border:0!important;
+    background:transparent!important;
+  }
+  .main-nav .nav-admin{
+    color:#d8bd87!important;
+  }
+}
