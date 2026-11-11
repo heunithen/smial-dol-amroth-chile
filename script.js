@@ -106,7 +106,7 @@ function buildSettingRichEditors(){
 buildSettingRichEditors();
 async function saveSingleShadowField(field,editor,button,status){
  const key=field.dataset.setting;
- const value=(editor.innerText??editor.textContent??'').replace(/\\u00a0/g,' ').trim();
+ const value=(editor.innerText??editor.textContent??'').replace(/\u00a0/g,' ').trim();
  const previous=button.textContent;
  button.disabled=true;button.textContent='Guardando…';status.textContent='';
  try{
@@ -283,7 +283,7 @@ document.querySelectorAll('[data-site-image]').forEach(input=>input.addEventList
   form.querySelectorAll('[data-setting]').forEach(field=>{
    const key=field.dataset.setting;if(!key)return;
    const editor=field.parentElement.querySelector('.setting-rich-editor');
-   if(key.startsWith('shadow_level_')&&editor)updates[key]=(editor.innerText??editor.textContent??'').replace(/\\u00a0/g,' ').trim();
+   if(key.startsWith('shadow_level_')&&editor)updates[key]=(editor.innerText??editor.textContent??'').replace(/\u00a0/g,' ').trim();
    else if(field.dataset.settingStorage)updates[key]=editor?editor.innerHTML:field.value;
    else updates[key]=field.value;
   });
