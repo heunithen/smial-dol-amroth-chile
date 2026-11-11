@@ -1,4 +1,4 @@
-// Versión 2.7.22
+// Versión 2.7.23
 const SUPABASE_URL='https://heuxofiaijgpwzvrbvoa.supabase.co';
 const SUPABASE_KEY='sb_publishable_3f_pQw9FSMD9ipequee7Ew_w4sIP_iL';
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -1012,26 +1012,19 @@ function initAdminTabs(){
 }
 initAdminTabs();
 
-// Reproductor musical del Smial: el reproductor de YouTube se despliega al solicitar reproducción.
+// Reproductor musical del Smial: audio de YouTube sin desplegar el video.
 (function initSmialMusicPlayer(){
  const toggle=document.getElementById('music-player-toggle');
- const frame=document.getElementById('music-player-frame');
  const iframe=document.getElementById('music-player-iframe');
- if(!toggle||!frame||!iframe)return;
+ if(!toggle||!iframe)return;
+ let playing=false;
  toggle.addEventListener('click',()=>{
-  const opening=frame.hidden;
-  frame.hidden=!opening;
-  toggle.setAttribute('aria-expanded',String(opening));
-  toggle.setAttribute('aria-label',opening?'Cerrar reproductor de música':'Abrir reproductor de música');
-  toggle.textContent=opening?'×':'▶';
-  if(opening){
-   const url=new URL(iframe.src);
-   url.searchParams.set('autoplay','1');
-   iframe.src=url.toString();
-  }else{
-   const url=new URL(iframe.src);
-   url.searchParams.set('autoplay','0');
-   iframe.src=url.toString();
-  }
+  playing=!playing;
+  const url=new URL(iframe.src);
+  url.searchParams.set('autoplay',playing?'1':'0');
+  iframe.src=url.toString();
+  toggle.textContent=playing?'Ⅱ':'▶';
+  toggle.setAttribute('aria-pressed',String(playing));
+  toggle.setAttribute('aria-label',playing?'Detener música':'Reproducir música');
  });
 })();
