@@ -1012,19 +1012,18 @@ function initAdminTabs(){
 }
 initAdminTabs();
 
-// Reproductor musical del Smial: audio de YouTube sin desplegar el video.
+// Versión 2.7.24
+// Controles de playlist mediante YouTube IFrame Player API.
 (function initSmialMusicPlayer(){
- const toggle=document.getElementById('music-player-toggle');
- const iframe=document.getElementById('music-player-iframe');
- if(!toggle||!iframe)return;
- let playing=false;
- toggle.addEventListener('click',()=>{
-  playing=!playing;
-  const url=new URL(iframe.src);
-  url.searchParams.set('autoplay',playing?'1':'0');
-  iframe.src=url.toString();
-  toggle.textContent=playing?'Ⅱ':'▶';
-  toggle.setAttribute('aria-pressed',String(playing));
-  toggle.setAttribute('aria-label',playing?'Detener música':'Reproducir música');
- });
+ const toggle=document.getElementById('music-player-toggle'),prev=document.getElementById('music-prev'),next=document.getElementById('music-next'),volume=document.getElementById('music-volume'),iframe=document.getElementById('music-player-iframe'),status=document.getElementById('music-track-status');
+ if(!toggle||!prev||!next||!volume||!iframe)return;
+ const playlist='PLpf9zAOOy1KxwDUc6ZHgeforxG1tLJ13y';let player=null,ready=false,playing=false;
+ const setPlaying=v=>{playing=v;toggle.textContent=v?'Ⅱ':'▶';toggle.setAttribute('aria-pressed',String(v));toggle.setAttribute('aria-label',v?'Pausar música':'Reproducir música');if(status)status.textContent=v?'Reproduciendo':'En pausa';};
+ function createPlayer(){if(player||!window.YT||!YT.Player)return;player=new YT.Player(iframe,{events:{onReady:e=>{ready=true;e.target.setVolume(+volume.value);e.target.cuePlaylist({listType:'playlist',list:playlist,index:0});},onStateChange:e=>{if(e.data===YT.PlayerState.PLAYING)setPlaying(true);if(e.data===YT.PlayerState.PAUSED||e.data===YT.PlayerState.ENDED)setPlaying(false);}}});}
+ function loadApi(){if(window.YT&&YT.Player){createPlayer();return;}if(!document.querySelector('script[data-youtube-iframe-api]')){const tag=document.createElement('script');tag.src='https://www.youtube.com/iframe_api';tag.dataset.youtubeIframeApi='true';document.head.appendChild(tag);}const prior=window.onYouTubeIframeAPIReady;window.onYouTubeIframeAPIReady=function(){if(typeof prior==='function')prior();createPlayer();};}
+ toggle.addEventListener('click',()=>{if(!ready){loadApi();if(status)status.textContent='Preparando reproductor…';const timer=setInterval(()=>{if(ready){clearInterval(timer);player.playVideo();}},200);setTimeout(()=>clearInterval(timer),15000);return;}if(playing)player.pauseVideo();else player.playVideo();});
+ prev.addEventListener('click',()=>{if(ready)player.previousVideo();else{loadApi();if(status)status.textContent='Preparando reproductor…';}});
+ next.addEventListener('click',()=>{if(ready)player.nextVideo();else{loadApi();if(status)status.textContent='Preparando reproductor…';}});
+ volume.addEventListener('input',()=>{if(ready)player.setVolume(+volume.value);});
+ loadApi();
 })();
