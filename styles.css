@@ -728,3 +728,8 @@ body{background:var(--paper);color:var(--text-color)}
 .membership-request-item h4{margin:0 0 8px}
 .membership-request-item p{margin:6px 0}
 #register-form input:focus,#member-login-form input:focus{outline:2px solid var(--gold);outline-offset:2px}
+
+
+/* v2.5.2 — edición de eventos publicados */
+#event-edit-cancel[hidden]{display:none!important}
+.admin-event-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
