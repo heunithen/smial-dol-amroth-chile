@@ -320,3 +320,18 @@ body{font-family:var(--sans);color:var(--text-color)}
 .main-nav>a:hover,.main-nav>a.active{color:var(--nav-active-color,#9b8355)}
 .main-nav .nav-register{color:var(--nav-register-text-color,#203a55);border-color:var(--nav-register-border-color,#9caaaf)}
 .main-nav .nav-register:hover,.main-nav .nav-register.active{color:var(--nav-active-color,#9b8355);border-color:var(--nav-active-color,#9b8355)}
+
+
+/* v1.9.3 — personalización independiente de las tarjetas del Lore público */
+.lore-chapter{
+ background:var(--lore-card-background,#efeee9);
+ border-color:var(--lore-card-border-color,#d6d9d6);
+}
+.lore-chapter h3,.lore-chapter .event-lore-content h2,.lore-chapter .event-lore-content h3,.lore-chapter .event-lore-content h4{
+ color:var(--lore-card-title-color,#20364d);
+}
+.lore-chapter .event-lore-content{color:var(--lore-card-text-color,#465766)}
+.lore-chapter .card-kicker{color:var(--lore-card-label-color,#9a8558)}
+.lore-chapter .event-lore-content blockquote{border-left-color:var(--lore-card-label-color,#9a8558)}
+.lore-chapter .event-lore-content a{color:var(--lore-card-title-color,#20364d)}
+.lore-chapter .event-lore-content strong{color:var(--lore-card-title-color,#20364d)}
