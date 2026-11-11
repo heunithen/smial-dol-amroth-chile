@@ -257,7 +257,6 @@ function editLoreScenario(s){
  document.getElementById('lore-low-editor').innerHTML=richEditorValue(s.low_resolution);
 
  document.getElementById('lore-success-editor').innerHTML=richEditorValue(s.success_resolution);
- document.getElementById('lore-partial-threshold').value=s.partial_threshold;
 
  document.getElementById('lore-editor-heading').textContent='Editar historia';
  say('lore-editor-feedback','Editando: '+s.name);
@@ -270,7 +269,7 @@ document.getElementById('lore-scenario-form').addEventListener('submit',async e=
   if(success<=partial)throw new Error('La puntuación de victoria debe ser mayor que la de éxito parcial.');
   const editors=['lore-intro-editor','lore-low-editor','lore-success-editor'];
   const content=editors.map(id=>sanitizeRich(document.getElementById(id).innerHTML));
-  if(content.some(value=>!value.trim()))throw new Error('Completa la introducción y las tres resoluciones.');
+  if(content.some(value=>!value.trim()))throw new Error('Completa la introducción y los dos finales.');
   let cover=document.getElementById('lore-cover-existing').value||null;
   const file=document.getElementById('lore-cover-image').files[0];if(file)cover=await uploadImage(file,'lore-covers');
   const id=document.getElementById('lore-scenario-id').value;
