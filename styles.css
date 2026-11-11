@@ -852,3 +852,9 @@ body{background:var(--paper);color:var(--text-color)}
 .storage-usage-track>span{display:block;width:0;height:100%;border-radius:20px;background:linear-gradient(90deg,#b89b68,#d8bd87);transition:width .35s}
 @media(max-width:900px){.photo-gallery-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:600px){.photo-gallery-section{padding:60px 16px}.photo-gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.photo-gallery-pagination{gap:9px;flex-wrap:wrap}.photo-gallery-pagination button{padding:9px 10px;font-size:11px}.photo-gallery-pagination span{width:100%;order:-1;text-align:center}.storage-usage-panel{padding:15px}.storage-usage-values{align-items:flex-start;flex-direction:column}.storage-usage-values span{text-align:left}}
+
+/* v2.7.4 — relato dinámico del nivel colectivo */
+.smial-level-narrative{margin:16px 0 18px;padding:18px 20px;border-left:2px solid #b9a477;background:rgba(255,255,255,.035)}
+.smial-level-narrative h4{font:500 13px/1.5 var(--serif);letter-spacing:.09em;color:#d6bd91;margin:0 0 8px}
+.smial-level-narrative p{font-size:11px;line-height:1.9;color:#c3cbd0;margin:0}
+@media(max-width:780px){.smial-level-narrative{padding:15px}}
