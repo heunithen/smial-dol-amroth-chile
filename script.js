@@ -259,12 +259,40 @@ async function loadMembershipRequests(){
  }));
 }
 const registerForm=document.getElementById('register-form');
+const registerPassword=document.getElementById('register-password');
+const registerPasswordConfirm=document.getElementById('register-confirm-password');
+const registerPasswordFeedback=document.getElementById('register-password-feedback');
+function validateRegisterPasswords(){
+ const password=registerPassword.value,confirmation=registerPasswordConfirm.value;
+ let message='',valid=false;
+ if(password.length>0&&password.length<6)message='La contraseña debe tener al menos 6 caracteres.';
+ else if(confirmation.length>0&&password!==confirmation)message='Las contraseñas no coinciden.';
+ else if(password.length>=6&&confirmation.length>0&&password===confirmation){message='Las contraseñas coinciden.';valid=true;}
+ registerPasswordFeedback.textContent=message;
+ registerPasswordFeedback.classList.toggle('is-valid',valid);
+ registerPasswordFeedback.classList.toggle('is-invalid',!!message&&!valid);
+ registerPassword.setAttribute('aria-invalid',password.length>0&&password.length<6?'true':'false');
+ registerPasswordConfirm.setAttribute('aria-invalid',confirmation.length>0&&password!==confirmation?'true':'false');
+ return password.length>=6&&password.length<=72&&password===confirmation;
+}
+[registerPassword,registerPasswordConfirm].forEach(input=>input.addEventListener('input',validateRegisterPasswords));
+registerForm.querySelectorAll('[data-password-toggle]').forEach(toggle=>toggle.addEventListener('click',()=>{
+ const input=document.getElementById(toggle.dataset.passwordToggle);
+ const show=input.type==='password';
+ input.type=show?'text':'password';
+ toggle.setAttribute('aria-pressed',String(show));
+ toggle.setAttribute('aria-label',show?'Ocultar contraseña':'Mostrar contraseña');
+ toggle.title=show?'Ocultar contraseña':'Mostrar contraseña';
+}));
 registerForm.addEventListener('submit',async e=>{
  e.preventDefault();
  const button=registerForm.querySelector('button[type="submit"]');
- const password=document.getElementById('register-password').value;
- const confirmation=document.getElementById('register-confirm-password').value;
- if(password!==confirmation){say('form-feedback','Las contraseñas no coinciden.');document.getElementById('register-confirm-password').focus();return;}
+ const password=registerPassword.value;
+ const confirmation=registerPasswordConfirm.value;
+ if(!validateRegisterPasswords()){
+  say('form-feedback',password.length<6?'La contraseña debe tener al menos 6 caracteres.':'Las contraseñas no coinciden.');
+  (password.length<6?registerPassword:registerPasswordConfirm).focus();return;
+ }
  button.disabled=true;say('form-feedback','Enviando solicitud...');
  try{
   const {data,error}=await db.functions.invoke('membership-request',{body:{
