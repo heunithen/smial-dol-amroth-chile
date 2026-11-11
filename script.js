@@ -198,14 +198,14 @@ async function loadEvents(){
  const host=document.getElementById('event-placeholder-list');if(!host)return;
  const {data,error}=await db.from('events').select('*').eq('status','published').order('event_date',{ascending:true});
  if(error)return;
- host.innerHTML=data.map(ev=>{const cover=ev.lore_cover_image_path?db.storage.from('smial-media').getPublicUrl(ev.lore_cover_image_path).data.publicUrl:'';return '<article class="public-event"><p class="card-kicker">'+escapeHtml(ev.event_date)+(ev.event_time?' · '+escapeHtml(ev.event_time.slice(0,5)):'')+'</p><h3>'+escapeHtml(ev.title)+'</h3><p>'+escapeHtml(ev.description)+'</p><small>'+escapeHtml(ev.location)+'</small>'+(ev.lore_title?'<div class="event-lore"><span>CRÓNICA DEL SMIAL</span><h4>'+escapeHtml(ev.lore_title)+'</h4>'+(cover?'<img class="event-lore-cover" src="'+escapeHtml(cover)+'" alt="">':'')+'<div class="event-lore-content">'+sanitizeRich(ev.lore_intro||'')+'</div>'+(ev.lore_resolution?'<div class="event-resolution"><b>'+escapeHtml((ev.lore_outcome||'').toUpperCase())+'</b><div class="event-lore-content">'+sanitizeRich(ev.lore_resolution)+'</div></div>':'<small>El desenlace se conocerá al cerrar el evento.</small>')+'</div>':'')+'</article>';}).join('');
+ host.innerHTML=data.map(ev=>{const cover=ev.lore_cover_image_path?db.storage.from('smial-media').getPublicUrl(ev.lore_cover_image_path).data.publicUrl:'';return '<article class="public-event"><p class="card-kicker">'+escapeHtml(ev.event_date)+(ev.event_time?' · '+escapeHtml(ev.event_time.slice(0,5)):'')+'</p><h3>'+escapeHtml(ev.title)+'</h3><p>'+sanitizeRich(ev.description||'')+'</p><small>'+escapeHtml(ev.location)+'</small>'+(ev.lore_title?'<div class="event-lore"><span>CRÓNICA DEL SMIAL</span><h4>'+escapeHtml(ev.lore_title)+'</h4>'+(cover?'<img class="event-lore-cover" src="'+escapeHtml(cover)+'" alt="">':'')+'<div class="event-lore-content">'+sanitizeRich(ev.lore_intro||'')+'</div>'+(ev.lore_resolution?'<div class="event-resolution"><b>'+escapeHtml((ev.lore_outcome||'').toUpperCase())+'</b><div class="event-lore-content">'+sanitizeRich(ev.lore_resolution)+'</div></div>':'<small>El desenlace se conocerá al cerrar el evento.</small>')+'</div>':'')+'</article>';}).join('');
  highlightLoreDates(host);
 }
 async function loadLoreScenarios(){
  const host=document.getElementById('event-placeholder-list');if(!host)return;
  const {data,error}=await db.from('events').select('*').eq('status','published').order('event_date',{ascending:true});
  if(error)return;
- host.innerHTML=data.map(ev=>'<article class="public-event"><p class="card-kicker">'+escapeHtml(ev.event_date)+(ev.event_time?' · '+escapeHtml(ev.event_time.slice(0,5)):'')+'</p><h3>'+escapeHtml(ev.title)+'</h3><p>'+escapeHtml(ev.description)+'</p><small>'+escapeHtml(ev.location)+'</small>'+(ev.lore_title?'<div class="event-lore"><span>CRÓNICA DEL SMIAL</span><h4>'+escapeHtml(ev.lore_title)+'</h4><p>'+escapeHtml(ev.lore_intro||'')+'</p>'+(ev.lore_resolution?'<div class="event-resolution"><b>'+escapeHtml((ev.lore_outcome||'').toUpperCase())+'</b><p>'+escapeHtml(ev.lore_resolution)+'</p></div>':'<small>El desenlace se conocerá al cerrar el evento.</small>')+'</div>':'')+'</article>').join('');
+ host.innerHTML=data.map(ev=>'<article class="public-event"><p class="card-kicker">'+escapeHtml(ev.event_date)+(ev.event_time?' · '+escapeHtml(ev.event_time.slice(0,5)):'')+'</p><h3>'+escapeHtml(ev.title)+'</h3><p>'+sanitizeRich(ev.description||'')+'</p><small>'+escapeHtml(ev.location)+'</small>'+(ev.lore_title?'<div class="event-lore"><span>CRÓNICA DEL SMIAL</span><h4>'+escapeHtml(ev.lore_title)+'</h4><p>'+escapeHtml(ev.lore_intro||'')+'</p>'+(ev.lore_resolution?'<div class="event-resolution"><b>'+escapeHtml((ev.lore_outcome||'').toUpperCase())+'</b><p>'+escapeHtml(ev.lore_resolution)+'</p></div>':'<small>El desenlace se conocerá al cerrar el evento.</small>')+'</div>':'')+'</article>').join('');
 }
 async function loadLoreScenarios(){
  const select=document.getElementById('event-lore-scenario');if(!select)return;
@@ -263,15 +263,17 @@ eventForm.addEventListener('submit',async e=>{
   if(pending?.length)throw new Error('Ya existe un acontecimiento activo en La Sombra. Resuélvelo antes de publicar otro.');
   const selectedId=document.getElementById('event-lore-scenario').value;
   if(!selectedId)throw new Error('Selecciona el acontecimiento que vas a activar.');
+  const eventDescription=document.getElementById('event-description-editor');
+  if(!eventDescription.textContent.trim())throw new Error('Escribe la descripción del evento.');
   const file=document.getElementById('event-image').files[0];const image_path=file?await uploadImage(file,'events'):null;
   const {data:scenarios,error:scenarioError}=await db.from('lore_scenarios').select('*').eq('active',true);
   if(scenarioError)throw scenarioError;
   if(!scenarios?.length)throw new Error('No hay acontecimientos preconfigurados activos.');
   const scenario=scenarios.find(s=>s.id===selectedId);
   if(!scenario)throw new Error('No se pudo seleccionar una historia.');
-  const payload={title:document.getElementById('event-title').value.trim(),description:document.getElementById('event-description').value.trim(),event_date:document.getElementById('event-date').value,event_time:document.getElementById('event-time').value||null,location:document.getElementById('event-location').value.trim(),image_path,status:'published',lore_scenario_id:scenario.id,lore_title:scenario.name,lore_cover_image_path:scenario.cover_image_path||null,lore_intro:scenario.intro,lore_low_resolution:scenario.low_resolution,lore_partial_resolution:scenario.partial_resolution,lore_success_resolution:scenario.success_resolution,lore_partial_threshold:scenario.partial_threshold,lore_success_threshold:scenario.success_threshold};
+  const payload={title:document.getElementById('event-title').value.trim(),description:sanitizeRich(document.getElementById('event-description-editor').innerHTML),event_date:document.getElementById('event-date').value,event_time:document.getElementById('event-time').value||null,location:document.getElementById('event-location').value.trim(),image_path,status:'published',lore_scenario_id:scenario.id,lore_title:scenario.name,lore_cover_image_path:scenario.cover_image_path||null,lore_intro:scenario.intro,lore_low_resolution:scenario.low_resolution,lore_partial_resolution:scenario.partial_resolution,lore_success_resolution:scenario.success_resolution,lore_partial_threshold:scenario.partial_threshold,lore_success_threshold:scenario.success_threshold};
   const {error}=await db.from('events').insert(payload);if(error)throw error;
-  eventForm.reset();say('event-feedback','Evento publicado con la crónica: '+scenario.name+'.');await Promise.all([loadAdminEvents(),loadEvents()]);
+  eventForm.reset();document.getElementById('event-description-editor').innerHTML='';say('event-feedback','Evento publicado con la crónica: '+scenario.name+'.');await Promise.all([loadAdminEvents(),loadEvents()]);
  }catch(err){say('event-feedback',err.message||'No se pudo publicar.');}finally{button.disabled=false;}
 });
 async function loadAdminEvents(){
@@ -350,7 +352,10 @@ function initRichEditors(){
    const editor=document.getElementById(button.dataset.editorTarget);if(!editor)return;
    editor.focus();const command=button.dataset.editorCommand;
    const value=button.dataset.editorValue;
-   document.execCommand(command,false,value?(command==='formatBlock'?'<'+value+'>':value):null);
+   let argument=value?(command==='formatBlock'?'<'+value+'>':value):null;
+   if(command==='createLink'){argument=prompt('Introduce la dirección del enlace (https://...)');if(!argument)return;if(!(argument.startsWith('https://')||argument.startsWith('http://'))){alert('El enlace debe comenzar con https:// o http://');return;}}
+   document.execCommand(command,false,argument);
+   editor.dispatchEvent(new Event('input',{bubbles:true}));
   });
  });
  document.querySelectorAll('[data-editor-image]').forEach(input=>{
