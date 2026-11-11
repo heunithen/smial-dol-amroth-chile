@@ -1,4 +1,4 @@
-// Versión 2.7.30
+// Versión 2.7.31
 const SUPABASE_URL='https://heuxofiaijgpwzvrbvoa.supabase.co';
 const SUPABASE_KEY='sb_publishable_3f_pQw9FSMD9ipequee7Ew_w4sIP_iL';
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -513,18 +513,52 @@ async function loadPending(){
 
 async function loadAdminAchievements(){
  const host=document.getElementById('admin-character-achievements');if(!host)return;
- const {data,error}=await db.from('characters').select('id,tolkien_name,real_name,role_title,achievements,hope_level,shadow_level').eq('status','approved').order('tolkien_name');
+ const {data,error}=await db.from('characters').select('id,real_name,tolkien_name,role_title,story,achievements,image_path,hope_level,shadow_level').eq('status','approved').order('tolkien_name');
  if(error){host.textContent='No se pudieron cargar los personajes: '+error.message;return;}
- host.innerHTML=(data||[]).map(c=>'<article class="admin-achievement-row"><div class="admin-achievement-heading"><strong>'+escapeHtml(c.tolkien_name)+'</strong><small>'+escapeHtml(c.real_name)+' · '+escapeHtml(c.role_title)+'</small><small>Esperanza '+c.hope_level+'/10 · Sombra '+c.shadow_level+'/10</small></div><label for="achievement-'+c.id+'">Logros reconocidos por la administración</label><textarea id="achievement-'+c.id+'" rows="3" maxlength="2000" data-achievements-id="'+c.id+'">'+escapeHtml(c.achievements||'')+'</textarea><button class="button button-dark" type="button" data-save-achievements="'+c.id+'">Guardar logros</button></article>').join('')||'<p>Aún no hay personajes aprobados.</p>';
+ host.innerHTML=(data||[]).map(c=>{
+  const imageUrl=db.storage.from('smial-media').getPublicUrl(c.image_path).data.publicUrl;
+  return '<article class="admin-achievement-row admin-character-editor" data-character-editor="'+c.id+'">'+
+   '<div class="admin-achievement-heading"><strong>'+escapeHtml(c.tolkien_name)+'</strong><small>'+escapeHtml(c.real_name)+' · '+escapeHtml(c.role_title)+'</small><small>Esperanza '+c.hope_level+'/10 · Sombra '+c.shadow_level+'/10</small></div>'+
+   '<div class="admin-character-current-image"><img src="'+escapeHtml(imageUrl)+'" alt="Imagen actual de '+escapeHtml(c.tolkien_name)+'"></div>'+
+   '<label>Reemplazar imagen del personaje (opcional; cuadrada, 1024 × 1024 px)<input type="file" accept="image/jpeg,image/png,image/webp" data-character-image="'+c.id+'"></label>'+
+   '<label>Nombre real<input type="text" maxlength="120" value="'+escapeHtml(c.real_name||'')+'" data-character-field="real_name"></label>'+
+   '<label>Nombre tolkiendil<input type="text" maxlength="120" value="'+escapeHtml(c.tolkien_name||'')+'" data-character-field="tolkien_name"></label>'+
+   '<label>Cargo<input type="text" maxlength="120" value="'+escapeHtml(c.role_title||'')+'" data-character-field="role_title"></label>'+
+   '<label>Historia<textarea rows="5" maxlength="1000" data-character-field="story">'+escapeHtml(c.story||'')+'</textarea></label>'+
+   '<button class="button button-dark" type="button" data-save-character="'+c.id+'">Guardar cambios del personaje</button><p class="form-feedback" data-character-feedback role="status"></p>'+
+   '<label class="admin-character-achievement-label">Logros reconocidos por la administración<textarea rows="3" maxlength="2000" data-character-achievements>'+escapeHtml(c.achievements||'')+'</textarea></label>'+
+   '<button class="button button-outline-dark" type="button" data-save-achievements="'+c.id+'">Guardar logros</button></article>';
+ }).join('')||'<p>Aún no hay personajes aprobados.</p>';
+ host.querySelectorAll('[data-save-character]').forEach(button=>button.addEventListener('click',async()=>{
+  const card=button.closest('[data-character-editor]'),id=button.dataset.saveCharacter;
+  const field=name=>card.querySelector('[data-character-field="'+name+'"]').value.trim();
+  const feedback=card.querySelector('[data-character-feedback]'),file=card.querySelector('[data-character-image]').files[0];
+  const payload={real_name:field('real_name'),tolkien_name:field('tolkien_name'),role_title:field('role_title'),story:field('story')};
+  if(!payload.real_name||!payload.tolkien_name||!payload.role_title||!payload.story){feedback.textContent='Completa todos los campos antes de guardar.';return;}
+  if(payload.story.length>1000){feedback.textContent='La historia no puede superar los 1000 caracteres.';return;}
+  button.disabled=true;feedback.textContent='Guardando cambios...';
+  try{
+   if(file){
+    const bitmap=await createImageBitmap(file);
+    const validDimensions=bitmap.width===1024&&bitmap.height===1024;bitmap.close();
+    if(!validDimensions)throw new Error('La imagen debe medir exactamente 1024 × 1024 píxeles.');
+    payload.image_path=await uploadImage(file,'characters');
+   }
+   const {error}=await db.from('characters').update(payload).eq('id',id).eq('status','approved');
+   if(error)throw error;
+   feedback.textContent='Personaje actualizado correctamente.';
+   await loadApproved();
+   await loadAdminAchievements();
+  }catch(err){feedback.textContent=err.message||'No se pudieron guardar los cambios.';button.disabled=false;}
+ }));
  host.querySelectorAll('[data-save-achievements]').forEach(button=>button.addEventListener('click',async()=>{
-  const id=button.dataset.saveAchievements,field=host.querySelector('[data-achievements-id="'+id+'"]');
+  const card=button.closest('[data-character-editor]'),id=button.dataset.saveAchievements,field=card.querySelector('[data-character-achievements]');
   button.disabled=true;const {error}=await db.from('characters').update({achievements:field.value.trim()}).eq('id',id).eq('status','approved');
   if(error)alert('No se pudieron guardar los logros: '+error.message);
-  else{button.textContent='Guardado';await loadApproved();}
+  else{button.textContent='Logros guardados';await loadApproved();}
   button.disabled=false;
  }));
 }
-
 let editingEventId=null;
 const eventForm=document.getElementById('event-form');
 const eventSubmitButton=eventForm.querySelector('button[type="submit"]');
