@@ -1,4 +1,4 @@
-// Versión 2.7.42
+// Versión 2.7.43
 const SUPABASE_URL='https://heuxofiaijgpwzvrbvoa.supabase.co';
 const SUPABASE_KEY='sb_publishable_3f_pQw9FSMD9ipequee7Ew_w4sIP_iL';
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -199,6 +199,16 @@ function applySiteSettings(){
  if(s.about_logo_image_path){aboutLogo.src=settingImageUrl(s.about_logo_image_path);aboutLogo.hidden=false;aboutMark?.classList.add('has-custom-logo');if(aboutSvg)aboutSvg.hidden=true;}else{aboutLogo.removeAttribute('src');aboutLogo.hidden=true;aboutMark?.classList.remove('has-custom-logo');if(aboutSvg)aboutSvg.hidden=false;}
  applyDesignOverrides();
 }
+function normalizeShadowNarratives(settings){
+ const merged={...SITE_DEFAULTS,...(settings||{})};
+ for(let level=1;level<=9;level++){
+  for(const kind of ['title','text']){
+   const key='shadow_level_'+level+'_'+kind;
+   if(typeof merged[key]!=='string'||!merged[key].trim())merged[key]=SITE_DEFAULTS[key]||'';
+  }
+ }
+ return merged;
+}
 function fillSiteSettingsForm(){
  settingFields.forEach(el=>{const key=el.dataset.setting;const value=siteSettings[key]??SITE_DEFAULTS[key]??'';el.value=value;const editor=el.parentElement.querySelector('.setting-rich-editor');if(editor)editor.innerHTML=richEditorValue(value);});
  [['hero','hero_image_path'],['logo','logo_image_path'],['about-logo','about_logo_image_path'],['shadow-background','shadow_background_image_path']].forEach(([kind,key])=>{const host=document.getElementById('site-'+kind+'-preview'),url=settingImageUrl(siteSettings[key]);if(host)host.innerHTML=url?'<img src="'+escapeHtml(url)+'" alt="Imagen actual">':'Sin imagen personalizada';});
@@ -232,7 +242,7 @@ async function loadSiteSettings(){
   }else if(result.error){
    console.warn('No se pudo cargar el diseño guardado; se usarán los valores base.',result.error);
   }else if(result.data?.settings){
-   siteSettings={...SITE_DEFAULTS,...result.data.settings};
+   siteSettings=normalizeShadowNarratives(result.data.settings);
   }
  }catch(error){
   console.warn('No se pudo cargar el diseño guardado; se usarán los valores base.',error);
@@ -246,7 +256,7 @@ async function loadSiteSettings(){
 async function loadSiteSettingsAdmin(){
  const {data,error}=await db.from('site_settings').select('settings').eq('id',1).maybeSingle();
  if(error){say('site-settings-feedback','No se pudo cargar la configuración: '+error.message);return;}
- siteSettings={...SITE_DEFAULTS,...(data?.settings||{})};fillSiteSettingsForm();applySiteSettings();await loadSavedSiteDesigns();
+ siteSettings=normalizeShadowNarratives(data?.settings||{});fillSiteSettingsForm();applySiteSettings();await loadSavedSiteDesigns();
 }
 
 document.querySelectorAll('[data-site-image]').forEach(input=>input.addEventListener('change',async()=>{
